@@ -71,38 +71,51 @@ void ofApp::update() {
 		}
 		else if (m.getAddress() == "/circles/show-first") {
 			if (m.getArgAsInt(0) == 1){
-				circlesParams.mode = 0;
 				circlesParams.visible = 1;
+				activeSources += 1;
+				circlesParams.index = activeSources;
 			}
 			else {
 				circlesParams.visible = 0;
+				activeSources -= 1;
+				if (ringsParams.index != 0) { ringsParams.index -= 1; }
+				circlesParams.index = activeSources;
 			}
 		}
 		else if (m.getAddress() == "/circles/add") {
 			if (m.getArgAsInt(0) == 1) {
-				circlesParams.mode = 1;
 				circlesParams.visible = 1;
+				activeSources += 1;
+				circlesParams.index = activeSources;
 			}
 			else {
 				circlesParams.visible = 0;
+				circlesParams.index -= activeSources;
+				activeSources -= 1;
 			}
 		}
 		else if (m.getAddress() == "/circles/blend") {
 			if (m.getArgAsInt(0) == 1) {
-			    circlesParams.mode = 2;
 				circlesParams.visible = 1;
+				activeSources += 1;
+				circlesParams.index = activeSources;
 			}
 			else {
 				circlesParams.visible = 0;
+				circlesParams.index -= activeSources;
+				activeSources -= 1;
 			}
 		}
 		else if (m.getAddress() == "/circles/layer") {
 			if (m.getArgAsInt(0) == 1) {
-				circlesParams.mode = 3;
 				circlesParams.visible = 1;
+				activeSources += 1;
+				circlesParams.index = activeSources;
 			}
 			else {
 				circlesParams.visible = 0;
+				circlesParams.index -= activeSources;
+				activeSources -= 1;
 			}
 		}
 		else if (m.getAddress() == "/rings/amount") {
@@ -123,42 +136,56 @@ void ofApp::update() {
 		}
 		else if (m.getAddress() == "/rings/show-first") {
 			if (m.getArgAsInt(0) == 1) {
-				ringsParams.mode = 0;
-			    ringsParams.visible = 1;
+				ringsParams.visible = 1;
+				activeSources += 1;
+				ringsParams.index = activeSources;
 			}
 			else {
 				ringsParams.visible = 0;
+				ringsParams.index -= 1;
+				if (circlesParams.index != 0) {circlesParams.index -= 1; }
+				activeSources -= 1;
 			}
 		}
 		else if (m.getAddress() == "/rings/add") {
 			if (m.getArgAsInt(0) == 1) {
-				ringsParams.mode = 1;
 				ringsParams.visible = 1;
+				activeSources += 1;
+				ringsParams.index = activeSources;
 			}
 			else {
 				ringsParams.visible = 0;
+				ringsParams.index -= activeSources;
+				activeSources -= 1;
 			}
 		}
 		else if (m.getAddress() == "/rings/blend") {
 			if (m.getArgAsInt(0) == 1) {
-				ringsParams.mode = 2;
 				ringsParams.visible = 1;
+				activeSources += 1;
+				ringsParams.index = activeSources;
 			}
 			else {
 				ringsParams.visible = 0;
+				ringsParams.index -= activeSources;
+				activeSources -= 1;
 			}
 		}
 		else if (m.getAddress() == "/rings/layer") {
 			if (m.getArgAsInt(0) == 1) {
-				ringsParams.mode = 3;
 				ringsParams.visible = 1;
+				activeSources += 1;
+				ringsParams.index = activeSources;
 			}
 			else {
 				ringsParams.visible = 0;
+				ringsParams.index -= activeSources;
+				activeSources -= 1;
 			}
 		}
+		ofLog() << "CirclesParams index: " << circlesParams.index;
+		ofLog() << "RingsParams index: " << ringsParams.index;
 	}
-
 }
 
 //--------------------------------------------------------------
@@ -178,10 +205,12 @@ void ofApp::draw(){
 	shader.setUniform1i("circlesParams.coordModification", circlesParams.coordModification);
 	shader.setUniform1i("circlesParams.visible", circlesParams.visible);
 	shader.setUniform1i("circlesParams.mode", circlesParams.mode);
+	shader.setUniform1i("circlesParams.index", circlesParams.index);
 
 	shader.setUniform1f("ringsParams.amount", ringsParams.amount);
 	shader.setUniform1i("ringsParams.visible", ringsParams.visible);
 	shader.setUniform1i("ringsParams.mode", ringsParams.mode);
+	shader.setUniform1i("ringsParams.index", ringsParams.index);
 	shader.setUniform3f("ringsParams.hsvColor", ringsParams.hsvColor);
 	shaderViewer.draw();
 	shader.end();

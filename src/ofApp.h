@@ -33,7 +33,9 @@ public:
 	ofSpherePrimitive sphere;
 	ofxOscReceiver oscReceiver;
 	float amplitude;
+	int activeSources;
 	struct CirclesParams {
+		int index = 0;
 		int visible = 0;
 		int mode = 0;
 		float amount = 1.0f;
@@ -46,6 +48,7 @@ public:
 	} circlesParams;
 
 	struct RingsParams {
+		int index = 0;
 		int visible = 0;
 		int mode = 0;
 		float amount = 1.0f;
