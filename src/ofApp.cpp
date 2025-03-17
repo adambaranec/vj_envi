@@ -74,6 +74,7 @@ void ofApp::update() {
 				circlesParams.visible = 1;
 				activeSources += 1;
 				circlesParams.index = activeSources;
+				circlesParams.mode = 0;
 			}
 			else {
 				circlesParams.visible = 0;
@@ -87,6 +88,7 @@ void ofApp::update() {
 				circlesParams.visible = 1;
 				activeSources += 1;
 				circlesParams.index = activeSources;
+				circlesParams.mode = 1;
 			}
 			else {
 				circlesParams.visible = 0;
@@ -99,6 +101,7 @@ void ofApp::update() {
 				circlesParams.visible = 1;
 				activeSources += 1;
 				circlesParams.index = activeSources;
+				circlesParams.mode = 2;
 			}
 			else {
 				circlesParams.visible = 0;
@@ -111,6 +114,7 @@ void ofApp::update() {
 				circlesParams.visible = 1;
 				activeSources += 1;
 				circlesParams.index = activeSources;
+				circlesParams.mode = 3;
 			}
 			else {
 				circlesParams.visible = 0;
@@ -139,6 +143,7 @@ void ofApp::update() {
 				ringsParams.visible = 1;
 				activeSources += 1;
 				ringsParams.index = activeSources;
+				ringsParams.mode = 0;
 			}
 			else {
 				ringsParams.visible = 0;
@@ -152,6 +157,7 @@ void ofApp::update() {
 				ringsParams.visible = 1;
 				activeSources += 1;
 				ringsParams.index = activeSources;
+				ringsParams.mode = 1;
 			}
 			else {
 				ringsParams.visible = 0;
@@ -164,6 +170,7 @@ void ofApp::update() {
 				ringsParams.visible = 1;
 				activeSources += 1;
 				ringsParams.index = activeSources;
+				ringsParams.mode = 2;
 			}
 			else {
 				ringsParams.visible = 0;
@@ -176,6 +183,7 @@ void ofApp::update() {
 				ringsParams.visible = 1;
 				activeSources += 1;
 				ringsParams.index = activeSources;
+				ringsParams.mode = 3;
 			}
 			else {
 				ringsParams.visible = 0;
@@ -183,8 +191,8 @@ void ofApp::update() {
 				activeSources -= 1;
 			}
 		}
-		ofLog() << "CirclesParams index: " << circlesParams.index;
-		ofLog() << "RingsParams index: " << ringsParams.index;
+		ofLog() << "CirclesParams mode: " << circlesParams.mode;
+		ofLog() << "RingsParams mode: " << ringsParams.mode;
 	}
 }
 

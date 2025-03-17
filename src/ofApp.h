@@ -52,6 +52,9 @@ public:
 		int visible = 0;
 		int mode = 0;
 		float amount = 1.0f;
+		float density = 15.0f;
+		float speed = 5.0f;
+		int direction = 1;
 		glm::fvec3 hsvColor = glm::fvec3(0.0f, 1.0f, 1.0f);;
 	} ringsParams;
 };
