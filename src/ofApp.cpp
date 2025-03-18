@@ -191,8 +191,6 @@ void ofApp::update() {
 				activeSources -= 1;
 			}
 		}
-		ofLog() << "CirclesParams mode: " << circlesParams.mode;
-		ofLog() << "RingsParams mode: " << ringsParams.mode;
 	}
 }
 
