@@ -29,7 +29,7 @@ void ofApp::update() {
 	while (oscReceiver.hasWaitingMessages()) {
 		ofxOscMessage m;
 		oscReceiver.getNextMessage(m);
-
+		/*  ----------- CIRCLES --------------*/
 		if (m.getAddress() == "/circles/quantity") {
 			int value = m.getArgAsInt(0);
 			//ofLog() << "Quantity of CirclesParams: " << value;
@@ -73,14 +73,14 @@ void ofApp::update() {
 			if (m.getArgAsInt(0) == 1){
 				circlesParams.visible = 1;
 				activeSources += 1;
-				circlesParams.index = activeSources;
+				circlesParams.index = 1;
 				circlesParams.mode = 0;
 			}
 			else {
 				circlesParams.visible = 0;
 				activeSources -= 1;
 				if (ringsParams.index != 0) { ringsParams.index -= 1; }
-				circlesParams.index = activeSources;
+				circlesParams.index = 0;
 			}
 		}
 		else if (m.getAddress() == "/circles/add") {
@@ -92,7 +92,7 @@ void ofApp::update() {
 			}
 			else {
 				circlesParams.visible = 0;
-				circlesParams.index -= activeSources;
+				circlesParams.index = 0;
 				activeSources -= 1;
 			}
 		}
@@ -105,7 +105,7 @@ void ofApp::update() {
 			}
 			else {
 				circlesParams.visible = 0;
-				circlesParams.index -= activeSources;
+				circlesParams.index = 0;
 				activeSources -= 1;
 			}
 		}
@@ -118,10 +118,10 @@ void ofApp::update() {
 			}
 			else {
 				circlesParams.visible = 0;
-				circlesParams.index -= activeSources;
+				circlesParams.index = 0;
 				activeSources -= 1;
 			}
-		}
+		}  /*  ----------- RINGS --------------*/
 		else if (m.getAddress() == "/rings/amount") {
 			float value = m.getArgAsFloat(0);
 			ringsParams.amount = value;
@@ -142,12 +142,12 @@ void ofApp::update() {
 			if (m.getArgAsInt(0) == 1) {
 				ringsParams.visible = 1;
 				activeSources += 1;
-				ringsParams.index = activeSources;
+				ringsParams.index = 1;
 				ringsParams.mode = 0;
 			}
 			else {
 				ringsParams.visible = 0;
-				ringsParams.index -= 1;
+				ringsParams.index = 0;
 				if (circlesParams.index != 0) {circlesParams.index -= 1; }
 				activeSources -= 1;
 			}
@@ -161,7 +161,7 @@ void ofApp::update() {
 			}
 			else {
 				ringsParams.visible = 0;
-				ringsParams.index -= activeSources;
+				ringsParams.index = 0;
 				activeSources -= 1;
 			}
 		}
@@ -174,7 +174,7 @@ void ofApp::update() {
 			}
 			else {
 				ringsParams.visible = 0;
-				ringsParams.index -= activeSources;
+				ringsParams.index = 0;
 				activeSources -= 1;
 			}
 		}
@@ -187,9 +187,146 @@ void ofApp::update() {
 			}
 			else {
 				ringsParams.visible = 0;
-				ringsParams.index -= activeSources;
+				ringsParams.index = 0;
 				activeSources -= 1;
 			}
+		}        /*  ----------- SQUARES --------------*/
+		else if (m.getAddress() == "/squares/amount") {
+		}
+		else if (m.getAddress() == "/squares/repeatx") {
+		}
+		else if (m.getAddress() == "/squares/repeaty") {
+		}
+		else if (m.getAddress() == "/squares/scrollx") {
+		}
+		else if (m.getAddress() == "/squares/scrolly") {
+		}
+		else if (m.getAddress() == "/squares/hue") {
+		}
+		else if (m.getAddress() == "/squares/saturation") {
+		}
+		else if (m.getAddress() == "/squares/value") {
+		}
+		else if (m.getAddress() == "/squares/outline-switch") {
+		}
+		else if (m.getAddress() == "/squares/rotate-switch") {
+		}
+		else if (m.getAddress() == "/squares/rotate-left") {
+		}
+		else if (m.getAddress() == "/squares/rotate-right") {
+		}
+		else if (m.getAddress() == "/squares/show-first") {
+		}
+		else if (m.getAddress() == "/squares/add") {
+		}
+		else if (m.getAddress() == "/squares/blend") {
+		}
+		else if (m.getAddress() == "/squares/layer") {
+		}  /*  ----------- SOLID --------------*/ 
+		else if (m.getAddress() == "/solid/amount") {
+		}
+		else if (m.getAddress() == "/solid/hue") {
+		}
+		else if (m.getAddress() == "/solid/saturation") {
+		}
+		else if (m.getAddress() == "/solid/value") {
+		}
+		else if (m.getAddress() == "/solid/show-texture") {
+		}
+		else if (m.getAddress() == "/solid/tex1") {
+		}
+		else if (m.getAddress() == "/solid/tex2") {
+		}
+		else if (m.getAddress() == "/solid/tex3") {
+		}
+		else if (m.getAddress() == "/solid/tex4") {
+		}
+		else if (m.getAddress() == "/solid/tex5") {
+		}
+		else if (m.getAddress() == "/solid/tex6") {
+		}
+		else if (m.getAddress() == "/solid/tex7") {
+		}
+		else if (m.getAddress() == "/solid/tex8") {
+		}
+		else if (m.getAddress() == "/solid/tex9") {
+		}
+		else if (m.getAddress() == "/solid/tex10") {
+		}
+		else if (m.getAddress() == "/solid/tex11") {
+		}
+		else if (m.getAddress() == "/solid/tex12") {
+		}
+		else if (m.getAddress() == "/solid/show-first") {
+		}
+		else if (m.getAddress() == "/solid/add") {
+		}
+		else if (m.getAddress() == "/solid/blend") {
+		}
+		else if (m.getAddress() == "/solid/layer") {
+		}/*  ----------- OSCILLATOR --------------*/ 
+		else if (m.getAddress() == "/osc/amount") {
+		}
+		else if (m.getAddress() == "/osc/hue1") {
+		}
+		else if (m.getAddress() == "/osc/hue2") {
+		}
+		else if (m.getAddress() == "/osc/saturation1") {
+		}
+		else if (m.getAddress() == "/osc/saturation2") {
+		}
+		else if (m.getAddress() == "/osc/value1") {
+		}
+		else if (m.getAddress() == "/osc/value2") {
+		}
+		else if (m.getAddress() == "/osc/predefined") {
+		}
+		else if (m.getAddress() == "/osc/add-ball") {
+		}
+		else if (m.getAddress() == "/osc/show-first") {
+		}
+		else if (m.getAddress() == "/osc/add") {
+		}
+		else if (m.getAddress() == "/osc/blend") {
+		}
+		else if (m.getAddress() == "/osc/layer") {
+		}
+		/*  ----------- SOURCE INDICES AND MIXING --------------*/
+		else if (m.getAddress() == "/circles/index2") {
+		}
+		else if (m.getAddress() == "/circles/index3") {
+		}
+		else if (m.getAddress() == "/circles/index4") {
+		}
+		else if (m.getAddress() == "/rings/index2") {
+		}
+		else if (m.getAddress() == "/rings/index3") {
+		}
+		else if (m.getAddress() == "/rings/index4") {
+		}
+		else if (m.getAddress() == "/squares/index2") {
+		}
+		else if (m.getAddress() == "/squares/index3") {
+		}
+		else if (m.getAddress() == "/squares/index4") {
+		}
+		else if (m.getAddress() == "/solid/index2") {
+		}
+		else if (m.getAddress() == "/solid/index3") {
+		}
+		else if (m.getAddress() == "/solid/index4") {
+		}
+		else if (m.getAddress() == "/osc/index2") {
+		}
+		else if (m.getAddress() == "/osc/index3") {
+		}
+		else if (m.getAddress() == "/osc/index4") {
+		}
+		else if (m.getAddress() == "/rings/index2") {
+		}
+		else if (m.getAddress() == "/rings/index3") {
+		}
+		else if (m.getAddress() == "/confirm") {
 		}
 	}
 }
