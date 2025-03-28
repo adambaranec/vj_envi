@@ -339,7 +339,7 @@ void ofApp::draw(){
 	shader.setUniform1f("amp", amplitude);
 	shader.setUniform1f("aspect", (float)ofGetWidth() / ofGetHeight());
 
-	shader.setUniform1i("circlesParams.quantity", circlesParams.quantity);
+	/*shader.setUniform1i("circlesParams.quantity", circlesParams.quantity);
 	shader.setUniform1f("circlesParams.amount", circlesParams.amount);
 	shader.setUniform1f("circlesParams.hueRange", circlesParams.hueRange);
 	shader.setUniform3f("circlesParams.hsvColor", circlesParams.hsvColor);
@@ -354,7 +354,7 @@ void ofApp::draw(){
 	shader.setUniform1i("ringsParams.visible", ringsParams.visible);
 	shader.setUniform1i("ringsParams.mode", ringsParams.mode);
 	shader.setUniform1i("ringsParams.index", ringsParams.index);
-	shader.setUniform3f("ringsParams.hsvColor", ringsParams.hsvColor);
+	shader.setUniform3f("ringsParams.hsvColor", ringsParams.hsvColor);*/
 	shaderViewer.draw();
 	shader.end();
 	camera.end();
