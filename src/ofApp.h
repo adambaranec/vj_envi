@@ -34,6 +34,7 @@ public:
 	ofxOscReceiver oscReceiver;
 	float amplitude;
 	int activeSources;
+	int var = 0;
 	struct CirclesParams {
 		int index = 0;
 		int visible = 0;
