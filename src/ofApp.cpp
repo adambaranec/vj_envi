@@ -28,7 +28,7 @@ void ofApp::setup(){
 void ofApp::update() {
 	if (ofGetFrameNum() != 0) {
 		if (ofGetFrameNum() % (60 * 60)*2 == 0) {
-			if (var == 11) { var = -1; }
+			if (var == 13) { var = -1; }
 			var += 1;
 		}
 	}
