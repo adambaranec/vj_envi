@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	oscReceiver.setup("192.168.50.113", 8000);
+	//oscReceiver.setup("192.168.50.113", 8000);
 	ofSoundStreamSettings settings;
 	settings.numOutputChannels = 0;
 	settings.numInputChannels = 6;
@@ -22,18 +22,19 @@ void ofApp::setup(){
 	shaderViewer.setHeight(1);
 	shaderViewer.setWidth((1920.0f / 1080.0f));
 	ofHideCursor();
+	ofSetFrameRate(60);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (ofGetFrameNum() != 0) {
-		if (ofGetFrameNum() % (60 * 60)*2 == 0) {
+	int numFrames = ofGetFrameNum();
+	if (numFrames != 0) {
+		if (numFrames % (60*60*3) == 0) {
 			if (var == 13) { var = -1; }
 			var += 1;
 		}
 	}
 }
-
 //--------------------------------------------------------------
 void ofApp::draw(){
 	camera.begin();
