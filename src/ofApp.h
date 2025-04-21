@@ -27,6 +27,8 @@ public:
 	ofCamera camera;
 	ofShader shader;
 	ofPlanePrimitive shaderViewer;
-	ofTexture tex;
-	int bank, var;
+	std::vector<ofVideoPlayer> videoPlayers;
+	std::vector<ofTexture> loopTextures;
+	ofTexture currentTex;
+	int videoPlayerIndex, textrureLooperIndex, bank, var;
 };

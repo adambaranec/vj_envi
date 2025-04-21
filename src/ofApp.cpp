@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup(){
+void ofApp::setup() {
 	//oscReceiver.setup("192.168.50.113", 8000);
 	/*ofSoundStreamSettings settings;
 	settings.numOutputChannels = 0;
@@ -12,17 +12,33 @@ void ofApp::setup(){
 	settings.setInListener(this);
 	soundStream.setup(settings);*/
 	//camera is set to 1920x1080 resolution
-	ofLoadImage(tex, "vj-loop-5-hd-texture.jpg");
 	camera.setGlobalPosition(0, 0, 1);
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
-	shader.load("vertex.vert", "texViewer.frag");
 	shaderViewer.setUseVbo(true);
 	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
 	shaderViewer.setHeight(1);
 	shaderViewer.setWidth((float)ofGetWidth() / (float)ofGetHeight());
+	ofDirectory loopsDir("loops");
+	loopsDir.allowExt("mp4");
+	loopsDir.listDir();
+	for (int i = 0; i < loopsDir.size(); i++) {
+		ofVideoPlayer player;
+		player.load(loopsDir.getPath(i));
+		player.setLoopState(OF_LOOP_NORMAL);
+		videoPlayers.push_back(player);
+	}
+	ofDirectory texDir("textures");
+	texDir.allowExt("png");
+	texDir.listDir();
+	for (int i = 0; i < texDir.size(); i++) {
+		ofTexture texture;
+		ofLoadImage(texture, texDir.getPath(i));
+		loopTextures.push_back(texture);
+	}
 	ofHideCursor();
+	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 }
 
 //--------------------------------------------------------------
@@ -30,19 +46,26 @@ void ofApp::update() {
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
+	ofClear(0, 0, 0, 255);
 	camera.begin();
-	shader.begin();
-	//shader.setUniformTexture("tex", tex, 0);
-	//shader.setUniform1f("time", ofGetElapsedTimef());
-	//shader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+    currentTex.bind();
+	//shaderViewer.rotateRad(-TWO_PI/300, glm::vec3(0.0, 0.0, 1.0));
 	shaderViewer.draw();
-	shader.end();
+	currentTex.unbind();
 	camera.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+	int index;
+	for (int i = 0; i < videoPlayers.size(); i++) {
+		if (i != index) {
+			videoPlayers[i].stop();
+		}
+		else {
+			videoPlayers[i].play();
+		}
+	}
 }
 
 //--------------------------------------------------------------
