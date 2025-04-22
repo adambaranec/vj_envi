@@ -16,6 +16,7 @@ void ofApp::setup() {
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
+	shader.load("vertex.vert", "fragment.frag");
 	shaderViewer.setUseVbo(true);
 	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
 	shaderViewer.setHeight(1);
@@ -55,12 +56,25 @@ void ofApp::update() {
 void ofApp::draw(){
 	ofClear(0, 0, 0, 255);
 	camera.begin();
-    currentTex.bind();
+	if (mode != SHADER) {
+		currentTex.bind();
+	}
+	else {
+		shader.begin();
+		shader.setUniform1f("time", ofGetElapsedTimef());
+		shader.setUniform1f("aspect", (float)ofGetWidth() / ofGetHeight());
+		shader.setUniform1i("var", shaderVar);
+	}
 	if (mode == TEXTURE) {
 	shaderViewer.rotateRad(-TWO_PI/300, glm::vec3(0.0, 0.0, 1.0));
 	}
 	shaderViewer.draw();
-	currentTex.unbind();
+	if (mode != SHADER) {
+		currentTex.unbind();
+	}
+	else {
+		shader.end();
+	}
 	camera.end();
 }
 
@@ -70,6 +84,7 @@ void ofApp::keyPressed(int key){
 	switch (key) {
 	case '1': mode = LOOP; break;
 	case '2': mode = TEXTURE; break;
+	case '3': mode = SHADER; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
@@ -82,6 +97,7 @@ void ofApp::keyPressed(int key){
 	}
 	if (mode == LOOP) {
 		shaderViewer.resetTransform();
+		shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 		if (index < videoPlayers.size()) {
 			for (int i = 0; i < videoPlayers.size(); i++) {
 				if (i != index) {
@@ -95,12 +111,21 @@ void ofApp::keyPressed(int key){
 		}
 	}
 	else if (mode == TEXTURE) {
-		for (int i = 0; i < videoPlayers.size(); i++) {
-			videoPlayers[i].stop();
+		shaderViewer.mapTexCoords(0, 0, 1920, 1080);
+		if (currentVideoPlayer.isPlaying()) {
+			currentVideoPlayer.stop();
 		}
 		if (index < loopTextures.size()) {
 			currentTex = loopTextures[index];
 		}
+	}
+	else if (mode == SHADER) {
+		shaderViewer.resetTransform();
+		shaderViewer.mapTexCoords(0, 0, 1, 1);
+		if (currentVideoPlayer.isPlaying()) {
+			currentVideoPlayer.stop();
+		}
+		shaderVar = index;
 	}
 }
 
