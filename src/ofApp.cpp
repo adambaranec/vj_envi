@@ -19,7 +19,7 @@ void ofApp::setup() {
 	shaderViewer.setUseVbo(true);
 	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
 	shaderViewer.setHeight(1);
-	shaderViewer.setWidth((float)ofGetWidth() / (float)ofGetHeight());
+	shaderViewer.setWidth(1920.0f/1080.0f);
 	ofDirectory loopsDir("loops");
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
@@ -39,17 +39,26 @@ void ofApp::setup() {
 	}
 	ofHideCursor();
 	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
+	mode = LOOP;
+	currentVideoPlayer = videoPlayers[0];
+	currentVideoPlayer.play();
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	if (mode == LOOP) {
+		currentVideoPlayer.update();
+		currentTex = currentVideoPlayer.getTexture();
+	}
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
 	ofClear(0, 0, 0, 255);
 	camera.begin();
     currentTex.bind();
-	//shaderViewer.rotateRad(-TWO_PI/300, glm::vec3(0.0, 0.0, 1.0));
+	if (mode == TEXTURE) {
+	shaderViewer.rotateRad(-TWO_PI/300, glm::vec3(0.0, 0.0, 1.0));
+	}
 	shaderViewer.draw();
 	currentTex.unbind();
 	camera.end();
@@ -57,13 +66,40 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	int index;
-	for (int i = 0; i < videoPlayers.size(); i++) {
-		if (i != index) {
+	int index = 0;
+	switch (key) {
+	case '1': mode = LOOP; break;
+	case '2': mode = TEXTURE; break;
+	}
+	switch (key) {
+	case 'q': index = 0; break;
+	case 'w': index = 1; break;
+	case 'e': index = 2; break;
+	case 'r': index = 3; break;
+	case 't': index = 4; break;
+	case 'y': index = 5; break;
+	case 'u': index = 6; break;
+	}
+	if (mode == LOOP) {
+		shaderViewer.resetTransform();
+		if (index < videoPlayers.size()) {
+			for (int i = 0; i < videoPlayers.size(); i++) {
+				if (i != index) {
+					videoPlayers[i].stop();
+				}
+				else {
+					videoPlayers[i].play();
+					currentVideoPlayer = videoPlayers[i];
+				}
+			}
+		}
+	}
+	else if (mode == TEXTURE) {
+		for (int i = 0; i < videoPlayers.size(); i++) {
 			videoPlayers[i].stop();
 		}
-		else {
-			videoPlayers[i].play();
+		if (index < loopTextures.size()) {
+			currentTex = loopTextures[index];
 		}
 	}
 }

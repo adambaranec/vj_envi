@@ -30,5 +30,6 @@ public:
 	std::vector<ofVideoPlayer> videoPlayers;
 	std::vector<ofTexture> loopTextures;
 	ofTexture currentTex;
-	int videoPlayerIndex, textrureLooperIndex, bank, var;
+	ofVideoPlayer currentVideoPlayer;
+	enum Mode { LOOP, TEXTURE, SHADER, CUSTOM } mode;
 };
