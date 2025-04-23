@@ -94,6 +94,11 @@ void ofApp::keyPressed(int key){
 	case 't': index = 4; break;
 	case 'y': index = 5; break;
 	case 'u': index = 6; break;
+	case 'i': index = 7; break;
+	case 'o': index = 8; break;
+	case 'p': index = 9; break;
+	case '[': index = 10; break;
+	case ']': index = 11; break;
 	}
 	if (mode == LOOP) {
 		shaderViewer.resetTransform();
@@ -120,12 +125,14 @@ void ofApp::keyPressed(int key){
 		}
 	}
 	else if (mode == SHADER) {
-		shaderViewer.resetTransform();
-		shaderViewer.mapTexCoords(0, 0, 1, 1);
-		if (currentVideoPlayer.isPlaying()) {
-			currentVideoPlayer.stop();
+		if (index <= 2) {
+			shaderViewer.resetTransform();
+			shaderViewer.mapTexCoords(0, 0, 1, 1);
+			if (currentVideoPlayer.isPlaying()) {
+				currentVideoPlayer.stop();
+			}
+			shaderVar = index;
 		}
-		shaderVar = index;
 	}
 }
 
