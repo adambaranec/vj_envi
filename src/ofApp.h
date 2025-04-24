@@ -33,4 +33,5 @@ public:
 	ofVideoPlayer currentVideoPlayer;
 	int shaderVar = 0;
 	enum Mode { LOOP, TEXTURE, SHADER, CUSTOM } mode;
+	ofFbo fbo;
 };

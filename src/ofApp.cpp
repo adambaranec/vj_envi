@@ -43,6 +43,7 @@ void ofApp::setup() {
 	mode = LOOP;
 	currentVideoPlayer = videoPlayers[0];
 	currentVideoPlayer.play();
+	fbo.allocate(1920, 1080, GL_RGBA);
 }
 
 //--------------------------------------------------------------
@@ -54,28 +55,72 @@ void ofApp::update() {
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
+	fbo.begin();
 	ofClear(0, 0, 0, 255);
 	camera.begin();
-	if (mode != SHADER) {
-		currentTex.bind();
-	}
-	else {
-		shader.begin();
-		shader.setUniform1f("time", ofGetElapsedTimef());
-		shader.setUniform1f("aspect", (float)ofGetWidth() / ofGetHeight());
-		shader.setUniform1i("var", shaderVar);
-	}
+	currentTex.bind();
 	if (mode == TEXTURE) {
 	shaderViewer.rotateRad(-TWO_PI/300, glm::vec3(0.0, 0.0, 1.0));
 	}
 	shaderViewer.draw();
-	if (mode != SHADER) {
-		currentTex.unbind();
+	currentTex.unbind();
+	camera.end();
+	fbo.end();
+	fbo.draw(0, 0);
+	//RECORDING
+	//SHADER  VARIATION 1
+	/*int rotDuration = 30 * 4.5;
+	int oneDirDur = rotDuration * 4;
+	float endVal1 = (float)TWO_PI;
+	static float val1 = 0.0f;
+	static int frameNum = 1;
+	camera.begin();
+	shader.begin();
+	//shader.setUniform1f("time", ofGetElapsedTimef());
+	shader.setUniform1f("aspect", (float)ofGetWidth() / ofGetHeight());
+	shader.setUniform1f("val1", val1);
+	shader.setUniform1i("var", 0);
+	shaderViewer.draw();
+	ofImage renderResult;
+	renderResult.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+	std::string filename = "shader-0/shader-0-" + ofToString(frameNum, 4, '0') + ".png";
+	shader.end();
+	camera.end();
+	frameNum++;
+	if (frameNum < oneDirDur) {
+		val1 += endVal1 / (float)rotDuration;
 	}
 	else {
-		shader.end();
+		val1 -= endVal1 / (float)rotDuration;
 	}
+	if (frameNum <= oneDirDur * 2) {
+		renderResult.save(filename);
+	}*/
+	//SHADER VARIATION 2
+	/*int moveDur = 30 * 4;
+	int rotDur = 30 * 3;
+	static float val1 = 0.0f;
+	static float val2 = 0.0f;
+	static int frameNum = 1;
+	camera.begin();
+	shader.begin();
+	//shader.setUniform1f("time", ofGetElapsedTimef());
+	shader.setUniform1f("aspect", (float)ofGetWidth() / ofGetHeight());
+	shader.setUniform1f("val1", val1);
+	shader.setUniform1f("val2", val2);
+	shader.setUniform1i("var", 1);
+	shaderViewer.draw();
+	ofImage renderResult;
+	renderResult.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+	std::string filename = "shader-1/shader-1-" + ofToString(frameNum, 4, '0') + ".png";
+	shader.end();
 	camera.end();
+	val1 += (float)PI / 60.0f;
+	val2 -= (float)TWO_PI / float(rotDur);
+	frameNum++;
+	if (frameNum <= 30 * 12) {
+		renderResult.save(filename);
+	}*/
 }
 
 //--------------------------------------------------------------
