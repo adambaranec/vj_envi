@@ -40,6 +40,7 @@ void ofApp::setup() {
 	}
 	ofHideCursor();
 	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
+	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 	mode = LOOP;
 	currentVideoPlayer = videoPlayers[0];
 	currentVideoPlayer.play();
@@ -147,6 +148,7 @@ void ofApp::keyPressed(int key){
 	}
 	if (mode == LOOP) {
 		shaderViewer.resetTransform();
+		shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 		if (index < videoPlayers.size()) {
 			for (int i = 0; i < videoPlayers.size(); i++) {
 				if (i != index) {
