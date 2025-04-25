@@ -129,7 +129,7 @@ void ofApp::keyPressed(int key){
 	switch (key) {
 	case '1': mode = LOOP; break;
 	case '2': mode = TEXTURE; break;
-	case '3': mode = SHADER; break;
+	//case '3': mode = SHADER; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
@@ -147,7 +147,6 @@ void ofApp::keyPressed(int key){
 	}
 	if (mode == LOOP) {
 		shaderViewer.resetTransform();
-		shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 		if (index < videoPlayers.size()) {
 			for (int i = 0; i < videoPlayers.size(); i++) {
 				if (i != index) {
@@ -161,7 +160,6 @@ void ofApp::keyPressed(int key){
 		}
 	}
 	else if (mode == TEXTURE) {
-		shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 		if (currentVideoPlayer.isPlaying()) {
 			currentVideoPlayer.stop();
 		}
@@ -169,7 +167,7 @@ void ofApp::keyPressed(int key){
 			currentTex = loopTextures[index];
 		}
 	}
-	else if (mode == SHADER) {
+	/*else if (mode == SHADER) {
 		if (index <= 2) {
 			shaderViewer.resetTransform();
 			shaderViewer.mapTexCoords(0, 0, 1, 1);
@@ -178,7 +176,7 @@ void ofApp::keyPressed(int key){
 			}
 			shaderVar = index;
 		}
-	}
+	}*/
 }
 
 //--------------------------------------------------------------
