@@ -17,6 +17,7 @@ void ofApp::setup() {
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
 	shader.load("vertex.vert", "fragment.frag");
+	transitionShader.load("vertex.vert", "transition.frag");
 	shaderViewer.setUseVbo(true);
 	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
 	shaderViewer.setHeight(1);
@@ -42,6 +43,7 @@ void ofApp::setup() {
 	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 	mode = LOOP;
+	status = RUNNING;
 	currentVideoPlayer = videoPlayers[0];
 	currentVideoPlayer.play();
 	fbo.allocate(1920, 1080, GL_RGBA);
@@ -49,22 +51,42 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (mode == LOOP) {
-		currentVideoPlayer.update();
-		currentTex = currentVideoPlayer.getTexture();
+	if (status == RUNNING) {
+		if (mode == LOOP) {
+			currentVideoPlayer.update();
+			currentTex = currentVideoPlayer.getTexture();
+		}
+	}
+	else if (status == TRANSITION) {
+
 	}
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
+	/*if (transitionValue < 1.0f) {
+	transitionValue = (ofGetElapsedTimef() - timestamp) / 10.0f;
+	transitionShader.begin();
+	transitionShader.setUniformTexture("prevTex", previousTex, 1);
+	transitionShader.setUniformTexture("newTex", nextTex, 2);
+	transitionShader.setUniform1f("progress", transitionValue);
+}
+else {
+	if (previousVideoPlayer.isPlaying()) {
+		previousVideoPlayer.stop();
+	}
+	currentTex.bind();
+}*/
 	fbo.begin();
 	ofClear(0, 0, 0, 255);
 	camera.begin();
-	currentTex.bind();
-	if (mode == TEXTURE) {
-	shaderViewer.rotateRad(-TWO_PI/300, glm::vec3(0.0, 0.0, 1.0));
+	if (status == RUNNING) {
+		currentTex.bind();
+		if (mode == TEXTURE) {
+			shaderViewer.rotateRad(-TWO_PI / 300, glm::vec3(0.0, 0.0, 1.0));
+		}
+		shaderViewer.draw();
+		currentTex.unbind();
 	}
-	shaderViewer.draw();
-	currentTex.unbind();
 	camera.end();
 	fbo.end();
 	fbo.draw(0, 0);
@@ -151,14 +173,16 @@ void ofApp::keyPressed(int key){
 		shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 		if (index < videoPlayers.size()) {
 			for (int i = 0; i < videoPlayers.size(); i++) {
-				if (i != index) {
-					videoPlayers[i].stop();
+				if (i == index) {
+					videoPlayers[i].play();
+					//nextVideoPlayer = videoPlayers[i];
 				}
 				else {
-					videoPlayers[i].play();
-					currentVideoPlayer = videoPlayers[i];
+					videoPlayers[i].stop();
 				}
-			}
+		    }
+			currentVideoPlayer = videoPlayers[index];
+			
 		}
 	}
 	else if (mode == TEXTURE) {
