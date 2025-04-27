@@ -93,7 +93,7 @@ void ofApp::draw(){
 	}
 	else {
 		if (previousTex.isAllocated() && nextTex.isAllocated()) {
-			float progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
+			float progress = (float)(ofGetFrameNum() - timestamp) / 450.0f;
 			transitionShader.setUniform1i("mode", 1);
 			transitionShader.setUniformTexture("prevTex", previousTex, 1);
 			transitionShader.setUniformTexture("newTex", nextTex, 2);
