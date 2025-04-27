@@ -47,46 +47,78 @@ void ofApp::setup() {
 	currentVideoPlayer = videoPlayers[0];
 	currentVideoPlayer.play();
 	fbo.allocate(1920, 1080, GL_RGBA);
+	ofSetFrameRate(30);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	/*if (triggeredTransition = true) {
+		elapsedFramesFromTransition = ofGetFrameNum() - timestamp;
+		if (elapsedFramesFromTransition < 299) {
+			if (status != TRANSITION)
+			 status = TRANSITION;
+		}
+		else if (elapsedFramesFromTransition == 299) {
+			if (mode == LOOP) {
+				currentVideoPlayer = nextVideoPlayer;
+				previousVideoPlayer.stop();
+			}
+			else if (mode == TEXTURE) {
+				currentTex = nextTex;
+			}
+		}
+		else if (elapsedFramesFromTransition > 299) {
+			if (status != RUNNING)
+				status = RUNNING;
+		}
+	}*/
 	if (status == RUNNING) {
 		if (mode == LOOP) {
 			currentVideoPlayer.update();
 			currentTex = currentVideoPlayer.getTexture();
 		}
 	}
-	else if (status == TRANSITION) {
-
-	}
+	/*else if (status == TRANSITION) {
+		if (mode == LOOP) {
+			if (previousMode == LOOP) {
+				previousVideoPlayer.update();
+				previousTex = previousVideoPlayer.getTexture();
+			}
+			else if (previousMode == TEXTURE) {
+				previousTex = currentTex;
+			}
+			nextVideoPlayer.update();
+			nextTex = nextVideoPlayer.getTexture();
+		}
+		else if (mode == TEXTURE) {
+			if (previousMode == LOOP) {
+				previousVideoPlayer.update();
+				previousTex = previousVideoPlayer.getTexture();
+			}
+			else if (previousMode == TEXTURE) {
+				previousTex = currentTex;
+			}
+			nextTex = currentTex;
+		}
+	}*/
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
-	/*if (transitionValue < 1.0f) {
-	transitionValue = (ofGetElapsedTimef() - timestamp) / 10.0f;
-	transitionShader.begin();
-	transitionShader.setUniformTexture("prevTex", previousTex, 1);
-	transitionShader.setUniformTexture("newTex", nextTex, 2);
-	transitionShader.setUniform1f("progress", transitionValue);
-}
-else {
-	if (previousVideoPlayer.isPlaying()) {
-		previousVideoPlayer.stop();
-	}
-	currentTex.bind();
-}*/
 	fbo.begin();
 	ofClear(0, 0, 0, 255);
 	camera.begin();
-	if (status == RUNNING) {
-		currentTex.bind();
-		if (mode == TEXTURE) {
-			shaderViewer.rotateRad(-TWO_PI / 300, glm::vec3(0.0, 0.0, 1.0));
-		}
-		shaderViewer.draw();
-		currentTex.unbind();
-	}
+	float progress = (float)elapsedFramesFromTransition / 300.0f;
+	transitionShader.begin();
+	transitionShader.setUniform1i("mode", 0);
+	transitionShader.setUniformTexture("currentTex", currentTex, 1);
+	//transitionShader.setUniformTexture("prevTex", previousTex, 1);
+	//transitionShader.setUniformTexture("newTex", nextTex, 2);
+	//if (progress <= 1.0f)
+		//transitionShader.setUniform1f("progress", progress);
+	if (mode == TEXTURE) 
+		shaderViewer.rotateRad(-TWO_PI / 150, glm::vec3(0.0, 0.0, 1.0));
+	shaderViewer.draw();
+	transitionShader.end();
 	camera.end();
 	fbo.end();
 	fbo.draw(0, 0);
@@ -148,6 +180,9 @@ else {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	previousMode = mode;
+	triggeredTransition = true;
+	timestamp = ofGetFrameNum();
 	int index = 0;
 	switch (key) {
 	case '1': mode = LOOP; break;
@@ -169,25 +204,33 @@ void ofApp::keyPressed(int key){
 	case ']': index = 11; break;
 	}
 	if (mode == LOOP) {
+		if (previousMode == LOOP) {
+			previousVideoPlayer = currentVideoPlayer;
+		}
+		else if (previousMode == TEXTURE) {
+			previousTex = currentTex;
+		}
 		shaderViewer.resetTransform();
 		shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 		if (index < videoPlayers.size()) {
 			for (int i = 0; i < videoPlayers.size(); i++) {
 				if (i == index) {
 					videoPlayers[i].play();
-					//nextVideoPlayer = videoPlayers[i];
+				    nextVideoPlayer = videoPlayers[i];
+					currentVideoPlayer = videoPlayers[i];
 				}
 				else {
 					videoPlayers[i].stop();
 				}
 		    }
-			currentVideoPlayer = videoPlayers[index];
-			
 		}
 	}
 	else if (mode == TEXTURE) {
-		if (currentVideoPlayer.isPlaying()) {
-			currentVideoPlayer.stop();
+		if (previousMode == LOOP) {
+			previousVideoPlayer = currentVideoPlayer;
+		}
+		else if (previousMode == TEXTURE) {
+			previousTex = currentTex;
 		}
 		if (index < loopTextures.size()) {
 			currentTex = loopTextures[index];

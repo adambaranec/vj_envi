@@ -32,8 +32,9 @@ public:
 	ofTexture currentTex, previousTex, nextTex;
 	ofVideoPlayer currentVideoPlayer, previousVideoPlayer, nextVideoPlayer;
 	int shaderVar = 0;
-	enum Mode { LOOP, TEXTURE, SHADER, CUSTOM } mode;
+	enum Mode { LOOP, TEXTURE, SHADER, CUSTOM } mode, previousMode;
 	enum Status {RUNNING, TRANSITION, TRANSITION_DONE} status;
 	ofFbo fbo;
-	int timestamp;
+	int timestamp, elapsedFramesFromTransition;
+	bool triggeredTransition = false;
 };
