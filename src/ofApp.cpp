@@ -51,26 +51,6 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	/*if (triggeredTransition = true) {
-		elapsedFramesFromTransition = ofGetFrameNum() - timestamp;
-		if (elapsedFramesFromTransition < 299) {
-			if (status != TRANSITION)
-			 status = TRANSITION;
-		}
-		else if (elapsedFramesFromTransition == 299) {
-			if (mode == LOOP) {
-				currentVideoPlayer = nextVideoPlayer;
-				previousVideoPlayer.stop();
-			}
-			else if (mode == TEXTURE) {
-				currentTex = nextTex;
-			}
-		}
-		else if (elapsedFramesFromTransition > 299) {
-			if (status != RUNNING)
-				status = RUNNING;
-		}
-	}*/
 	if (!triggeredTransition) {
 		if (mode == LOOP) {
 			currentVideoPlayer.update();
@@ -82,22 +62,22 @@ void ofApp::update() {
 			if (previousMode == LOOP) {
 				previousVideoPlayer.update();
 				previousTex = previousVideoPlayer.getTexture();
+				nextVideoPlayer.update();
+				nextTex = nextVideoPlayer.getTexture();
 			}
 			else if (previousMode == TEXTURE) {
-				previousTex = nextTex;
+				nextVideoPlayer.update();
+				nextTex = nextVideoPlayer.getTexture();
 			}
-			nextVideoPlayer.update();
-			nextTex = nextVideoPlayer.getTexture();
 		}
 		else if (mode == TEXTURE) {
 			if (previousMode == LOOP) {
 				previousVideoPlayer.update();
 				previousTex = previousVideoPlayer.getTexture();
 			}
-			else if (previousMode == TEXTURE) {
+			/*else if (previousMode == TEXTURE) {
 				previousTex = nextTex;
-			}
-			nextTex = loopTextures[2];
+			}*/
 		}
 	}
 }
@@ -192,12 +172,11 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	previousMode = mode;
-	timestamp = ofGetFrameNum();
 	int index = 0;
 	switch (key) {
-	case '1': mode = LOOP; break;
-	case '2': mode = TEXTURE; break;
-	//case '3': mode = SHADER; break;
+	case '1': modeToSet = LOOP; break;
+	case '2': modeToSet = TEXTURE; break;
+	//case '3': modeToSet = SHADER; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
@@ -213,74 +192,62 @@ void ofApp::keyPressed(int key){
 	case '[': index = 10; break;
 	case ']': index = 11; break;
 	}
-	if (mode == LOOP) {
-		if (previousMode == LOOP) {
-			if (!triggeredTransition) {
-				previousVideoPlayer = currentVideoPlayer;
-			}
-			else {
-				previousVideoPlayer = nextVideoPlayer;
-				previousVideoPlayer.play();
-			}
-		}
-		else if (previousMode == TEXTURE) {
-			if (!triggeredTransition) {
-				previousTex = currentTex;
-			}
-			else {
-				previousTex = nextTex;
-			}
-		}
-		shaderViewer.resetTransform();
-		shaderViewer.setScale(0.83f, 0.83f, 0.83f);
-		if (index < videoPlayers.size()) {
-			nextVideoPlayer = videoPlayers[index];
-			nextVideoPlayer.play();
-			/*for (int i = 0; i < videoPlayers.size(); i++) {
-				if (i == index) {
-					videoPlayers[i].play();
-				    nextVideoPlayer = videoPlayers[i];
+	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
+		timestamp = ofGetFrameNum();
+		mode = modeToSet;
+		if (mode == LOOP) {
+			if (previousMode == LOOP) {
+				if (!triggeredTransition) {
+					previousVideoPlayer = currentVideoPlayer;
 				}
 				else {
-					videoPlayers[i].stop();
+					previousVideoPlayer = nextVideoPlayer;
+					previousVideoPlayer.play();
 				}
-		    }*/
-		}
-	}
-	else if (mode == TEXTURE) {
-		if (index < loopTextures.size()) {
-			nextTex = loopTextures[index];
-		}
-		if (previousMode == LOOP) {
-			if (!triggeredTransition) {
-				previousVideoPlayer = currentVideoPlayer;
 			}
-			else {
-				previousVideoPlayer = nextVideoPlayer;
+			else if (previousMode == TEXTURE) {
+				if (!triggeredTransition) {
+					previousTex = currentTex;
+				}
+				else {
+					previousTex = nextTex;
+				}
 			}
-		}
-		else if (previousMode == TEXTURE) {
 			shaderViewer.resetTransform();
 			shaderViewer.setScale(0.83f, 0.83f, 0.83f);
-			if (!triggeredTransition) {
-				previousTex = currentTex;
-			}
-			else {
-				previousTex = nextTex;
+			if (index < videoPlayers.size()) {
+				nextVideoPlayer = videoPlayers[index];
+				nextVideoPlayer.play();
 			}
 		}
+		else if (mode == TEXTURE) {
+			if (previousMode == LOOP) {
+				if (!triggeredTransition) {
+					previousVideoPlayer = currentVideoPlayer;
+				}
+				else {
+					previousVideoPlayer = nextVideoPlayer;
+				}
+				if (index < loopTextures.size()) {
+					nextTex = loopTextures[index];
+				}
+			}
+			else if (previousMode == TEXTURE) {
+				shaderViewer.resetTransform();
+				shaderViewer.setScale(0.83f, 0.83f, 0.83f);
+				if (!triggeredTransition) {
+					previousTex = currentTex;
+				}
+				else {
+					previousTex = nextTex;
+					if (index < loopTextures.size()) {
+						nextTex = loopTextures[index];
+					}
+				}
+			}
+		}
+		if (!triggeredTransition) { triggeredTransition = true; }
 	}
-	if (!triggeredTransition) { triggeredTransition = true;}
-	/*else if (mode == SHADER) {
-		if (index <= 2) {
-			shaderViewer.resetTransform();
-			shaderViewer.mapTexCoords(0, 0, 1, 1);
-			if (currentVideoPlayer.isPlaying()) {
-				currentVideoPlayer.stop();
-			}
-			shaderVar = index;
-		}
-	}*/
 }
 
 //--------------------------------------------------------------
