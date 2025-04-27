@@ -16,7 +16,7 @@ void ofApp::setup() {
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
-	shader.load("vertex.vert", "fragment.frag");
+	//shader.load("vertex.vert", "fragment.frag");
 	transitionShader.load("vertex.vert", "transition.frag");
 	shaderViewer.setUseVbo(true);
 	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
@@ -43,7 +43,6 @@ void ofApp::setup() {
 	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 	mode = LOOP;
-	status = RUNNING;
 	currentVideoPlayer = videoPlayers[0];
 	currentVideoPlayer.play();
 	fbo.allocate(1920, 1080, GL_RGBA);
@@ -72,20 +71,20 @@ void ofApp::update() {
 				status = RUNNING;
 		}
 	}*/
-	if (status == RUNNING) {
+	if (!triggeredTransition) {
 		if (mode == LOOP) {
 			currentVideoPlayer.update();
 			currentTex = currentVideoPlayer.getTexture();
 		}
 	}
-	/*else if (status == TRANSITION) {
+	else {
 		if (mode == LOOP) {
 			if (previousMode == LOOP) {
 				previousVideoPlayer.update();
 				previousTex = previousVideoPlayer.getTexture();
 			}
 			else if (previousMode == TEXTURE) {
-				previousTex = currentTex;
+				previousTex = nextTex;
 			}
 			nextVideoPlayer.update();
 			nextTex = nextVideoPlayer.getTexture();
@@ -96,27 +95,39 @@ void ofApp::update() {
 				previousTex = previousVideoPlayer.getTexture();
 			}
 			else if (previousMode == TEXTURE) {
-				previousTex = currentTex;
+				previousTex = nextTex;
 			}
-			nextTex = currentTex;
+			nextTex = loopTextures[2];
 		}
-	}*/
+	}
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
 	fbo.begin();
 	ofClear(0, 0, 0, 255);
 	camera.begin();
-	float progress = (float)elapsedFramesFromTransition / 300.0f;
 	transitionShader.begin();
-	transitionShader.setUniform1i("mode", 0);
-	transitionShader.setUniformTexture("currentTex", currentTex, 1);
-	//transitionShader.setUniformTexture("prevTex", previousTex, 1);
-	//transitionShader.setUniformTexture("newTex", nextTex, 2);
-	//if (progress <= 1.0f)
-		//transitionShader.setUniform1f("progress", progress);
-	if (mode == TEXTURE) 
-		shaderViewer.rotateRad(-TWO_PI / 150, glm::vec3(0.0, 0.0, 1.0));
+	if (!triggeredTransition) {
+		transitionShader.setUniform1i("mode", 0);
+		transitionShader.setUniformTexture("currentTex", currentTex, 1);
+	}
+	else {
+		if (previousTex.isAllocated() && nextTex.isAllocated()) {
+			float progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
+			transitionShader.setUniform1i("mode", 1);
+			transitionShader.setUniformTexture("prevTex", previousTex, 1);
+			transitionShader.setUniformTexture("newTex", nextTex, 2);
+			if (progress <= 1.0f) {
+				transitionShader.setUniform1f("progress", progress);
+			}
+			else {
+				if (previousVideoPlayer.isPlaying()) { previousVideoPlayer.stop(); }
+				if (mode == TEXTURE) {
+					shaderViewer.rotateRad(-TWO_PI / 150, glm::vec3(0.0, 0.0, 1.0));
+				}
+			}
+		}
+	}
 	shaderViewer.draw();
 	transitionShader.end();
 	camera.end();
@@ -181,7 +192,6 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	previousMode = mode;
-	triggeredTransition = true;
 	timestamp = ofGetFrameNum();
 	int index = 0;
 	switch (key) {
@@ -205,37 +215,62 @@ void ofApp::keyPressed(int key){
 	}
 	if (mode == LOOP) {
 		if (previousMode == LOOP) {
-			previousVideoPlayer = currentVideoPlayer;
+			if (!triggeredTransition) {
+				previousVideoPlayer = currentVideoPlayer;
+			}
+			else {
+				previousVideoPlayer = nextVideoPlayer;
+				previousVideoPlayer.play();
+			}
 		}
 		else if (previousMode == TEXTURE) {
-			previousTex = currentTex;
+			if (!triggeredTransition) {
+				previousTex = currentTex;
+			}
+			else {
+				previousTex = nextTex;
+			}
 		}
 		shaderViewer.resetTransform();
 		shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 		if (index < videoPlayers.size()) {
-			for (int i = 0; i < videoPlayers.size(); i++) {
+			nextVideoPlayer = videoPlayers[index];
+			nextVideoPlayer.play();
+			/*for (int i = 0; i < videoPlayers.size(); i++) {
 				if (i == index) {
 					videoPlayers[i].play();
 				    nextVideoPlayer = videoPlayers[i];
-					currentVideoPlayer = videoPlayers[i];
 				}
 				else {
 					videoPlayers[i].stop();
 				}
-		    }
+		    }*/
 		}
 	}
 	else if (mode == TEXTURE) {
+		if (index < loopTextures.size()) {
+			nextTex = loopTextures[index];
+		}
 		if (previousMode == LOOP) {
-			previousVideoPlayer = currentVideoPlayer;
+			if (!triggeredTransition) {
+				previousVideoPlayer = currentVideoPlayer;
+			}
+			else {
+				previousVideoPlayer = nextVideoPlayer;
+			}
 		}
 		else if (previousMode == TEXTURE) {
-			previousTex = currentTex;
-		}
-		if (index < loopTextures.size()) {
-			currentTex = loopTextures[index];
+			shaderViewer.resetTransform();
+			shaderViewer.setScale(0.83f, 0.83f, 0.83f);
+			if (!triggeredTransition) {
+				previousTex = currentTex;
+			}
+			else {
+				previousTex = nextTex;
+			}
 		}
 	}
+	if (!triggeredTransition) { triggeredTransition = true;}
 	/*else if (mode == SHADER) {
 		if (index <= 2) {
 			shaderViewer.resetTransform();
