@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-//#include "ofxOsc\src\ofxOsc.h"
 
 class ofApp : public ofBaseApp {
 
@@ -29,12 +28,9 @@ public:
 	ofPlanePrimitive shaderViewer;
 	std::vector<ofVideoPlayer> videoPlayers;
 	std::vector<ofTexture> loopTextures;
-	ofTexture currentTex, previousTex, nextTex;
-	ofVideoPlayer currentVideoPlayer, previousVideoPlayer, nextVideoPlayer;
-	int shaderVar = 0;
-	enum Mode { LOOP, TEXTURE, SHADER, CUSTOM } mode, previousMode, modeToSet;
-	enum Status {RUNNING, TRANSITION, TRANSITION_DONE} status;
-	ofFbo fbo;
-	int timestamp, elapsedFramesFromTransition;
-	bool triggeredTransition = false;
+	ofVideoPlayer currentVideoPlayer, previousVideoPlayer;
+	int timestamp, elapsedFramesFromTransition, index, previousIndex;
+	enum Mode {VIDEO, SHADER} mode, previousMode;
+	ofFbo previousFrame, currentFrame;
+	float progress = 1.0f;
 };
