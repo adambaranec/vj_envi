@@ -30,7 +30,7 @@ public:
 	std::vector<ofTexture> loopTextures;
 	ofVideoPlayer currentVideoPlayer, previousVideoPlayer;
 	int timestamp, elapsedFramesFromTransition, index, previousIndex;
-	enum Mode {VIDEO, SHADER} mode, previousMode;
+	enum Mode {VIDEO, SHADER} mode, previousMode, modeToSet;
 	ofFbo previousFrame, currentFrame;
 	float progress = 1.0f;
 };

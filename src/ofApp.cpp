@@ -69,6 +69,7 @@ void ofApp::draw(){
 		shader.begin();
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		shader.setUniform1f("time", ofGetElapsedTimef());
+		shader.setUniform1i("var", index);
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
 	}
@@ -82,6 +83,7 @@ void ofApp::draw(){
 			shader.begin();
 			shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 			shader.setUniform1f("time", ofGetElapsedTimef());
+			shader.setUniform1i("var", previousIndex);
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			shader.end();
 		}
@@ -109,8 +111,8 @@ void ofApp::keyPressed(int key){
 	previousMode = mode;
 	previousIndex = index;
 	switch (key) {
-	case '1': mode = VIDEO; break;
-	//case '2': mode = SHADER; break;
+	case '1': modeToSet = VIDEO; break;
+	case '2': modeToSet = SHADER; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
@@ -126,15 +128,23 @@ void ofApp::keyPressed(int key){
 	case '[': index = 10; break;
 	case ']': index = 11; break;
 	}
-	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0' && previousIndex != index) {
-		progress = .0f;
-		timestamp = ofGetFrameNum();
-		if (previousMode == VIDEO) {
-			previousVideoPlayer = currentVideoPlayer;
-		}
-		if (mode == VIDEO) {
-			currentVideoPlayer = videoPlayers[index];
-			currentVideoPlayer.play();
+	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
+		bool equalIndex = previousIndex == index;
+		bool equalMode = previousMode == modeToSet;
+		bool firstCondition = equalIndex && !equalMode;
+		bool secondCondition = !equalIndex && equalMode;
+		bool thirdCondition = !equalIndex && !equalMode;
+		if (firstCondition || secondCondition || thirdCondition) {
+			mode = modeToSet;
+			progress = .0f;
+			timestamp = ofGetFrameNum();
+			if (previousMode == VIDEO) {
+				previousVideoPlayer = currentVideoPlayer;
+			}
+			if (mode == VIDEO) {
+				currentVideoPlayer = videoPlayers[index];
+				currentVideoPlayer.play();
+			}
 		}
 	}
 }
