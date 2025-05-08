@@ -27,6 +27,7 @@ void ofApp::setup() {
 	shaderViewer.setWidth(1920.0f/1080.0f);
 	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
+	//stored in bin/data/loops
 	ofDirectory loopsDir("loops");
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
@@ -36,6 +37,7 @@ void ofApp::setup() {
 		player.setLoopState(OF_LOOP_NORMAL);
 		videoPlayers.push_back(player);
 	}
+	//stored in bin/data/textures
 	ofDirectory texDir("textures");
 	texDir.allowExt("png");
 	texDir.listDir();
@@ -44,6 +46,8 @@ void ofApp::setup() {
 		ofLoadImage(texture, texDir.getPath(i));
 		loopTextures.push_back(texture);
 	}
+	ofLoadImage(zilip, "zilip.jpg");
+	ofLoadImage(les, "les.jpg");
 	mode = VIDEO;
 	currentVideoPlayer = videoPlayers[0];
 	currentVideoPlayer.play();
@@ -70,6 +74,10 @@ void ofApp::draw(){
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		shader.setUniform1f("time", ofGetElapsedTimef());
 		shader.setUniform1i("var", index);
+		if (index == 1) {
+			shader.setUniformTexture("zilip", zilip, 1);
+			shader.setUniformTexture("les", les, 2);
+		}
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
 	}
@@ -84,6 +92,10 @@ void ofApp::draw(){
 			shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 			shader.setUniform1f("time", ofGetElapsedTimef());
 			shader.setUniform1i("var", previousIndex);
+			if (previousIndex == 1) {
+				shader.setUniformTexture("zilip", zilip, 1);
+				shader.setUniformTexture("les", les, 2);
+			}
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			shader.end();
 		}

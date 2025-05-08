@@ -33,4 +33,5 @@ public:
 	enum Mode {VIDEO, SHADER} mode, previousMode, modeToSet;
 	ofFbo previousFrame, currentFrame;
 	float progress = 1.0f;
+	ofTexture zilip, les;
 };
