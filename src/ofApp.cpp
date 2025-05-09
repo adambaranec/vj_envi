@@ -48,8 +48,9 @@ void ofApp::setup() {
 	}
 	ofLoadImage(zilip, "zilip.jpg");
 	ofLoadImage(les, "les.jpg");
+	ofLoadImage(zalesie, "zalesie.jpg");
 	mode = VIDEO;
-	currentVideoPlayer = videoPlayers[0];
+	currentVideoPlayer = videoPlayers[4];
 	currentVideoPlayer.play();
 }
 
@@ -78,6 +79,9 @@ void ofApp::draw(){
 			shader.setUniformTexture("zilip", zilip, 1);
 			shader.setUniformTexture("les", les, 2);
 		}
+		else if (index == 2) {
+			shader.setUniformTexture("zalesie", zalesie, 1);
+		}
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
 	}
@@ -95,6 +99,9 @@ void ofApp::draw(){
 			if (previousIndex == 1) {
 				shader.setUniformTexture("zilip", zilip, 1);
 				shader.setUniformTexture("les", les, 2);
+			}
+			else if (previousIndex == 2) {
+				shader.setUniformTexture("zalesie", zalesie, 1);
 			}
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			shader.end();
@@ -139,6 +146,11 @@ void ofApp::keyPressed(int key){
 	case 'p': index = 9; break;
 	case '[': index = 10; break;
 	case ']': index = 11; break;
+	case 'a': index = 12; break;
+	case 's': index = 13; break;
+	case 'd': index = 14; break;
+	case 'f': index = 15; break;
+	case 'g': index = 16; break;
 	}
 	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
 		bool equalIndex = previousIndex == index;
