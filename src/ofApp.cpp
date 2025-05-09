@@ -111,6 +111,7 @@ void ofApp::draw(){
 	//rendering final textures with transition
 	camera.begin();
 	transitionShader.begin();
+	transitionShader.setUniform1f("time", ofGetElapsedTimef());
 	transitionShader.setUniform1f("progress", progress);
 	if (progress < 1.0f) {
 		progress = (float)(ofGetFrameNum() - timestamp) / 450.0f;
