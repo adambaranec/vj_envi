@@ -34,5 +34,5 @@ public:
 	ofFbo previousFrame, currentFrame;
 	float progress = 1.0f;
 	//additional textures used for shaders
-	ofTexture zilip, les, zalesie;
+	ofTexture zilip, les, zalesie, zakutie;
 };

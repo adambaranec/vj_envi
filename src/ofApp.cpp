@@ -49,8 +49,9 @@ void ofApp::setup() {
 	ofLoadImage(zilip, "zilip.jpg");
 	ofLoadImage(les, "les.jpg");
 	ofLoadImage(zalesie, "zalesie.jpg");
+	ofLoadImage(zakutie, "zakutie.jpg");
 	mode = VIDEO;
-	currentVideoPlayer = videoPlayers[4];
+	currentVideoPlayer = videoPlayers[1];
 	currentVideoPlayer.play();
 }
 
@@ -82,6 +83,9 @@ void ofApp::draw(){
 		else if (index == 2) {
 			shader.setUniformTexture("zalesie", zalesie, 1);
 		}
+		else if (index == 3) {
+			shader.setUniformTexture("zakutie", zakutie, 1);
+		}
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
 	}
@@ -102,6 +106,9 @@ void ofApp::draw(){
 			}
 			else if (previousIndex == 2) {
 				shader.setUniformTexture("zalesie", zalesie, 1);
+			}
+			else if (previousIndex == 3) {
+				shader.setUniformTexture("zakutie", zakutie, 1);
 			}
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			shader.end();
