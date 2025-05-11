@@ -2,6 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+	// code to be used for visualising sound
+	// coming from Focusrite
 	/*ofSoundStreamSettings settings;
 	settings.numOutputChannels = 0;
 	settings.numInputChannels = 6;
@@ -10,24 +12,45 @@ void ofApp::setup() {
 	settings.setInDevice(soundStream.getDeviceList()[4]);
 	settings.setInListener(this);
 	soundStream.setup(settings);*/
-	//camera is set to 1920x1080 resolution
+    //---------------------------------------------
+	// global OF settings
 	ofSetFrameRate(30);
 	ofHideCursor();
+	//---------------------------------------------
+	// allocating the two FBOs to render to -
+	// previousFrame is used when the transition is happening
+	// and currentFrame is used as the following texture to render
+	// when the transition is done or as the default texture.
 	previousFrame.allocate(1920, 1080, GL_RGBA);
 	currentFrame.allocate(1920, 1080, GL_RGBA);
+	//---------------------------------------------
+	// camera to set for the plane primitive to show
+	// the result of rendering of the FBOs
+	// the following settings of the camera fit to 1920x1080 resolution
 	camera.setGlobalPosition(0, 0, 1);
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
-	shader.load("vertex.vert", "fragment.frag");
-	transitionShader.load("vertex.vert", "transition.frag");
+	//---------------------------------------------
+	// to view the visuals correctly, the plane primitive 
+	// as the container must have the needed position, width and height
 	shaderViewer.setUseVbo(true);
 	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
 	shaderViewer.setHeight(1);
 	shaderViewer.setWidth(1920.0f/1080.0f);
 	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
+	// for some reason, with its default scale the visuals are
+	// not shown as whole
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
-	//stored in bin/data/loops
+	//---------------------------------------------
+	// shader - for generative visuals
+	// transitionShader - the main shader to show the results
+	// VERT and FRAG files stored in bin/data
+	shader.load("vertex.vert", "fragment.frag");
+	transitionShader.load("vertex.vert", "transition.frag");
+	//---------------------------------------------
+	// loading external sources
+	// stored in bin/data/loops
 	ofDirectory loopsDir("loops");
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
@@ -37,7 +60,7 @@ void ofApp::setup() {
 		player.setLoopState(OF_LOOP_NORMAL);
 		videoPlayers.push_back(player);
 	}
-	//stored in bin/data/textures
+	// stored in bin/data/textures (images only)
 	ofDirectory texDir("textures");
 	texDir.allowExt("png");
 	texDir.listDir();
@@ -46,13 +69,20 @@ void ofApp::setup() {
 		ofLoadImage(texture, texDir.getPath(i));
 		loopTextures.push_back(texture);
 	}
+	// external textures for use in generative sources
+	// (stored independently in bin/data)
 	ofLoadImage(zilip, "zilip.jpg");
 	ofLoadImage(les, "les.jpg");
 	ofLoadImage(zalesie, "zalesie.jpg");
 	ofLoadImage(zakutie, "zakutie.jpg");
+	//---------------------------------------------
+	// preparing to start
 	mode = VIDEO;
 	currentVideoPlayer = videoPlayers[1];
 	currentVideoPlayer.play();
+	// because the second videoPlayer is going to start,
+    // therefore the current index must be 1
+	index = 1;
 }
 
 //--------------------------------------------------------------
@@ -66,12 +96,13 @@ void ofApp::update() {
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
+	//---------------------------------------------
 	//first drawing to the FBOs
 	currentFrame.begin();
 	if (mode == VIDEO){
 		currentVideoPlayer.draw(0, 0);
 	}
-	else if (mode == SHADER) {
+	else if (mode == SHADER && index <= 6) {
 		shader.begin();
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		shader.setUniform1f("time", ofGetElapsedTimef());
@@ -95,7 +126,7 @@ void ofApp::draw(){
 		if (previousMode == VIDEO) {
 			previousVideoPlayer.draw(0, 0);
 		}
-		else if (previousMode == SHADER) {
+		else if (previousMode == SHADER && index <= 6) {
 			shader.begin();
 			shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 			shader.setUniform1f("time", ofGetElapsedTimef());
@@ -115,6 +146,7 @@ void ofApp::draw(){
 		}
 		previousFrame.end();
 	}
+	//---------------------------------------------
 	//rendering final textures with transition
 	camera.begin();
 	transitionShader.begin();
@@ -173,7 +205,7 @@ void ofApp::keyPressed(int key){
 			if (previousMode == VIDEO) {
 				previousVideoPlayer = currentVideoPlayer;
 			}
-			if (mode == VIDEO) {
+			if (mode == VIDEO && index < videoPlayers.size()) {
 				currentVideoPlayer = videoPlayers[index];
 				currentVideoPlayer.play();
 			}
@@ -220,6 +252,7 @@ void ofApp::mouseExited(int x, int y){
 void ofApp::windowResized(int w, int h){
 	shaderViewer.setHeight(1);
 	shaderViewer.setWidth((float)w / (float)h);
+	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 }
 
 //--------------------------------------------------------------
@@ -235,5 +268,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 //--------------------------------------------------------------
 void ofApp::audioIn(ofSoundBuffer& buffer)
 {
+	// used when capturing audio is enabled and then
+	// sent as a uniform to a shader
 	//amplitude = buffer.getRMSAmplitudeChannel(5);
 }
