@@ -75,6 +75,7 @@ void ofApp::setup() {
 	ofLoadImage(les, "les.jpg");
 	ofLoadImage(zalesie, "zalesie.jpg");
 	ofLoadImage(zakutie, "zakutie.jpg");
+	ofLoadImage(korzo, "korzo.jpg");
 	//---------------------------------------------
 	// preparing to start
 	mode = VIDEO;
@@ -102,7 +103,7 @@ void ofApp::draw(){
 	if (mode == VIDEO){
 		currentVideoPlayer.draw(0, 0);
 	}
-	else if (mode == SHADER && index <= 6) {
+	else if (mode == SHADER && index <= 8) {
 		shader.begin();
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		shader.setUniform1f("time", ofGetElapsedTimef());
@@ -117,6 +118,9 @@ void ofApp::draw(){
 		else if (index == 3) {
 			shader.setUniformTexture("zakutie", zakutie, 1);
 		}
+		else if (index == 4) {
+			shader.setUniformTexture("korzo", korzo, 1);
+		}
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
 	}
@@ -126,7 +130,7 @@ void ofApp::draw(){
 		if (previousMode == VIDEO) {
 			previousVideoPlayer.draw(0, 0);
 		}
-		else if (previousMode == SHADER && index <= 6) {
+		else if (previousMode == SHADER && index <= 8) {
 			shader.begin();
 			shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 			shader.setUniform1f("time", ofGetElapsedTimef());
@@ -140,6 +144,9 @@ void ofApp::draw(){
 			}
 			else if (previousIndex == 3) {
 				shader.setUniformTexture("zakutie", zakutie, 1);
+			}
+			else if (previousIndex == 4) {
+				shader.setUniformTexture("korzo", korzo, 1);
 			}
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			shader.end();
