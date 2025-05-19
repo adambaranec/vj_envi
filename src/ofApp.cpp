@@ -78,12 +78,12 @@ void ofApp::setup() {
 	ofLoadImage(korzo, "korzo.jpg");
 	//---------------------------------------------
 	// preparing to start
+	index = static_cast<int>(ofRandom(0, texDir.size() - 1));
 	mode = VIDEO;
-	currentVideoPlayer = videoPlayers[1];
+	currentVideoPlayer = videoPlayers[index];
 	currentVideoPlayer.play();
-	// because the second videoPlayer is going to start,
-    // therefore the current index must be 1
-	index = 1;
+	//setting mode for transition
+	transitionMode = 1;
 }
 
 //--------------------------------------------------------------
@@ -158,9 +158,11 @@ void ofApp::draw(){
 	camera.begin();
 	transitionShader.begin();
 	transitionShader.setUniform1f("time", ofGetElapsedTimef());
+	transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 	transitionShader.setUniform1f("progress", progress);
 	if (progress < 1.0f) {
 		progress = (float)(ofGetFrameNum() - timestamp) / 450.0f;
+		transitionShader.setUniform1i("mode", transitionMode);
 		transitionShader.setUniformTexture("prevTex", previousFrame.getTexture(), 2);
 	}
 	else {
@@ -200,6 +202,7 @@ void ofApp::keyPressed(int key){
 	case 'g': index = 16; break;
 	}
 	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
+		transitionMode = static_cast<int>(ofRandom(0, 2));
 		bool equalIndex = previousIndex == index;
 		bool equalMode = previousMode == modeToSet;
 		bool firstCondition = equalIndex && !equalMode;
