@@ -78,7 +78,7 @@ void ofApp::setup() {
 	ofLoadImage(korzo, "korzo.jpg");
 	//---------------------------------------------
 	// preparing to start
-	index = static_cast<int>(ofRandom(0, texDir.size() - 1));
+	index = static_cast<int>(ofRandom(0, texDir.size()));
 	mode = VIDEO;
 	currentVideoPlayer = videoPlayers[index];
 	currentVideoPlayer.play();
@@ -103,7 +103,7 @@ void ofApp::draw(){
 	if (mode == VIDEO){
 		currentVideoPlayer.draw(0, 0);
 	}
-	else if (mode == SHADER && index <= 8) {
+	else if (mode == SHADER && index <= 9) {
 		shader.begin();
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		shader.setUniform1f("time", ofGetElapsedTimef());
@@ -130,7 +130,7 @@ void ofApp::draw(){
 		if (previousMode == VIDEO) {
 			previousVideoPlayer.draw(0, 0);
 		}
-		else if (previousMode == SHADER && index <= 8) {
+		else if (previousMode == SHADER && index <= 9) {
 			shader.begin();
 			shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 			shader.setUniform1f("time", ofGetElapsedTimef());
@@ -202,7 +202,7 @@ void ofApp::keyPressed(int key){
 	case 'g': index = 16; break;
 	}
 	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
-		transitionMode = static_cast<int>(ofRandom(0, 2));
+		transitionMode = static_cast<int>(ofRandom(0, 5));
 		bool equalIndex = previousIndex == index;
 		bool equalMode = previousMode == modeToSet;
 		bool firstCondition = equalIndex && !equalMode;
