@@ -78,12 +78,10 @@ void ofApp::setup() {
 	ofLoadImage(korzo, "korzo.jpg");
 	//---------------------------------------------
 	// preparing to start
-	index = static_cast<int>(ofRandom(0, texDir.size()));
-	mode = VIDEO;
-	currentVideoPlayer = videoPlayers[index];
-	currentVideoPlayer.play();
-	//setting mode for transition
-	transitionMode = 1;
+	if (mode == VIDEO) {
+		currentVideoPlayer = videoPlayers[index];
+		currentVideoPlayer.play();
+	}
 }
 
 //--------------------------------------------------------------
