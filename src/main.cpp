@@ -16,6 +16,37 @@ bool isDigits(std::string& str)
 
 //========================================================================
 int main(int argc, char* argv[]) {
+	ofBuffer fragmentShaderFile = ofBufferFromFile("fragment.frag");
+	ofBuffer transitionShaderFile = ofBufferFromFile("transition.frag");
+	std::string fragmentText = fragmentShaderFile.getText();
+	std::string transitionText = transitionShaderFile.getText();
+	std::string v = "var";
+	std::string m = "mode";
+	std::string lastFragmentLineWithVar, lastTransitionLineWithMode;
+	std::string maxFragmentIndex, maxTransitionIndex;
+	static int lastFragmentLineIndexWithVar, lastTransitionLineIndexWithMode;
+	for (auto line : fragmentShaderFile.getLines()) {
+		size_t pos = line.find(v);
+		if (pos != std::string::npos) {
+			lastFragmentLineWithVar = line;
+		}
+	}
+	for (auto line : transitionShaderFile.getLines()) {
+		size_t pos = line.find(m);
+		if (pos != std::string::npos) {
+			lastTransitionLineWithMode = line;
+		}
+	}
+	for (char ch : lastFragmentLineWithVar) {
+		if (ch >= 48 && ch <= 57) {
+			maxFragmentIndex += ch;
+		}
+	}
+	for (char ch : lastTransitionLineWithMode) {
+		if (ch >= 48 && ch <= 57) {
+			maxTransitionIndex += ch;
+		}
+	}
 
 	//Use ofGLFWWindowSettings for more options like multi-monitor fullscreen
 	ofGLWindowSettings settings;
@@ -29,9 +60,11 @@ int main(int argc, char* argv[]) {
 
 	auto window = ofCreateWindow(settings);
 	auto app = make_shared<ofApp>();
+	app->maxShaderIndex = std::stoi(maxFragmentIndex);
+	app->maxTransitionIndex = std::stoi(maxTransitionIndex);
 	if (argc == 2) {
 		std::string indexArg = argv[1];
-		int receivedIndex = static_cast<int>(*argv[1]) - 48;
+		int receivedIndex = std::stoi(indexArg);
 		bool indexArgCheck = isDigits(indexArg);
 		if (indexArgCheck) {
 			if (receivedIndex < loopsDir.size()) {
@@ -52,7 +85,7 @@ int main(int argc, char* argv[]) {
 		std::string indexArg = argv[2];
 		bool indexArgDefCheck = indexArgDef == "--index" || indexArgDef == "-i";
 		bool indexArgCheck = isDigits(indexArg);
-		int receivedIndex = static_cast<int>(*argv[2]) - 48;
+		int receivedIndex = std::stoi(indexArg);
 		if (indexArgDefCheck && indexArgCheck) {
 			if (receivedIndex < loopsDir.size()) {
 				app->index = receivedIndex;
@@ -87,7 +120,7 @@ int main(int argc, char* argv[]) {
 		bool modeArgDefCheck = modeArgDef == "--mode" || modeArgDef == "-m";
 		bool modeArgCheck = modeArg == "VIDEO" || modeArg == "SHADER";
 		if (indexArgDefCheck && indexArgCheck && modeArgDefCheck && modeArgCheck) {
-			int receivedIndex = static_cast<int>(*argv[2]) - 48;
+			int receivedIndex = std::stoi(indexArg);
 			if (modeArg == "VIDEO") {
 				app->mode = static_cast<ofApp::Mode>(0);
 				if (receivedIndex < loopsDir.size()) {
@@ -101,7 +134,7 @@ int main(int argc, char* argv[]) {
 			}
 			else if (modeArg == "SHADER") {
 				app->mode = static_cast<ofApp::Mode>(1);
-				if (receivedIndex <= 9) {
+				if (receivedIndex <= app->maxShaderIndex) {
 					app->index = receivedIndex;
 					ofRunApp(window, app);
 					ofRunMainLoop();
