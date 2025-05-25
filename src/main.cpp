@@ -70,6 +70,7 @@ int main(int argc, char* argv[]) {
 			if (receivedIndex < loopsDir.size()) {
 				app->index = receivedIndex;
 				app->mode = static_cast<ofApp::Mode>(0);
+				app->modeToSet = app->mode;
 				ofRunApp(window, app);
 				ofRunMainLoop();
 			}
@@ -90,6 +91,7 @@ int main(int argc, char* argv[]) {
 			if (receivedIndex < loopsDir.size()) {
 				app->index = receivedIndex;
 				app->mode = static_cast<ofApp::Mode>(0);
+				app->modeToSet = app->mode;
 				ofRunApp(window, app);
 				ofRunMainLoop();
 			}
@@ -118,11 +120,12 @@ int main(int argc, char* argv[]) {
 		bool indexArgDefCheck = indexArgDef == "--index" || indexArgDef == "-i";
 		bool indexArgCheck = isDigits(indexArg);
 		bool modeArgDefCheck = modeArgDef == "--mode" || modeArgDef == "-m";
-		bool modeArgCheck = modeArg == "VIDEO" || modeArg == "SHADER";
+		bool modeArgCheck = modeArg == "VIDEO" || modeArg == "SHADER" || modeArg == "3D";
 		if (indexArgDefCheck && indexArgCheck && modeArgDefCheck && modeArgCheck) {
 			int receivedIndex = std::stoi(indexArg);
 			if (modeArg == "VIDEO") {
 				app->mode = static_cast<ofApp::Mode>(0);
+				app->modeToSet = app->mode;
 				if (receivedIndex < loopsDir.size()) {
 					app->index = receivedIndex;
 					ofRunApp(window, app);
@@ -134,6 +137,7 @@ int main(int argc, char* argv[]) {
 			}
 			else if (modeArg == "SHADER") {
 				app->mode = static_cast<ofApp::Mode>(1);
+				app->modeToSet = app->mode;
 				if (receivedIndex <= app->maxShaderIndex) {
 					app->index = receivedIndex;
 					ofRunApp(window, app);
@@ -141,6 +145,18 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					ofLog() << "No shader variation at this index";
+				}
+			}
+			else if (modeArg == "3D") {
+				app->mode = static_cast<ofApp::Mode>(2);
+				if (receivedIndex <= 1) {
+					app->index = receivedIndex;
+					app->modeToSet = app->mode;
+					ofRunApp(window, app);
+					ofRunMainLoop();
+				}
+				else {
+					ofLog() << "No shader variation for 3D objects at this index";
 				}
 			}
 		}

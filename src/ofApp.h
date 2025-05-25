@@ -24,16 +24,19 @@ public:
 
 	ofSoundStream soundStream;
 	ofCamera camera;
-	ofShader shader, transitionShader;
+	ofShader shader, transitionShader, threeDimShader;
 	ofPlanePrimitive shaderViewer;
 	std::vector<ofVideoPlayer> videoPlayers;
 	std::vector<ofTexture> loopTextures;
 	ofVideoPlayer currentVideoPlayer, previousVideoPlayer;
 	int timestamp, elapsedFramesFromTransition, index, previousIndex, transitionMode;
 	int maxShaderIndex, maxTransitionIndex;
-	enum Mode {VIDEO, SHADER} mode, previousMode, modeToSet;
+	enum Mode {VIDEO, SHADER, THREE_D} mode, previousMode, modeToSet;
 	ofFbo previousFrame, currentFrame;
 	float progress = 1.0f;
-	//additional textures used for shaders
+	//additional textures and 3D shapes used for shaders
 	ofTexture zilip, les, zalesie, zakutie, korzo;
+	ofBoxPrimitive cube;
+	ofSpherePrimitive sphere;
+	ofMesh torus;
 };

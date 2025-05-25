@@ -45,9 +45,11 @@ void ofApp::setup() {
 	//---------------------------------------------
 	// shader - for generative visuals
 	// transitionShader - the main shader to show the results
+	// threeDimShader - for 3D objects renderer by OF
 	// VERT and FRAG files stored in bin/data
 	shader.load("vertex.vert", "fragment.frag");
 	transitionShader.load("vertex.vert", "transition.frag");
+	threeDimShader.load("vertex.vert", "three_d.frag");
 	//---------------------------------------------
 	// loading external sources
 	// stored in bin/data/loops
@@ -76,6 +78,34 @@ void ofApp::setup() {
 	ofLoadImage(zalesie, "zalesie.jpg");
 	ofLoadImage(zakutie, "zakutie.jpg");
 	ofLoadImage(korzo, "korzo.jpg");
+	//configuring 3D pritimives used for the third mode
+	cube.setUseVbo(true);
+	cube.setPosition(glm::vec3(0.0, 0.0, 0.0));
+	cube.set(0.35);
+	sphere.setUseVbo(true);
+	sphere.setPosition(glm::vec3(0.0, 0.0, 0.0));
+	sphere.set(0.3, 100);
+	/*
+	int numSlices = 40;  // Number of divisions around the torus
+	int numSegments = 20; // Number of divisions along the tube
+	float R = 200;       // Major radius
+	float r = 50;        // Minor radius
+
+	for (int i = 0; i < numSlices; i++) {
+		float theta = ofMap(i, 0, numSlices, 0, TWO_PI);
+		for (int j = 0; j < numSegments; j++) {
+			float phi = ofMap(j, 0, numSegments, 0, TWO_PI);
+
+			// Parametric equations for torus
+			float x = (R + r * cos(phi)) * cos(theta);
+			float y = (R + r * cos(phi)) * sin(theta);
+			float z = r * sin(phi);
+
+			torus.addVertex(ofVec3f(x, y, z));
+			torus.addNormal(ofVec3f(x, y, z).normalized());
+		}
+	}*/
+	ofEnableDepthTest();
 	// preparing to start
 	if (mode == VIDEO) {
 		currentVideoPlayer = videoPlayers[index];
@@ -97,6 +127,7 @@ void ofApp::draw(){
 	//---------------------------------------------
 	//first drawing to the FBOs
 	currentFrame.begin();
+	ofClear(0, 0, 0, 255);
 	if (mode == VIDEO){
 		currentVideoPlayer.draw(0, 0);
 	}
@@ -121,9 +152,26 @@ void ofApp::draw(){
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
 	}
+	else if (mode == THREE_D) {
+		camera.begin();
+		threeDimShader.begin();
+		threeDimShader.setUniform1f("time", ofGetElapsedTimef());
+		threeDimShader.setUniform1i("var", index);
+		if (index == 0) {
+			cube.rotateDeg(-3, glm::vec3(0.0, 1.0, 0.0));
+			cube.draw();
+		}
+		else if (index == 1) {
+		    sphere.rotateDeg(-1, glm::vec3(0.0,1.0,0.0));
+		    sphere.draw();
+		}
+		threeDimShader.end();
+		camera.end();
+	}
 	currentFrame.end();
 	if (progress < 1.0f) {
 		previousFrame.begin();
+		ofClear(0, 0, 0, 255);
 		if (previousMode == VIDEO) {
 			previousVideoPlayer.draw(0, 0);
 		}
@@ -147,6 +195,22 @@ void ofApp::draw(){
 			}
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			shader.end();
+		}
+		else if (previousMode == THREE_D) {
+			camera.begin();
+			threeDimShader.begin();
+			threeDimShader.setUniform1f("time", ofGetElapsedTimef());
+			threeDimShader.setUniform1i("var", previousIndex);
+			if (previousIndex == 0) {
+				cube.rotateDeg(-3, glm::vec3(0.0, 1.0, 0.0));
+				cube.draw();
+			}
+			else if (previousIndex == 1) {
+				sphere.rotateDeg(-1, glm::vec3(0.0, 1.0, 0.0));
+				sphere.draw();
+			}
+			threeDimShader.end();
+			camera.end();
 		}
 		previousFrame.end();
 	}
@@ -178,6 +242,7 @@ void ofApp::keyPressed(int key){
 	switch (key) {
 	case '1': modeToSet = VIDEO; break;
 	case '2': modeToSet = SHADER; break;
+	case '3': modeToSet = THREE_D; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
