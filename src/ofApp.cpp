@@ -60,8 +60,19 @@ void ofApp::setup() {
 		ofVideoPlayer player;
 		player.load(loopsDir.getPath(i));
 		player.setLoopState(OF_LOOP_NORMAL);
-		videoPlayers.push_back(player);
+		loopPlayers.push_back(player);
 	}
+	// stored in bin/data/nature
+	ofDirectory natureClipsDir("nature");
+	natureClipsDir.allowExt("mp4");
+	natureClipsDir.listDir();
+	for (int i = 0; i < natureClipsDir.size(); i++) {
+		ofVideoPlayer player;
+		player.load(natureClipsDir.getPath(i));
+		player.setLoopState(OF_LOOP_NORMAL);
+		natureClipPlayers.push_back(player);
+	}
+	/*
 	// stored in bin/data/textures (images only)
 	ofDirectory texDir("textures");
 	texDir.allowExt("png");
@@ -71,13 +82,14 @@ void ofApp::setup() {
 		ofLoadImage(texture, texDir.getPath(i));
 		loopTextures.push_back(texture);
 	}
+	*/
 	// external textures for use in generative sources
 	// (stored independently in bin/data)
-	ofLoadImage(zilip, "zilip.jpg");
+	/*ofLoadImage(zilip, "zilip.jpg");
 	ofLoadImage(les, "les.jpg");
 	ofLoadImage(zalesie, "zalesie.jpg");
 	ofLoadImage(zakutie, "zakutie.jpg");
-	ofLoadImage(korzo, "korzo.jpg");
+	ofLoadImage(korzo, "korzo.jpg");*/
 	//configuring 3D pritimives used for the third mode
 	cube.setUseVbo(true);
 	cube.setPosition(glm::vec3(0.0, 0.0, 0.0));
@@ -107,18 +119,22 @@ void ofApp::setup() {
 	}*/
 	ofEnableDepthTest();
 	// preparing to start
-	if (mode == VIDEO) {
-		currentVideoPlayer = videoPlayers[index];
+	if (mode == LOOPS) {
+		currentVideoPlayer = loopPlayers[index];
+		currentVideoPlayer.play();
+	}
+	else if (mode == NATURE) {
+		currentVideoPlayer = natureClipPlayers[index];
 		currentVideoPlayer.play();
 	}
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (previousMode == VIDEO) {
+	if (previousMode == LOOPS || previousMode == NATURE) {
 		previousVideoPlayer.update();
 	}
-	if (mode == VIDEO) {
+	if (mode == LOOPS || mode == NATURE) {
 		currentVideoPlayer.update();
 	}
 }
@@ -128,10 +144,10 @@ void ofApp::draw(){
 	//first drawing to the FBOs
 	currentFrame.begin();
 	ofClear(0, 0, 0, 255);
-	if (mode == VIDEO){
+	if (mode == LOOPS || mode == NATURE){
 		currentVideoPlayer.draw(0, 0);
 	}
-	else if (mode == SHADER && index <= maxShaderIndex) {
+	/*else if (mode == SHADER && index <= maxShaderIndex) {
 		shader.begin();
 		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		shader.setUniform1f("time", ofGetElapsedTimef());
@@ -151,7 +167,7 @@ void ofApp::draw(){
 		}
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		shader.end();
-	}
+	}*/
 	else if (mode == THREE_D) {
 		camera.begin();
 		threeDimShader.begin();
@@ -172,10 +188,10 @@ void ofApp::draw(){
 	if (progress < 1.0f) {
 		previousFrame.begin();
 		ofClear(0, 0, 0, 255);
-		if (previousMode == VIDEO) {
+		if (previousMode == LOOPS || previousMode == NATURE) {
 			previousVideoPlayer.draw(0, 0);
 		}
-		else if (previousMode == SHADER && index <= maxShaderIndex) {
+		/*else if (previousMode == SHADER && index <= maxShaderIndex) {
 			shader.begin();
 			shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 			shader.setUniform1f("time", ofGetElapsedTimef());
@@ -195,7 +211,7 @@ void ofApp::draw(){
 			}
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			shader.end();
-		}
+		}*/
 		else if (previousMode == THREE_D) {
 			camera.begin();
 			threeDimShader.begin();
@@ -240,8 +256,8 @@ void ofApp::keyPressed(int key){
 	previousMode = mode;
 	previousIndex = index;
 	switch (key) {
-	case '1': modeToSet = VIDEO; break;
-	case '2': modeToSet = SHADER; break;
+	case '1': modeToSet = LOOPS; break;
+	case '2': modeToSet = NATURE; break;
 	case '3': modeToSet = THREE_D; break;
 	}
 	switch (key) {
@@ -262,9 +278,11 @@ void ofApp::keyPressed(int key){
 	case 'd': index = 14; break;
 	case 'f': index = 15; break;
 	case 'g': index = 16; break;
+	case 'h': index = 17; break;
+	case 'j': index = 18; break;
 	}
 	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
-		transitionMode = static_cast<int>(ofRandom(0, maxTransitionIndex + 1));
+		transitionMode = static_cast<int>(ofRandom(0, 5));
 		bool equalIndex = previousIndex == index;
 		bool equalMode = previousMode == modeToSet;
 		bool firstCondition = equalIndex && !equalMode;
@@ -274,11 +292,15 @@ void ofApp::keyPressed(int key){
 			mode = modeToSet;
 			progress = .0f;
 			timestamp = ofGetFrameNum();
-			if (previousMode == VIDEO) {
+			if (previousMode == LOOPS || previousMode == NATURE) {
 				previousVideoPlayer = currentVideoPlayer;
 			}
-			if (mode == VIDEO && index < videoPlayers.size()) {
-				currentVideoPlayer = videoPlayers[index];
+			if (mode == LOOPS && index < loopPlayers.size()) {
+				currentVideoPlayer = loopPlayers[index];
+				currentVideoPlayer.play();
+			}
+			else if (mode == NATURE && index < natureClipPlayers.size()) {
+				currentVideoPlayer = natureClipPlayers[index];
 				currentVideoPlayer.play();
 			}
 		}

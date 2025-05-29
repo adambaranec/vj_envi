@@ -16,7 +16,7 @@ bool isDigits(std::string& str)
 
 //========================================================================
 int main(int argc, char* argv[]) {
-	ofBuffer fragmentShaderFile = ofBufferFromFile("fragment.frag");
+	/*ofBuffer fragmentShaderFile = ofBufferFromFile("fragment.frag");
 	ofBuffer transitionShaderFile = ofBufferFromFile("transition.frag");
 	std::string fragmentText = fragmentShaderFile.getText();
 	std::string transitionText = transitionShaderFile.getText();
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 		if (ch >= 48 && ch <= 57) {
 			maxTransitionIndex += ch;
 		}
-	}
+	}*/
 
 	//Use ofGLFWWindowSettings for more options like multi-monitor fullscreen
 	ofGLWindowSettings settings;
@@ -57,11 +57,12 @@ int main(int argc, char* argv[]) {
 	ofDirectory loopsDir("loops");
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
+	ofDirectory natureClipDir("nature");
+	natureClipDir.allowExt("mp4");
+	natureClipDir.listDir();
 
 	auto window = ofCreateWindow(settings);
 	auto app = make_shared<ofApp>();
-	app->maxShaderIndex = std::stoi(maxFragmentIndex);
-	app->maxTransitionIndex = std::stoi(maxTransitionIndex);
 	if (argc == 2) {
 		std::string indexArg = argv[1];
 		int receivedIndex = std::stoi(indexArg);
@@ -120,10 +121,10 @@ int main(int argc, char* argv[]) {
 		bool indexArgDefCheck = indexArgDef == "--index" || indexArgDef == "-i";
 		bool indexArgCheck = isDigits(indexArg);
 		bool modeArgDefCheck = modeArgDef == "--mode" || modeArgDef == "-m";
-		bool modeArgCheck = modeArg == "VIDEO" || modeArg == "SHADER" || modeArg == "3D";
+		bool modeArgCheck = modeArg == "LOOPS" || modeArg == "NATURE" || modeArg == "3D";
 		if (indexArgDefCheck && indexArgCheck && modeArgDefCheck && modeArgCheck) {
 			int receivedIndex = std::stoi(indexArg);
-			if (modeArg == "VIDEO") {
+			if (modeArg == "LOOPS") {
 				app->mode = static_cast<ofApp::Mode>(0);
 				app->modeToSet = app->mode;
 				if (receivedIndex < loopsDir.size()) {
@@ -135,10 +136,10 @@ int main(int argc, char* argv[]) {
 					ofLog() << "No video at this index";
 				}
 			}
-			else if (modeArg == "SHADER") {
+			else if (modeArg == "NATURE") {
 				app->mode = static_cast<ofApp::Mode>(1);
 				app->modeToSet = app->mode;
-				if (receivedIndex <= app->maxShaderIndex) {
+				if (receivedIndex < natureClipDir.size()) {
 					app->index = receivedIndex;
 					ofRunApp(window, app);
 					ofRunMainLoop();
