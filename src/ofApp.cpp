@@ -55,6 +55,7 @@ void ofApp::setup() {
 		ofVideoPlayer player;
 		player.load(loopsDir.getPath(i));
 		player.setLoopState(OF_LOOP_NORMAL);
+		player.setVolume(0.0f);
 		loopPlayers.push_back(player);
 	}
 	// stored in bin/data/nature
@@ -65,35 +66,20 @@ void ofApp::setup() {
 		ofVideoPlayer player;
 		player.load(natureClipsDir.getPath(i));
 		player.setLoopState(OF_LOOP_NORMAL);
+		player.setVolume(0.0f);
 		natureClipPlayers.push_back(player);
 	}
-	// stored in bin/data/nature
-	ofDirectory threeDDir("nature");
+	// stored in bin/data/3D
+	ofDirectory threeDDir("3D");
 	threeDDir.allowExt("mp4");
 	threeDDir.listDir();
 	for (int i = 0; i < threeDDir.size(); i++) {
 		ofVideoPlayer player;
 		player.load(threeDDir.getPath(i));
 		player.setLoopState(OF_LOOP_NORMAL);
-		natureClipPlayers.push_back(player);
+		player.setVolume(0.0f);
+		threeDPlayers.push_back(player);
 	}
-	/*
-	// stored in bin/data/textures (images only)
-	ofDirectory texDir("textures");
-	texDir.allowExt("png");
-	texDir.listDir();
-	for (int i = 0; i < texDir.size(); i++) {
-		ofTexture texture;
-		ofLoadImage(texture, texDir.getPath(i));
-		loopTextures.push_back(texture);
-	}
-	//configuring 3D pritimives used for the third mode
-	cube.setUseVbo(true);
-	cube.setPosition(glm::vec3(0.0, 0.0, 0.0));
-	cube.set(0.35);
-	sphere.setUseVbo(true);
-	sphere.setPosition(glm::vec3(0.0, 0.0, 0.0));
-	sphere.set(0.3, 100);*/
 	/*
 	int numSlices = 40;  // Number of divisions around the torus
 	int numSegments = 20; // Number of divisions along the tube
@@ -124,14 +110,18 @@ void ofApp::setup() {
 		currentVideoPlayer = natureClipPlayers[index];
 		currentVideoPlayer.play();
 	}
+	else if (mode == THREE_D) {
+		currentVideoPlayer = threeDPlayers[index];
+		currentVideoPlayer.play();
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (previousMode == LOOPS || previousMode == NATURE) {
+	if (previousMode == LOOPS || previousMode == NATURE || previousMode == THREE_D) {
 		previousVideoPlayer.update();
 	}
-	if (mode == LOOPS || mode == NATURE) {
+	if (mode == LOOPS || mode == NATURE || mode == THREE_D) {
 		currentVideoPlayer.update();
 	}
 }
@@ -141,48 +131,16 @@ void ofApp::draw(){
 	//first drawing to the FBOs
 	currentFrame.begin();
 	ofClear(0, 0, 0, 255);
-	if (mode == LOOPS || mode == NATURE){
+	if (mode == LOOPS || mode == NATURE || mode == THREE_D){
 		currentVideoPlayer.draw(0, 0);
 	}
-	/*else if (mode == THREE_D) {
-		camera.begin();
-		threeDimShader.begin();
-		threeDimShader.setUniform1f("time", ofGetElapsedTimef());
-		threeDimShader.setUniform1i("var", index);
-		if (index == 0) {
-			cube.rotateDeg(-3, glm::vec3(0.0, 1.0, 0.0));
-			cube.draw();
-		}
-		else if (index == 1) {
-		    sphere.rotateDeg(-1, glm::vec3(0.0,1.0,0.0));
-		    sphere.draw();
-		}
-		threeDimShader.end();
-		camera.end();
-	}*/
 	currentFrame.end();
 	if (progress < 1.0f) {
 		previousFrame.begin();
 		ofClear(0, 0, 0, 255);
-		if (previousMode == LOOPS || previousMode == NATURE) {
+		if (previousMode == LOOPS || previousMode == NATURE || previousMode == THREE_D) {
 			previousVideoPlayer.draw(0, 0);
 		}
-		/*else if (previousMode == THREE_D) {
-			camera.begin();
-			threeDimShader.begin();
-			threeDimShader.setUniform1f("time", ofGetElapsedTimef());
-			threeDimShader.setUniform1i("var", previousIndex);
-			if (previousIndex == 0) {
-				cube.rotateDeg(-3, glm::vec3(0.0, 1.0, 0.0));
-				cube.draw();
-			}
-			else if (previousIndex == 1) {
-				sphere.rotateDeg(-1, glm::vec3(0.0, 1.0, 0.0));
-				sphere.draw();
-			}
-			threeDimShader.end();
-			camera.end();
-		}*/
 		previousFrame.end();
 	}
 	//---------------------------------------------
@@ -247,7 +205,7 @@ void ofApp::keyPressed(int key){
 			mode = modeToSet;
 			progress = .0f;
 			timestamp = ofGetFrameNum();
-			if (previousMode == LOOPS || previousMode == NATURE) {
+			if (previousMode == LOOPS || previousMode == NATURE || previousMode == THREE_D) {
 				previousVideoPlayer = currentVideoPlayer;
 			}
 			if (mode == LOOPS && index < loopPlayers.size()) {
@@ -256,6 +214,10 @@ void ofApp::keyPressed(int key){
 			}
 			else if (mode == NATURE && index < natureClipPlayers.size()) {
 				currentVideoPlayer = natureClipPlayers[index];
+				currentVideoPlayer.play();
+			} 
+			else if (mode == THREE_D && index < threeDPlayers.size()) {
+				currentVideoPlayer = threeDPlayers[index];
 				currentVideoPlayer.play();
 			}
 		}

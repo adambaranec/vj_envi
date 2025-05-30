@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	natureClipDir.allowExt("mp4");
 	natureClipDir.listDir();
 
-	ofDirectory threeDDir("nature");
+	ofDirectory threeDDir("3D");
 	threeDDir.allowExt("mp4");
 	threeDDir.listDir();
 
