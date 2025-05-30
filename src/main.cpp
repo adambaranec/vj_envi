@@ -16,37 +16,6 @@ bool isDigits(std::string& str)
 
 //========================================================================
 int main(int argc, char* argv[]) {
-	/*ofBuffer fragmentShaderFile = ofBufferFromFile("fragment.frag");
-	ofBuffer transitionShaderFile = ofBufferFromFile("transition.frag");
-	std::string fragmentText = fragmentShaderFile.getText();
-	std::string transitionText = transitionShaderFile.getText();
-	std::string v = "var";
-	std::string m = "mode";
-	std::string lastFragmentLineWithVar, lastTransitionLineWithMode;
-	std::string maxFragmentIndex, maxTransitionIndex;
-	static int lastFragmentLineIndexWithVar, lastTransitionLineIndexWithMode;
-	for (auto line : fragmentShaderFile.getLines()) {
-		size_t pos = line.find(v);
-		if (pos != std::string::npos) {
-			lastFragmentLineWithVar = line;
-		}
-	}
-	for (auto line : transitionShaderFile.getLines()) {
-		size_t pos = line.find(m);
-		if (pos != std::string::npos) {
-			lastTransitionLineWithMode = line;
-		}
-	}
-	for (char ch : lastFragmentLineWithVar) {
-		if (ch >= 48 && ch <= 57) {
-			maxFragmentIndex += ch;
-		}
-	}
-	for (char ch : lastTransitionLineWithMode) {
-		if (ch >= 48 && ch <= 57) {
-			maxTransitionIndex += ch;
-		}
-	}*/
 
 	//Use ofGLFWWindowSettings for more options like multi-monitor fullscreen
 	ofGLWindowSettings settings;
@@ -57,9 +26,14 @@ int main(int argc, char* argv[]) {
 	ofDirectory loopsDir("loops");
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
+
 	ofDirectory natureClipDir("nature");
 	natureClipDir.allowExt("mp4");
 	natureClipDir.listDir();
+
+	ofDirectory threeDDir("nature");
+	threeDDir.allowExt("mp4");
+	threeDDir.listDir();
 
 	auto window = ofCreateWindow(settings);
 	auto app = make_shared<ofApp>();
@@ -111,7 +85,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	else if (argc == 4) {
-		ofLog() << "Unknown third parameter. To define the mode, type e.g. --mode VIDEO";
+		ofLog() << "Unknown third parameter. To define the mode, type e.g. --mode LOOPS";
 	}
 	else if (argc == 5) {
 		std::string indexArgDef = argv[1];
@@ -150,7 +124,7 @@ int main(int argc, char* argv[]) {
 			}
 			else if (modeArg == "3D") {
 				app->mode = static_cast<ofApp::Mode>(2);
-				if (receivedIndex <= 1) {
+				if (receivedIndex < threeDDir.size()) {
 					app->index = receivedIndex;
 					app->modeToSet = app->mode;
 					ofRunApp(window, app);
@@ -162,7 +136,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		else {
-		ofLog() << "An error in definition. Example: -i 5 -m SHADER";
+		ofLog() << "An error in definition. Example: -i 6 -m LOOPS";
 		}
 	}
 

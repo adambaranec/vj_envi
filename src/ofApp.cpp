@@ -43,13 +43,8 @@ void ofApp::setup() {
 	// not shown as whole
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 	//---------------------------------------------
-	// shader - for generative visuals
 	// transitionShader - the main shader to show the results
-	// threeDimShader - for 3D objects renderer by OF
-	// VERT and FRAG files stored in bin/data
-	shader.load("vertex.vert", "fragment.frag");
 	transitionShader.load("vertex.vert", "transition.frag");
-	threeDimShader.load("vertex.vert", "three_d.frag");
 	//---------------------------------------------
 	// loading external sources
 	// stored in bin/data/loops
@@ -72,6 +67,16 @@ void ofApp::setup() {
 		player.setLoopState(OF_LOOP_NORMAL);
 		natureClipPlayers.push_back(player);
 	}
+	// stored in bin/data/nature
+	ofDirectory threeDDir("nature");
+	threeDDir.allowExt("mp4");
+	threeDDir.listDir();
+	for (int i = 0; i < threeDDir.size(); i++) {
+		ofVideoPlayer player;
+		player.load(threeDDir.getPath(i));
+		player.setLoopState(OF_LOOP_NORMAL);
+		natureClipPlayers.push_back(player);
+	}
 	/*
 	// stored in bin/data/textures (images only)
 	ofDirectory texDir("textures");
@@ -82,21 +87,13 @@ void ofApp::setup() {
 		ofLoadImage(texture, texDir.getPath(i));
 		loopTextures.push_back(texture);
 	}
-	*/
-	// external textures for use in generative sources
-	// (stored independently in bin/data)
-	/*ofLoadImage(zilip, "zilip.jpg");
-	ofLoadImage(les, "les.jpg");
-	ofLoadImage(zalesie, "zalesie.jpg");
-	ofLoadImage(zakutie, "zakutie.jpg");
-	ofLoadImage(korzo, "korzo.jpg");*/
 	//configuring 3D pritimives used for the third mode
 	cube.setUseVbo(true);
 	cube.setPosition(glm::vec3(0.0, 0.0, 0.0));
 	cube.set(0.35);
 	sphere.setUseVbo(true);
 	sphere.setPosition(glm::vec3(0.0, 0.0, 0.0));
-	sphere.set(0.3, 100);
+	sphere.set(0.3, 100);*/
 	/*
 	int numSlices = 40;  // Number of divisions around the torus
 	int numSegments = 20; // Number of divisions along the tube
@@ -147,28 +144,7 @@ void ofApp::draw(){
 	if (mode == LOOPS || mode == NATURE){
 		currentVideoPlayer.draw(0, 0);
 	}
-	/*else if (mode == SHADER && index <= maxShaderIndex) {
-		shader.begin();
-		shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
-		shader.setUniform1f("time", ofGetElapsedTimef());
-		shader.setUniform1i("var", index);
-		if (index == 1) {
-			shader.setUniformTexture("zilip", zilip, 1);
-			shader.setUniformTexture("les", les, 2);
-		}
-		else if (index == 2) {
-			shader.setUniformTexture("zalesie", zalesie, 1);
-		}
-		else if (index == 3) {
-			shader.setUniformTexture("zakutie", zakutie, 1);
-		}
-		else if (index == 4) {
-			shader.setUniformTexture("korzo", korzo, 1);
-		}
-		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-		shader.end();
-	}*/
-	else if (mode == THREE_D) {
+	/*else if (mode == THREE_D) {
 		camera.begin();
 		threeDimShader.begin();
 		threeDimShader.setUniform1f("time", ofGetElapsedTimef());
@@ -183,7 +159,7 @@ void ofApp::draw(){
 		}
 		threeDimShader.end();
 		camera.end();
-	}
+	}*/
 	currentFrame.end();
 	if (progress < 1.0f) {
 		previousFrame.begin();
@@ -191,28 +167,7 @@ void ofApp::draw(){
 		if (previousMode == LOOPS || previousMode == NATURE) {
 			previousVideoPlayer.draw(0, 0);
 		}
-		/*else if (previousMode == SHADER && index <= maxShaderIndex) {
-			shader.begin();
-			shader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
-			shader.setUniform1f("time", ofGetElapsedTimef());
-			shader.setUniform1i("var", previousIndex);
-			if (previousIndex == 1) {
-				shader.setUniformTexture("zilip", zilip, 1);
-				shader.setUniformTexture("les", les, 2);
-			}
-			else if (previousIndex == 2) {
-				shader.setUniformTexture("zalesie", zalesie, 1);
-			}
-			else if (previousIndex == 3) {
-				shader.setUniformTexture("zakutie", zakutie, 1);
-			}
-			else if (previousIndex == 4) {
-				shader.setUniformTexture("korzo", korzo, 1);
-			}
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			shader.end();
-		}*/
-		else if (previousMode == THREE_D) {
+		/*else if (previousMode == THREE_D) {
 			camera.begin();
 			threeDimShader.begin();
 			threeDimShader.setUniform1f("time", ofGetElapsedTimef());
@@ -227,7 +182,7 @@ void ofApp::draw(){
 			}
 			threeDimShader.end();
 			camera.end();
-		}
+		}*/
 		previousFrame.end();
 	}
 	//---------------------------------------------

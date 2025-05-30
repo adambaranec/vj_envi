@@ -24,9 +24,9 @@ public:
 
 	ofSoundStream soundStream;
 	ofCamera camera;
-	ofShader shader, transitionShader, threeDimShader;
+	ofShader transitionShader;
 	ofPlanePrimitive shaderViewer;
-	std::vector<ofVideoPlayer> loopPlayers, natureClipPlayers;
+	std::vector<ofVideoPlayer> loopPlayers, natureClipPlayers, threeDPlayers;
 	std::vector<ofTexture> loopTextures;
 	ofVideoPlayer currentVideoPlayer, previousVideoPlayer;
 	int timestamp, elapsedFramesFromTransition, index, previousIndex, transitionMode;
@@ -34,8 +34,7 @@ public:
 	ofFbo previousFrame, currentFrame;
 	float progress = 1.0f;
 	//additional textures and 3D shapes used for shaders
-	ofTexture zilip, les, zalesie, zakutie, korzo;
 	ofBoxPrimitive cube;
 	ofSpherePrimitive sphere;
-	ofMesh torus;
+	//ofMesh torus;
 };
