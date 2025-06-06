@@ -193,6 +193,20 @@ void ofApp::keyPressed(int key){
 	case 'g': index = 16; break;
 	case 'h': index = 17; break;
 	case 'j': index = 18; break;
+	case 'k': index = 19; break;
+	case 'l': index = 20; break;
+	case ';': index = 21; break;
+	case '\'': index = 22; break;
+	case 'z': index = 23; break;
+	case 'x': index = 24; break;
+	case 'c': index = 25; break;
+	case 'v': index = 26; break;
+	case 'b': index = 27; break;
+	case 'n': index = 28; break;
+	case 'm': index = 29; break;
+	case ',': index = 30; break;
+	case '.': index = 31; break;
+	case '/': index = 32; break;
 	}
 	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
 		transitionMode = static_cast<int>(ofRandom(0, 5));
