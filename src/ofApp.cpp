@@ -58,6 +58,7 @@ void ofApp::setup() {
 		player.setVolume(0.0f);
 		loopPlayers.push_back(player);
 	}
+	/*
 	// stored in bin/data/nature
 	ofDirectory natureClipsDir("nature");
 	natureClipsDir.allowExt("mp4");
@@ -79,7 +80,7 @@ void ofApp::setup() {
 		player.setLoopState(OF_LOOP_NORMAL);
 		player.setVolume(0.0f);
 		threeDPlayers.push_back(player);
-	}
+	}*/
 	/*
 	int numSlices = 40;  // Number of divisions around the torus
 	int numSegments = 20; // Number of divisions along the tube
@@ -226,14 +227,14 @@ void ofApp::keyPressed(int key){
 				currentVideoPlayer = loopPlayers[index];
 				currentVideoPlayer.play();
 			}
-			else if (mode == NATURE && index < natureClipPlayers.size()) {
+			/*else if (mode == NATURE && index < natureClipPlayers.size()) {
 				currentVideoPlayer = natureClipPlayers[index];
 				currentVideoPlayer.play();
 			} 
 			else if (mode == THREE_D && index < threeDPlayers.size()) {
 				currentVideoPlayer = threeDPlayers[index];
 				currentVideoPlayer.play();
-			}
+			}*/
 		}
 	}
 }

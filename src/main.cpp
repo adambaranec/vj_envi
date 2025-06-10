@@ -27,13 +27,13 @@ int main(int argc, char* argv[]) {
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
 
-	ofDirectory natureClipDir("nature");
+	/*ofDirectory natureClipDir("nature");
 	natureClipDir.allowExt("mp4");
 	natureClipDir.listDir();
 
 	ofDirectory threeDDir("3D");
 	threeDDir.allowExt("mp4");
-	threeDDir.listDir();
+	threeDDir.listDir();*/
 
 	auto window = ofCreateWindow(settings);
 	auto app = make_shared<ofApp>();
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 			ofLog() << "Error, only numbers";
 		}
 	}
-	else if (argc == 3) {
+	/*else if (argc == 3) {
 		std::string indexArgDef = argv[1];
 		std::string indexArg = argv[2];
 		bool indexArgDefCheck = indexArgDef == "--index" || indexArgDef == "-i";
@@ -138,6 +138,6 @@ int main(int argc, char* argv[]) {
 		else {
 		ofLog() << "An error in definition. Example: -i 6 -m LOOPS";
 		}
-	}
+	}*/
 
 }
