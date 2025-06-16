@@ -30,7 +30,6 @@ public:
 	std::vector<ofTexture> loopTextures;
 	ofVideoPlayer currentVideoPlayer, previousVideoPlayer;
 	int timestamp, elapsedFramesFromTransition, index, previousIndex, transitionMode;
-	enum Mode {LOOPS, NATURE, THREE_D} mode, previousMode, modeToSet;
 	ofFbo previousFrame, currentFrame;
 	float progress = 1.0f;
 	//additional textures and 3D shapes used for shaders

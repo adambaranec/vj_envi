@@ -58,73 +58,16 @@ void ofApp::setup() {
 		player.setVolume(0.0f);
 		loopPlayers.push_back(player);
 	}
-	/*
-	// stored in bin/data/nature
-	ofDirectory natureClipsDir("nature");
-	natureClipsDir.allowExt("mp4");
-	natureClipsDir.listDir();
-	for (int i = 0; i < natureClipsDir.size(); i++) {
-		ofVideoPlayer player;
-		player.load(natureClipsDir.getPath(i));
-		player.setLoopState(OF_LOOP_NORMAL);
-		player.setVolume(0.0f);
-		natureClipPlayers.push_back(player);
-	}
-	// stored in bin/data/3D
-	ofDirectory threeDDir("3D");
-	threeDDir.allowExt("mp4");
-	threeDDir.listDir();
-	for (int i = 0; i < threeDDir.size(); i++) {
-		ofVideoPlayer player;
-		player.load(threeDDir.getPath(i));
-		player.setLoopState(OF_LOOP_NORMAL);
-		player.setVolume(0.0f);
-		threeDPlayers.push_back(player);
-	}*/
-	/*
-	int numSlices = 40;  // Number of divisions around the torus
-	int numSegments = 20; // Number of divisions along the tube
-	float R = 200;       // Major radius
-	float r = 50;        // Minor radius
-
-	for (int i = 0; i < numSlices; i++) {
-		float theta = ofMap(i, 0, numSlices, 0, TWO_PI);
-		for (int j = 0; j < numSegments; j++) {
-			float phi = ofMap(j, 0, numSegments, 0, TWO_PI);
-
-			// Parametric equations for torus
-			float x = (R + r * cos(phi)) * cos(theta);
-			float y = (R + r * cos(phi)) * sin(theta);
-			float z = r * sin(phi);
-
-			torus.addVertex(ofVec3f(x, y, z));
-			torus.addNormal(ofVec3f(x, y, z).normalized());
-		}
-	}*/
 	ofEnableDepthTest();
 	// preparing to start
-	if (mode == LOOPS) {
-		currentVideoPlayer = loopPlayers[index];
-		currentVideoPlayer.play();
-	}
-	else if (mode == NATURE) {
-		currentVideoPlayer = natureClipPlayers[index];
-		currentVideoPlayer.play();
-	}
-	else if (mode == THREE_D) {
-		currentVideoPlayer = threeDPlayers[index];
-		currentVideoPlayer.play();
-	}
+	currentVideoPlayer = loopPlayers[index];
+	currentVideoPlayer.play();
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (previousMode == LOOPS || previousMode == NATURE || previousMode == THREE_D) {
-		previousVideoPlayer.update();
-	}
-	if (mode == LOOPS || mode == NATURE || mode == THREE_D) {
-		currentVideoPlayer.update();
-	}
+	currentVideoPlayer.update();
+	//if (previousVideoPlayer.isPlaying()) { previousVideoPlayer.update(); }
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -132,33 +75,29 @@ void ofApp::draw(){
 	//first drawing to the FBOs
 	currentFrame.begin();
 	ofClear(0, 0, 0, 255);
-	if (mode == LOOPS || mode == NATURE || mode == THREE_D){
-		currentVideoPlayer.draw(0, 0);
-	}
+	currentVideoPlayer.draw(0, 0);
 	currentFrame.end();
-	if (progress < 1.0f) {
+	/*if (progress < 1.0f) {
 		previousFrame.begin();
 		ofClear(0, 0, 0, 255);
-		if (previousMode == LOOPS || previousMode == NATURE || previousMode == THREE_D) {
-			previousVideoPlayer.draw(0, 0);
-		}
+		previousVideoPlayer.draw(0, 0);
 		previousFrame.end();
-	}
+	}*/
 	//---------------------------------------------
 	//rendering final textures with transition
 	camera.begin();
 	transitionShader.begin();
 	transitionShader.setUniform1f("time", ofGetElapsedTimef());
 	transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-	transitionShader.setUniform1f("progress", progress);
-	if (progress < 1.0f) {
+	//transitionShader.setUniform1f("progress", progress);
+	/*if (progress < 1.0f) {
 		progress = (float)(ofGetFrameNum() - timestamp) / 450.0f;
 		transitionShader.setUniform1i("mode", transitionMode);
 		transitionShader.setUniformTexture("prevTex", previousFrame.getTexture(), 2);
 	}
 	else {
 		if (previousVideoPlayer.isPlaying()) { previousVideoPlayer.stop(); }
-	}
+	}*/
 	transitionShader.setUniformTexture("currentTex", currentFrame.getTexture(), 1);
 	shaderViewer.draw();
 	transitionShader.end();
@@ -167,13 +106,12 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	previousMode = mode;
 	previousIndex = index;
-	switch (key) {
+	/*switch (key) {
 	case '1': modeToSet = LOOPS; break;
 	case '2': modeToSet = NATURE; break;
 	case '3': modeToSet = THREE_D; break;
-	}
+	}*/
 	switch (key) {
 	case 'q': index = 0; break;
 	case 'w': index = 1; break;
@@ -210,31 +148,17 @@ void ofApp::keyPressed(int key){
 	case '/': index = 32; break;
 	}
 	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
-		transitionMode = static_cast<int>(ofRandom(0, 5));
+		//transitionMode = static_cast<int>(ofRandom(0, 5));
 		bool equalIndex = previousIndex == index;
-		bool equalMode = previousMode == modeToSet;
-		bool firstCondition = equalIndex && !equalMode;
-		bool secondCondition = !equalIndex && equalMode;
-		bool thirdCondition = !equalIndex && !equalMode;
-		if (firstCondition || secondCondition || thirdCondition) {
-			mode = modeToSet;
+		if (!equalIndex) {
 			progress = .0f;
-			timestamp = ofGetFrameNum();
-			if (previousMode == LOOPS || previousMode == NATURE || previousMode == THREE_D) {
-				previousVideoPlayer = currentVideoPlayer;
-			}
-			if (mode == LOOPS && index < loopPlayers.size()) {
+			//timestamp = ofGetFrameNum();
+			//previousVideoPlayer = currentVideoPlayer;
+			if (index < loopPlayers.size()) {
+				currentVideoPlayer.stop();
 				currentVideoPlayer = loopPlayers[index];
 				currentVideoPlayer.play();
 			}
-			/*else if (mode == NATURE && index < natureClipPlayers.size()) {
-				currentVideoPlayer = natureClipPlayers[index];
-				currentVideoPlayer.play();
-			} 
-			else if (mode == THREE_D && index < threeDPlayers.size()) {
-				currentVideoPlayer = threeDPlayers[index];
-				currentVideoPlayer.play();
-			}*/
 		}
 	}
 }

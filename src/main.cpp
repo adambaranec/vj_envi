@@ -27,14 +27,6 @@ int main(int argc, char* argv[]) {
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
 
-	/*ofDirectory natureClipDir("nature");
-	natureClipDir.allowExt("mp4");
-	natureClipDir.listDir();
-
-	ofDirectory threeDDir("3D");
-	threeDDir.allowExt("mp4");
-	threeDDir.listDir();*/
-
 	auto window = ofCreateWindow(settings);
 	auto app = make_shared<ofApp>();
 	if (argc == 2) {
@@ -44,8 +36,6 @@ int main(int argc, char* argv[]) {
 		if (indexArgCheck) {
 			if (receivedIndex < loopsDir.size()) {
 				app->index = receivedIndex;
-				app->mode = static_cast<ofApp::Mode>(0);
-				app->modeToSet = app->mode;
 				ofRunApp(window, app);
 				ofRunMainLoop();
 			}
@@ -56,88 +46,25 @@ int main(int argc, char* argv[]) {
 			ofLog() << "Error, only numbers";
 		}
 	}
-	/*else if (argc == 3) {
-		std::string indexArgDef = argv[1];
-		std::string indexArg = argv[2];
-		bool indexArgDefCheck = indexArgDef == "--index" || indexArgDef == "-i";
-		bool indexArgCheck = isDigits(indexArg);
-		int receivedIndex = std::stoi(indexArg);
-		if (indexArgDefCheck && indexArgCheck) {
-			if (receivedIndex < loopsDir.size()) {
-				app->index = receivedIndex;
-				app->mode = static_cast<ofApp::Mode>(0);
-				app->modeToSet = app->mode;
-				ofRunApp(window, app);
-				ofRunMainLoop();
-			}
-			else {
-				ofLog() << "No element at this index";
-			}
-		}
-		else if (!indexArgDefCheck && indexArgCheck) {
-			ofLog() << "Not correct definition for index. Use -i or --index";
-		}
-		else if (indexArgDefCheck && !indexArgCheck) {
-			ofLog() << "Incorrect format of index, only numbers";
-		}
-		else if (!indexArgDefCheck && !indexArgCheck) {
-			ofLog() << "Unknown parameters. Use e.g. -i 10 or --index 3";
-		}
-	}
-	else if (argc == 4) {
-		ofLog() << "Unknown third parameter. To define the mode, type e.g. --mode LOOPS";
-	}
-	else if (argc == 5) {
-		std::string indexArgDef = argv[1];
-		std::string indexArg = argv[2];
-		std::string modeArgDef = argv[3];
-		std::string modeArg = argv[4];
-		bool indexArgDefCheck = indexArgDef == "--index" || indexArgDef == "-i";
-		bool indexArgCheck = isDigits(indexArg);
-		bool modeArgDefCheck = modeArgDef == "--mode" || modeArgDef == "-m";
-		bool modeArgCheck = modeArg == "LOOPS" || modeArg == "NATURE" || modeArg == "3D";
-		if (indexArgDefCheck && indexArgCheck && modeArgDefCheck && modeArgCheck) {
-			int receivedIndex = std::stoi(indexArg);
-			if (modeArg == "LOOPS") {
-				app->mode = static_cast<ofApp::Mode>(0);
-				app->modeToSet = app->mode;
-				if (receivedIndex < loopsDir.size()) {
-					app->index = receivedIndex;
-					ofRunApp(window, app);
-					ofRunMainLoop();
-				}
-				else {
-					ofLog() << "No video at this index";
-				}
-			}
-			else if (modeArg == "NATURE") {
-				app->mode = static_cast<ofApp::Mode>(1);
-				app->modeToSet = app->mode;
-				if (receivedIndex < natureClipDir.size()) {
-					app->index = receivedIndex;
-					ofRunApp(window, app);
-					ofRunMainLoop();
-				}
-				else {
-					ofLog() << "No shader variation at this index";
-				}
-			}
-			else if (modeArg == "3D") {
-				app->mode = static_cast<ofApp::Mode>(2);
-				if (receivedIndex < threeDDir.size()) {
-					app->index = receivedIndex;
-					app->modeToSet = app->mode;
-					ofRunApp(window, app);
-					ofRunMainLoop();
-				}
-				else {
-					ofLog() << "No shader variation for 3D objects at this index";
-				}
-			}
-		}
-		else {
-		ofLog() << "An error in definition. Example: -i 6 -m LOOPS";
-		}
-	}*/
-
 }
+
+/*
+int numSlices = 40;  // Number of divisions around the torus
+int numSegments = 20; // Number of divisions along the tube
+float R = 200;       // Major radius
+float r = 50;        // Minor radius
+
+for (int i = 0; i < numSlices; i++) {
+	float theta = ofMap(i, 0, numSlices, 0, TWO_PI);
+	for (int j = 0; j < numSegments; j++) {
+		float phi = ofMap(j, 0, numSegments, 0, TWO_PI);
+
+		// Parametric equations for torus
+		float x = (R + r * cos(phi)) * cos(theta);
+		float y = (R + r * cos(phi)) * sin(theta);
+		float z = r * sin(phi);
+
+		torus.addVertex(ofVec3f(x, y, z));
+		torus.addNormal(ofVec3f(x, y, z).normalized());
+	}
+}*/
