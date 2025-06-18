@@ -38,7 +38,7 @@ void ofApp::setup() {
 	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
 	shaderViewer.setHeight(1);
 	shaderViewer.setWidth(1920.0f/1080.0f);
-	shaderViewer.mapTexCoords(0, 0, 1920, 1080);
+	//shaderViewer.mapTexCoords(0, 0, 1920, 1080);
 	// for some reason, with its default scale the visuals are
 	// not shown as whole
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
