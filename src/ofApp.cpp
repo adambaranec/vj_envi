@@ -17,12 +17,11 @@ void ofApp::setup() {
 	ofSetFrameRate(30);
 	ofHideCursor();
 	//---------------------------------------------
-	// allocating the two FBOs to render to -
-	// previousFrame is used when the transition is happening
-	// and currentFrame is used as the following texture to render
-	// when the transition is done or as the default texture.
-	previousFrame.allocate(1920, 1080, GL_RGBA);
-	currentFrame.allocate(1920, 1080, GL_RGBA);
+	// allocating four FBOs to render loops to
+	src0.allocate(1920, 1080, GL_RGBA);
+	src1.allocate(1920, 1080, GL_RGBA);
+	src2.allocate(1920, 1080, GL_RGBA);
+	src3.allocate(1920, 1080, GL_RGBA);
 	//---------------------------------------------
 	// camera to set for the plane primitive to show
 	// the result of rendering of the FBOs
@@ -67,38 +66,21 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	currentVideoPlayer.update();
-	//if (previousVideoPlayer.isPlaying()) { previousVideoPlayer.update(); }
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
 	//---------------------------------------------
 	//first drawing to the FBOs
-	currentFrame.begin();
+	src0.begin();
 	ofClear(0, 0, 0, 255);
 	currentVideoPlayer.draw(0, 0);
-	currentFrame.end();
-	/*if (progress < 1.0f) {
-		previousFrame.begin();
-		ofClear(0, 0, 0, 255);
-		previousVideoPlayer.draw(0, 0);
-		previousFrame.end();
-	}*/
-	//---------------------------------------------
-	//rendering final textures with transition
+	src0.end();
+	//the final rendering to the FBOs
 	camera.begin();
 	transitionShader.begin();
 	transitionShader.setUniform1f("time", ofGetElapsedTimef());
 	transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-	//transitionShader.setUniform1f("progress", progress);
-	/*if (progress < 1.0f) {
-		progress = (float)(ofGetFrameNum() - timestamp) / 450.0f;
-		transitionShader.setUniform1i("mode", transitionMode);
-		transitionShader.setUniformTexture("prevTex", previousFrame.getTexture(), 2);
-	}
-	else {
-		if (previousVideoPlayer.isPlaying()) { previousVideoPlayer.stop(); }
-	}*/
-	transitionShader.setUniformTexture("currentTex", currentFrame.getTexture(), 1);
+	transitionShader.setUniformTexture("currentTex", src0.getTexture(), 1);
 	shaderViewer.draw();
 	transitionShader.end();
 	camera.end();

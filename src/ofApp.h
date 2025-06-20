@@ -30,7 +30,7 @@ public:
 	std::vector<ofTexture> loopTextures;
 	ofVideoPlayer currentVideoPlayer, previousVideoPlayer;
 	int timestamp, elapsedFramesFromTransition, index, previousIndex, transitionMode;
-	ofFbo previousFrame, currentFrame;
+	ofFbo src0, src1, src2, src3;
 	float progress = 1.0f;
 	//additional textures and 3D shapes used for shaders
 	ofBoxPrimitive cube;
