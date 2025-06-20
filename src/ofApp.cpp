@@ -148,18 +148,17 @@ void ofApp::keyPressed(int key){
 	case '/': index = 32; break;
 	}
 	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
-		//transitionMode = static_cast<int>(ofRandom(0, 5));
 		bool equalIndex = previousIndex == index;
 		if (!equalIndex) {
-			progress = .0f;
-			//timestamp = ofGetFrameNum();
-			//previousVideoPlayer = currentVideoPlayer;
 			if (index < loopPlayers.size()) {
 				currentVideoPlayer.stop();
 				currentVideoPlayer = loopPlayers[index];
 				currentVideoPlayer.play();
 			}
 		}
+	}
+	if (key == 13) {
+		transitionShader.load("vertex.vert", "transition.frag");
 	}
 }
 
