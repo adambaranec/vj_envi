@@ -26,10 +26,10 @@ public:
 	ofCamera camera;
 	ofShader transitionShader;
 	ofPlanePrimitive shaderViewer;
-	std::vector<ofVideoPlayer> loopPlayers, natureClipPlayers, threeDPlayers;
+	std::vector<ofVideoPlayer> loopPlayers;
 	std::vector<ofTexture> loopTextures;
-	ofVideoPlayer currentVideoPlayer, previousVideoPlayer;
-	int timestamp, elapsedFramesFromTransition, index, previousIndex, transitionMode;
+	ofVideoPlayer src0Player, src1Player, src2Player, src3Player, currentVideoPlayer;
+	int timestamp, index, previousIndex, sourceIndex;
 	ofFbo src0, src1, src2, src3;
 	float progress = 1.0f;
 	//additional textures and 3D shapes used for shaders

@@ -59,28 +59,63 @@ void ofApp::setup() {
 	}
 	ofEnableDepthTest();
 	// preparing to start
-	currentVideoPlayer = loopPlayers[index];
-	currentVideoPlayer.play();
+	sourceIndex = 0;
+	src0Player = loopPlayers[index];
+	src0Player.play();
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	currentVideoPlayer.update();
+	if (src0Player.isLoaded()) {
+		src0Player.update();
+	}
+	if (src1Player.isLoaded()) {
+		src1Player.update();
+	}
+	if (src2Player.isLoaded()) {
+		src2Player.update();
+	}
+	if (src3Player.isLoaded()) {
+		src3Player.update();
+	}
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
 	//---------------------------------------------
 	//first drawing to the FBOs
-	src0.begin();
-	ofClear(0, 0, 0, 255);
-	currentVideoPlayer.draw(0, 0);
-	src0.end();
+	if (src0Player.isFrameNew()) {
+		src0.begin();
+		ofClear(0, 0, 0, 255);
+		src0Player.draw(0, 0);
+		src0.end();
+	}
+	if (src1Player.isFrameNew()) {
+		src1.begin();
+		ofClear(0, 0, 0, 255);
+		src1Player.draw(0, 0);
+		src1.end();
+	}
+	if (src2Player.isFrameNew()) {
+		src2.begin();
+		ofClear(0, 0, 0, 255);
+		src2Player.draw(0, 0);
+		src2.end();
+	}
+	if (src3Player.isFrameNew()) {
+		src3.begin();
+		ofClear(0, 0, 0, 255);
+		src3Player.draw(0, 0);
+		src3.end();
+	}
 	//the final rendering to the FBOs
 	camera.begin();
 	transitionShader.begin();
 	transitionShader.setUniform1f("time", ofGetElapsedTimef());
 	transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-	transitionShader.setUniformTexture("currentTex", src0.getTexture(), 1);
+	transitionShader.setUniformTexture("tex0", src0.getTexture(), 1);
+	transitionShader.setUniformTexture("tex1", src1.getTexture(), 2);
+	transitionShader.setUniformTexture("tex2", src1.getTexture(), 3);
+	transitionShader.setUniformTexture("tex3", src1.getTexture(), 4);
 	shaderViewer.draw();
 	transitionShader.end();
 	camera.end();
@@ -89,11 +124,12 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	previousIndex = index;
-	/*switch (key) {
-	case '1': modeToSet = LOOPS; break;
-	case '2': modeToSet = NATURE; break;
-	case '3': modeToSet = THREE_D; break;
-	}*/
+	switch (key) {
+	case '1': sourceIndex = 0; break;
+	case '2': sourceIndex = 1; break;
+	case '3': sourceIndex = 2; break;
+	case '4': sourceIndex = 3; break;
+	}
 	switch (key) {
 	case 'q': index = 0; break;
 	case 'w': index = 1; break;
@@ -133,14 +169,57 @@ void ofApp::keyPressed(int key){
 		bool equalIndex = previousIndex == index;
 		if (!equalIndex) {
 			if (index < loopPlayers.size()) {
-				currentVideoPlayer.stop();
-				currentVideoPlayer = loopPlayers[index];
-				currentVideoPlayer.play();
+				if (sourceIndex == 0) {
+					src0Player.stop();
+					src0Player = loopPlayers[index];
+					src0Player.play();
+				}
+				else if (sourceIndex == 1) {
+					src1Player.stop();
+					src1Player = loopPlayers[index];
+					src1Player.play();
+				}
+				else if (sourceIndex == 2) {
+					src2Player.stop();
+					src2Player = loopPlayers[index];
+					src2Player.play();
+				}
+				else if (sourceIndex == 3) {
+					src3Player.stop();
+					src3Player = loopPlayers[index];
+					src3Player.play();
+				}
+			}
+		}
+		else {
+			if (sourceIndex == 0) {
+				src0Player.stop();
+				src0Player.play();
+			}
+			else if (sourceIndex == 1) {
+				src1Player.stop();
+				src1Player.play();
+			}
+			else if (sourceIndex == 2) {
+				src2Player.stop();
+				src2Player.play();
+			}
+			else if (sourceIndex == 3) {
+				src3Player.stop();
+				src3Player.play();
 			}
 		}
 	}
 	if (key == 13) {
 		transitionShader.load("vertex.vert", "transition.frag");
+	}
+	if (key == '0') {
+		switch (sourceIndex) {
+		case 0: src0Player.close(); break;
+		case 1: src1Player.close(); break;
+		case 2: src2Player.close(); break;
+		case 3: src3Player.close(); break;
+		}
 	}
 }
 
