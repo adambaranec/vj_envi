@@ -215,10 +215,10 @@ void ofApp::keyPressed(int key){
 	}
 	if (key == '0') {
 		switch (sourceIndex) {
-		case 0: src0Player.close(); break;
-		case 1: src1Player.close(); break;
-		case 2: src2Player.close(); break;
-		case 3: src3Player.close(); break;
+		case 0: src0Player.stop(); break;
+		case 1: src1Player.stop(); break;
+		case 2: src2Player.stop(); break;
+		case 3: src3Player.stop(); break;
 		}
 	}
 }
