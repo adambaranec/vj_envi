@@ -114,8 +114,8 @@ void ofApp::draw(){
 	transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 	transitionShader.setUniformTexture("tex0", src0.getTexture(), 1);
 	transitionShader.setUniformTexture("tex1", src1.getTexture(), 2);
-	transitionShader.setUniformTexture("tex2", src1.getTexture(), 3);
-	transitionShader.setUniformTexture("tex3", src1.getTexture(), 4);
+	transitionShader.setUniformTexture("tex2", src2.getTexture(), 3);
+	transitionShader.setUniformTexture("tex3", src3.getTexture(), 4);
 	shaderViewer.draw();
 	transitionShader.end();
 	camera.end();
