@@ -45,6 +45,9 @@ int main(int argc, char* argv[]) {
 		} else {
 			ofLog() << "Error, only numbers";
 		}
+	} else if (argc == 1) {
+		ofRunApp(window, app);
+		ofRunMainLoop();
 	}
 }
 

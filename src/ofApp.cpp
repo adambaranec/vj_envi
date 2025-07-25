@@ -4,24 +4,26 @@
 void ofApp::setup() {
 	// code to be used for visualising sound
 	// coming from Focusrite
-	/*ofSoundStreamSettings settings;
+	ofSoundStreamSettings settings;
 	settings.numOutputChannels = 0;
 	settings.numInputChannels = 6;
 	settings.bufferSize = 256;
 	//Focusrite USB Asio
 	settings.setInDevice(soundStream.getDeviceList()[4]);
 	settings.setInListener(this);
-	soundStream.setup(settings);*/
+	soundStream.setup(settings);
     //---------------------------------------------
 	// global OF settings
 	ofSetFrameRate(30);
 	ofHideCursor();
+	/*
 	//---------------------------------------------
 	// allocating four FBOs to render loops to
 	src0.allocate(1920, 1080, GL_RGBA);
 	src1.allocate(1920, 1080, GL_RGBA);
 	src2.allocate(1920, 1080, GL_RGBA);
 	src3.allocate(1920, 1080, GL_RGBA);
+	*/
 	//---------------------------------------------
 	// camera to set for the plane primitive to show
 	// the result of rendering of the FBOs
@@ -30,6 +32,7 @@ void ofApp::setup() {
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
+	/*
 	//---------------------------------------------
 	// to view the visuals correctly, the plane primitive 
 	// as the container must have the needed position, width and height
@@ -57,15 +60,19 @@ void ofApp::setup() {
 		player.setVolume(0.0f);
 		loopPlayers.push_back(player);
 	}
+	*/
 	ofEnableDepthTest();
+	ofSetCircleResolution(100);
+	ofSetRectMode(OF_RECTMODE_CENTER);
 	// preparing to start
-	sourceIndex = 0;
-	src0Player = loopPlayers[index];
-	src0Player.play();
+	//sourceIndex = 0;
+	//src0Player = loopPlayers[index];
+	//src0Player.play();
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	/*
 	if (src0Player.isLoaded()) {
 		src0Player.update();
 	}
@@ -78,9 +85,104 @@ void ofApp::update() {
 	if (src3Player.isLoaded()) {
 		src3Player.update();
 	}
+	*/
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
+	ofClear(0, 0, 0, 255);
+	camera.begin();
+	if (index == 0 || index == 1 || index == 2 || index == 3 || index == 4 || index == 5 || index == 6) {
+		if (index == 0 || index == 2 || index == 4) {
+			ofSetColor(255, 0, 0);
+		}
+		else if (index == 1 || index == 3 || index == 5) {
+			ofSetColor(255);
+		}
+		if (index != 6) {
+			ofDrawCircle(0, 0, 0, 0.15f + amplitude);
+		}
+		if (index == 0 || index == 1 || index == 4 || index == 5){
+			ofSetColor(0);
+			ofDrawCircle(0, 0, 0.01, 0.1f + amplitude);
+		}
+		if (index == 4 || index == 5 || index == 6) {
+			for (int i = 0; i < 8; i++) {
+				ofPushMatrix();
+				if (index == 6) {
+					ofTranslate(sin((TWO_PI / 8 * i) - ofGetElapsedTimef()) * 0.32f, cos((TWO_PI / 8 * i) - ofGetElapsedTimef()) * 0.32f);
+				} else if (index == 4 || index == 5) {
+					ofTranslate(sin(TWO_PI / 8 * i) * 0.32f, cos(TWO_PI / 8 * i) * 0.32f);
+				}
+				ofRotate(ofGetElapsedTimef()*-100);
+				if (index == 6) {
+					ofSetColor(255, 255, 0);
+				} else if (index == 4 || index == 5) {
+					ofSetColor(255, 0, 255);
+				}
+				ofDrawRectangle(0, 0, 0.1f, 0.1f);
+				ofSetColor(0);
+				if (index == 4) {
+					ofTranslate(0, 0, 0.001f);
+					ofDrawRectangle(0, 0, 0.06f, 0.06f);
+				}
+				ofPopMatrix();
+			}
+		}
+	}
+	else if (index == 7 || index == 8) {
+		ofSetColor(255, 0, 255);
+		ofDrawRectangle(0, 0, 0.3f+amplitude, 0.3f+amplitude);
+		if (index == 8) {
+			ofSetColor(255, 0, 255);
+			ofDrawRectangle(0.48f, 0.25f, 0.15f + amplitude, 0.15f + amplitude);
+			ofSetColor(0);
+			ofDrawRectangle(0.48f, 0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+
+			ofSetColor(255, 0, 255);
+			ofDrawRectangle(0.48f, -0.25f, 0.15f + amplitude, 0.15f + amplitude);
+			ofSetColor(0);
+			ofDrawRectangle(0.48f, -0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+
+			ofSetColor(255, 0, 255);
+			ofDrawRectangle(-0.48f, -0.25f, 0.15f + amplitude, 0.15f + amplitude);
+			ofSetColor(0);
+			ofDrawRectangle(-0.48f, -0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+
+			ofSetColor(255, 0, 255);
+			ofDrawRectangle(-0.48f, 0.25f, 0.15f + amplitude, 0.15f + amplitude);
+			ofSetColor(0);
+			ofDrawRectangle(-0.48f, 0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+		}
+		ofSetColor(0);
+		ofDrawRectangle(0, 0, 0.001, 0.2f + amplitude, 0.2f + amplitude);
+	}
+	else if (index == 9) {
+		ofSetColor(ofColor::fromHsb(255*0.62, 255*0.8,255));
+		for (int i = 0; i < 14; i++) {
+			ofPushMatrix();
+			ofTranslate(sin((TWO_PI / 14 * i)+ofGetElapsedTimef())*0.6, 0.0f, cos((TWO_PI / 14 * i)+ofGetElapsedTimef())*0.35);
+			ofRotateY(ofGetElapsedTimef()*30);
+			ofDrawCircle(0,0,0.06f+amplitude*0.1);
+			ofPopMatrix();
+		}
+	}
+	else if (index == 10) {
+		ofSetColor(ofColor::fromHsb(255 * 0.62, 255 * 0.92, 255));
+		ofPushMatrix();
+		ofTranslate(sin(ofGetElapsedTimef()*1.2)*0.6, 0, 0);
+		ofDrawCircle(0, 0, 0.1f + amplitude * 0.6);
+		ofPopMatrix();
+		ofPushMatrix();
+		ofTranslate(sin(-ofGetElapsedTimef() * 1.2) * 0.6, 0, 0);
+		ofDrawCircle(0, 0, 0.1f + amplitude * 0.6);
+		ofPopMatrix();
+	}
+	else if (index == 11) {
+		ofBackground(255*amplitude*2);
+	}
+	camera.end();
+	/*
+	DRAWING FBOS WITH THE VIDEO PLAYERS AND SHADERS
 	//---------------------------------------------
 	//first drawing to the FBOs
 	if (src0Player.isFrameNew()) {
@@ -112,17 +214,55 @@ void ofApp::draw(){
 	transitionShader.begin();
 	transitionShader.setUniform1f("time", ofGetElapsedTimef());
 	transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-	transitionShader.setUniformTexture("tex0", src0.getTexture(), 1);
-	transitionShader.setUniformTexture("tex1", src1.getTexture(), 2);
-	transitionShader.setUniformTexture("tex2", src2.getTexture(), 3);
-	transitionShader.setUniformTexture("tex3", src3.getTexture(), 4);
+	//transitionShader.setUniformTexture("tex0", src0.getTexture(), 1);
+	//transitionShader.setUniformTexture("tex1", src1.getTexture(), 2);
+	//transitionShader.setUniformTexture("tex2", src2.getTexture(), 3);
+	//transitionShader.setUniformTexture("tex3", src3.getTexture(), 4);
 	shaderViewer.draw();
 	transitionShader.end();
 	camera.end();
+	*/
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	switch (key) {
+	case 'q': index = 0; break;
+	case 'w': index = 1; break;
+	case 'e': index = 2; break;
+	case 'r': index = 3; break;
+	case 't': index = 4; break;
+	case 'y': index = 5; break;
+	case 'u': index = 6; break;
+	case 'i': index = 7; break;
+	case 'o': index = 8; break;
+	case 'p': index = 9; break;
+	case '[': index = 10; break;
+	case ']': index = 11; break;
+	case 'a': index = 12; break;
+	case 's': index = 13; break;
+	case 'd': index = 14; break;
+	case 'f': index = 15; break;
+	case 'g': index = 16; break;
+	case 'h': index = 17; break;
+	case 'j': index = 18; break;
+	case 'k': index = 19; break;
+	case 'l': index = 20; break;
+	case ';': index = 21; break;
+	case '\'': index = 22; break;
+	case 'z': index = 23; break;
+	case 'x': index = 24; break;
+	case 'c': index = 25; break;
+	case 'v': index = 26; break;
+	case 'b': index = 27; break;
+	case 'n': index = 28; break;
+	case 'm': index = 29; break;
+	case ',': index = 30; break;
+	case '.': index = 31; break;
+	case '/': index = 32; break;
+	}
+	/*
+	CHANGING SOURCES AND PLAYERS
 	previousIndex = index;
 	switch (key) {
 	case '1': sourceIndex = 0; break;
@@ -221,6 +361,7 @@ void ofApp::keyPressed(int key){
 		case 3: src3Player.stop(); break;
 		}
 	}
+	*/
 }
 
 //--------------------------------------------------------------
@@ -260,9 +401,11 @@ void ofApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
+	/*
 	shaderViewer.setHeight(1);
 	shaderViewer.setWidth((float)w / (float)h);
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
+	*/
 }
 
 //--------------------------------------------------------------
@@ -280,5 +423,5 @@ void ofApp::audioIn(ofSoundBuffer& buffer)
 {
 	// used when capturing audio is enabled and then
 	// sent as a uniform to a shader
-	//amplitude = buffer.getRMSAmplitudeChannel(5);
+	amplitude = buffer.getRMSAmplitudeChannel(5);
 }
