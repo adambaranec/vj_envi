@@ -47,6 +47,7 @@ void ofApp::setup() {
 	//---------------------------------------------
 	// transitionShader - the main shader to show the results
 	transitionShader.load("vertex.vert", "transition.frag");
+	*/
 	//---------------------------------------------
 	// loading external sources
 	// stored in bin/data/loops
@@ -60,10 +61,8 @@ void ofApp::setup() {
 		player.setVolume(0.0f);
 		loopPlayers.push_back(player);
 	}
-	*/
 	ofEnableDepthTest();
 	ofSetCircleResolution(100);
-	ofSetRectMode(OF_RECTMODE_CENTER);
 	// preparing to start
 	//sourceIndex = 0;
 	//src0Player = loopPlayers[index];
@@ -72,6 +71,9 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	if (modeIndex == 1) {
+		currentVideoPlayer.update();
+	}
 	/*
 	if (src0Player.isLoaded()) {
 		src0Player.update();
@@ -90,97 +92,107 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw(){
 	ofClear(0, 0, 0, 255);
-	camera.begin();
-	if (index == 0 || index == 1 || index == 2 || index == 3 || index == 4 || index == 5 || index == 6) {
-		if (index == 0 || index == 2 || index == 4) {
-			ofSetColor(255, 0, 0);
-		}
-		else if (index == 1 || index == 3 || index == 5) {
-			ofSetColor(255);
-		}
-		if (index != 6) {
-			ofDrawCircle(0, 0, 0, 0.15f + amplitude);
-		}
-		if (index == 0 || index == 1 || index == 4 || index == 5){
-			ofSetColor(0);
-			ofDrawCircle(0, 0, 0.01, 0.1f + amplitude);
-		}
-		if (index == 4 || index == 5 || index == 6) {
-			for (int i = 0; i < 8; i++) {
-				ofPushMatrix();
-				if (index == 6) {
-					ofTranslate(sin((TWO_PI / 8 * i) - ofGetElapsedTimef()) * 0.32f, cos((TWO_PI / 8 * i) - ofGetElapsedTimef()) * 0.32f);
-				} else if (index == 4 || index == 5) {
-					ofTranslate(sin(TWO_PI / 8 * i) * 0.32f, cos(TWO_PI / 8 * i) * 0.32f);
-				}
-				ofRotate(ofGetElapsedTimef()*-100);
-				if (index == 6) {
-					ofSetColor(255, 255, 0);
-				} else if (index == 4 || index == 5) {
-					ofSetColor(255, 0, 255);
-				}
-				ofDrawRectangle(0, 0, 0.1f, 0.1f);
+	if (modeIndex == 0) {
+		ofSetRectMode(OF_RECTMODE_CENTER);
+		camera.begin();
+		if (index == 0 || index == 1 || index == 2 || index == 3 || index == 4 || index == 5 || index == 6) {
+			if (index == 0 || index == 2 || index == 4) {
+				ofSetColor(255, 0, 0);
+			}
+			else if (index == 1 || index == 3 || index == 5) {
+				ofSetColor(255);
+			}
+			if (index != 6) {
+				ofDrawCircle(0, 0, 0, 0.15f + amplitude);
+			}
+			if (index == 0 || index == 1 || index == 4 || index == 5) {
 				ofSetColor(0);
-				if (index == 4) {
-					ofTranslate(0, 0, 0.001f);
-					ofDrawRectangle(0, 0, 0.06f, 0.06f);
+				ofDrawCircle(0, 0, 0.01, 0.1f + amplitude);
+			}
+			if (index == 4 || index == 5 || index == 6) {
+				for (int i = 0; i < 8; i++) {
+					ofPushMatrix();
+					if (index == 6) {
+						ofTranslate(sin((TWO_PI / 8 * i) - ofGetElapsedTimef()) * 0.32f, cos((TWO_PI / 8 * i) - ofGetElapsedTimef()) * 0.32f);
+					}
+					else if (index == 4 || index == 5) {
+						ofTranslate(sin(TWO_PI / 8 * i) * 0.32f, cos(TWO_PI / 8 * i) * 0.32f);
+					}
+					ofRotate(ofGetElapsedTimef() * -100);
+					if (index == 6) {
+						ofSetColor(255, 255, 0);
+					}
+					else if (index == 4 || index == 5) {
+						ofSetColor(255, 0, 255);
+					}
+					ofDrawRectangle(0, 0, 0.1f, 0.1f);
+					ofSetColor(0);
+					if (index == 4) {
+						ofTranslate(0, 0, 0.001f);
+						ofDrawRectangle(0, 0, 0.06f, 0.06f);
+					}
+					ofPopMatrix();
 				}
+			}
+		}
+		else if (index == 7 || index == 8) {
+			ofSetColor(255, 0, 255);
+			ofDrawRectangle(0, 0, 0.3f + amplitude, 0.3f + amplitude);
+			if (index == 8) {
+				ofSetColor(255, 0, 255);
+				ofDrawRectangle(0.48f, 0.25f, 0.15f + amplitude, 0.15f + amplitude);
+				ofSetColor(0);
+				ofDrawRectangle(0.48f, 0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+
+				ofSetColor(255, 0, 255);
+				ofDrawRectangle(0.48f, -0.25f, 0.15f + amplitude, 0.15f + amplitude);
+				ofSetColor(0);
+				ofDrawRectangle(0.48f, -0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+
+				ofSetColor(255, 0, 255);
+				ofDrawRectangle(-0.48f, -0.25f, 0.15f + amplitude, 0.15f + amplitude);
+				ofSetColor(0);
+				ofDrawRectangle(-0.48f, -0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+
+				ofSetColor(255, 0, 255);
+				ofDrawRectangle(-0.48f, 0.25f, 0.15f + amplitude, 0.15f + amplitude);
+				ofSetColor(0);
+				ofDrawRectangle(-0.48f, 0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
+			}
+			ofSetColor(0);
+			ofDrawRectangle(0, 0, 0.001, 0.2f + amplitude, 0.2f + amplitude);
+		}
+		else if (index == 9) {
+			ofSetColor(ofColor::fromHsb(255 * 0.62, 255 * 0.8, 255));
+			for (int i = 0; i < 14; i++) {
+				ofPushMatrix();
+				ofTranslate(sin((TWO_PI / 14 * i) + ofGetElapsedTimef()) * 0.6, 0.0f, cos((TWO_PI / 14 * i) + ofGetElapsedTimef()) * 0.35);
+				ofRotateY(ofGetElapsedTimef() * 30);
+				ofDrawCircle(0, 0, 0.06f + amplitude * 0.1);
 				ofPopMatrix();
 			}
 		}
-	}
-	else if (index == 7 || index == 8) {
-		ofSetColor(255, 0, 255);
-		ofDrawRectangle(0, 0, 0.3f+amplitude, 0.3f+amplitude);
-		if (index == 8) {
-			ofSetColor(255, 0, 255);
-			ofDrawRectangle(0.48f, 0.25f, 0.15f + amplitude, 0.15f + amplitude);
-			ofSetColor(0);
-			ofDrawRectangle(0.48f, 0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
-
-			ofSetColor(255, 0, 255);
-			ofDrawRectangle(0.48f, -0.25f, 0.15f + amplitude, 0.15f + amplitude);
-			ofSetColor(0);
-			ofDrawRectangle(0.48f, -0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
-
-			ofSetColor(255, 0, 255);
-			ofDrawRectangle(-0.48f, -0.25f, 0.15f + amplitude, 0.15f + amplitude);
-			ofSetColor(0);
-			ofDrawRectangle(-0.48f, -0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
-
-			ofSetColor(255, 0, 255);
-			ofDrawRectangle(-0.48f, 0.25f, 0.15f + amplitude, 0.15f + amplitude);
-			ofSetColor(0);
-			ofDrawRectangle(-0.48f, 0.25f, 0.001f, 0.08f + amplitude, 0.08f + amplitude);
-		}
-		ofSetColor(0);
-		ofDrawRectangle(0, 0, 0.001, 0.2f + amplitude, 0.2f + amplitude);
-	}
-	else if (index == 9) {
-		ofSetColor(ofColor::fromHsb(255*0.62, 255*0.8,255));
-		for (int i = 0; i < 14; i++) {
+		else if (index == 10) {
+			ofSetColor(ofColor::fromHsb(255 * 0.62, 255 * 0.92, 255));
 			ofPushMatrix();
-			ofTranslate(sin((TWO_PI / 14 * i)+ofGetElapsedTimef())*0.6, 0.0f, cos((TWO_PI / 14 * i)+ofGetElapsedTimef())*0.35);
-			ofRotateY(ofGetElapsedTimef()*30);
-			ofDrawCircle(0,0,0.06f+amplitude*0.1);
+			ofTranslate(sin(ofGetElapsedTimef() * 1.2) * 0.6, 0, 0);
+			ofDrawCircle(0, 0, 0.1f + amplitude * 0.6);
+			ofPopMatrix();
+			ofPushMatrix();
+			ofTranslate(sin(-ofGetElapsedTimef() * 1.2) * 0.6, 0, 0);
+			ofDrawCircle(0, 0, 0.1f + amplitude * 0.6);
 			ofPopMatrix();
 		}
+		else if (index == 11) {
+			ofBackground(255 * amplitude * 5);
+		}
+		camera.end();
 	}
-	else if (index == 10) {
-		ofSetColor(ofColor::fromHsb(255 * 0.62, 255 * 0.92, 255));
-		ofPushMatrix();
-		ofTranslate(sin(ofGetElapsedTimef()*1.2)*0.6, 0, 0);
-		ofDrawCircle(0, 0, 0.1f + amplitude * 0.6);
-		ofPopMatrix();
-		ofPushMatrix();
-		ofTranslate(sin(-ofGetElapsedTimef() * 1.2) * 0.6, 0, 0);
-		ofDrawCircle(0, 0, 0.1f + amplitude * 0.6);
-		ofPopMatrix();
+	else if (modeIndex == 1) {
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		ofSetColor(255);
+		currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 	}
-	else if (index == 11) {
-		ofBackground(255*amplitude*2);
-	}
-	camera.end();
 	/*
 	DRAWING FBOS WITH THE VIDEO PLAYERS AND SHADERS
 	//---------------------------------------------
@@ -226,6 +238,12 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	previousIndex = index;
+	previousModeIndex = modeIndex;
+	switch (key) {
+	case '1': modeIndex = 0; break;
+	case '2': modeIndex = 1; break;
+	}
 	switch (key) {
 	case 'q': index = 0; break;
 	case 'w': index = 1; break;
@@ -260,6 +278,19 @@ void ofApp::keyPressed(int key){
 	case ',': index = 30; break;
 	case '.': index = 31; break;
 	case '/': index = 32; break;
+	}
+	if (modeIndex == 1) {
+		if (index < loopPlayers.size() && previousIndex < loopPlayers.size()) {
+			loopPlayers[previousIndex].stop();
+			loopPlayers[index].play();
+			currentVideoPlayer = loopPlayers[index];
+		}
+	}
+	else if (modeIndex == 0) {
+		for (int i = 0; i < loopPlayers.size(); i++) {
+			loopPlayers[i].stop();
+		}
+		currentVideoPlayer.stop();
 	}
 	/*
 	CHANGING SOURCES AND PLAYERS
