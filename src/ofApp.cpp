@@ -44,10 +44,10 @@ void ofApp::setup() {
 	// for some reason, with its default scale the visuals are
 	// not shown as whole
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
+	*/
 	//---------------------------------------------
 	// transitionShader - the main shader to show the results
 	transitionShader.load("vertex.vert", "transition.frag");
-	*/
 	//---------------------------------------------
 	// loading external sources
 	// stored in bin/data/loops
@@ -168,7 +168,7 @@ void ofApp::draw(){
 				ofPushMatrix();
 				ofTranslate(sin((TWO_PI / 14 * i) + ofGetElapsedTimef()) * 0.6, 0.0f, cos((TWO_PI / 14 * i) + ofGetElapsedTimef()) * 0.35);
 				ofRotateY(ofGetElapsedTimef() * 30);
-				ofDrawCircle(0, 0, 0.06f + amplitude * 0.1);
+				ofDrawCircle(0, 0, 0.06f + amplitude * 0.4);
 				ofPopMatrix();
 			}
 		}
@@ -186,12 +186,208 @@ void ofApp::draw(){
 		else if (index == 11) {
 			ofBackground(255 * amplitude * 5);
 		}
+		else if (index == 12) {
+			ofSetColor(255, 0, 0);
+			ofDrawCircle(0, 0, 0, 0.15f + amplitude);
+			ofSetColor(0);
+			ofDrawCircle(0, 0, 0.01, 0.1f + amplitude);
+			ofSetColor(255);
+			ofDrawCircle(0.48f, 0.25f, 0.1f + amplitude);
+			ofDrawCircle(0.48f, -0.25f, 0.1f + amplitude);
+			ofDrawCircle(-0.48f, -0.25f, 0.1f + amplitude);
+			ofDrawCircle(-0.48f, 0.25f, 0.1f + amplitude);
+			ofSetColor(0);
+			ofDrawCircle(0.48f, 0.25f, 0.001f, 0.07f + amplitude);
+			ofDrawCircle(0.48f, -0.25f, 0.001f, 0.07f + amplitude);
+			ofDrawCircle(-0.48f, -0.25f, 0.001f, 0.07f + amplitude);
+			ofDrawCircle(-0.48f, 0.25f, 0.001f, 0.07f + amplitude);
+		}
+		else if (index == 13) {
+			ofSetColor(255);
+			ofDrawRectangle(sin(ofGetElapsedTimef())*0.6, 0, 0.2f + amplitude, 0.2f + amplitude);
+			ofSetColor(0);
+			ofDrawRectangle(sin(ofGetElapsedTimef()) * 0.6, 0, 0.001f, 0.1f + amplitude, 0.1f + amplitude);
+			ofSetColor(255);
+			ofDrawRectangle(0, sin(ofGetElapsedTimef()) * 0.26, 0.2f + amplitude, 0.2f + amplitude);
+			ofSetColor(0);
+			ofDrawRectangle(0, sin(ofGetElapsedTimef()) * 0.26, 0.001f, 0.1f + amplitude, 0.1f + amplitude);
+		}
+		else if (index == 14 || index == 15) {
+			if (index == 14) {
+				ofSetColor(ofColor::purple);
+			}
+			ofPushMatrix();
+			ofTranslate(0, 0.2, 0);
+			if (index == 15) {
+				ofSetColor(255);
+			}
+			ofDrawTriangle(0, 0.035f + amplitude, -0.035f - amplitude, -0.035f - amplitude, 0.035f + amplitude, -0.035f - amplitude);
+			ofPopMatrix();
+			ofPushMatrix();
+			ofTranslate(0.4, 0.2, 0);
+			if (index == 15) {
+				ofSetColor(255, 255, 0);
+			}
+			ofDrawTriangle(0, 0.035f + amplitude, -0.035f - amplitude, -0.035f - amplitude, 0.035f + amplitude, -0.035f - amplitude);
+			ofPopMatrix();
+			ofPushMatrix();
+			ofTranslate(-0.4, 0.2, 0);
+			if (index == 15) {
+				ofSetColor(255,255,0);
+			}
+			ofDrawTriangle(0, 0.035f + amplitude, -0.035f - amplitude, -0.035f - amplitude, 0.035f + amplitude, -0.035f - amplitude);
+			ofPopMatrix();
+			ofPushMatrix();
+			ofTranslate(-0.4, -0.2, 0);
+			if (index == 15) {
+				ofSetColor(255);
+			}
+			ofDrawTriangle(0, 0.035f + amplitude, -0.035f - amplitude, -0.035f - amplitude, 0.035f + amplitude, -0.035f - amplitude);
+			ofPopMatrix();
+			ofPushMatrix();
+			ofTranslate(0, -0.2, 0);
+			if (index == 15) {
+				ofSetColor(255, 255, 0);
+			}
+			ofDrawTriangle(0, 0.035f + amplitude, -0.035f - amplitude, -0.035f - amplitude, 0.035f + amplitude, -0.035f - amplitude);
+			ofPopMatrix();
+			ofPushMatrix();
+			ofTranslate(0.4, -0.2, 0);
+			if (index == 15) {
+				ofSetColor(255);
+			}
+			ofDrawTriangle(0, 0.035f + amplitude, -0.035f - amplitude, -0.035f - amplitude, 0.035f + amplitude, -0.035f - amplitude);
+			ofPopMatrix();
+		}
+		else if (index == 16 || index == 17 || index == 18) {
+			ofPushMatrix();
+			if (index == 16 || index == 17) {
+				ofSetColor(255);
+			} else if (index == 18) {
+				ofSetColor(ofColor::fromHsb(255*0.54,255,255));
+			}
+			ofRotate(ofGetElapsedTimef() * -40);
+			ofDrawRectangle(0, 0, 1.7f, 0.005f + amplitude);
+			ofPopMatrix();
+
+			if (index == 17 || index == 18) {
+				ofPushMatrix();
+				if (index == 17) {
+					ofSetColor(255);
+				}
+				if (index == 18) {
+					ofSetColor(0, 255, 0);
+				}
+				ofTranslate(0.2, 0.2, 0);
+				ofRotate(ofGetElapsedTimef() * -40);
+				ofDrawRectangle(0, 0, 1.7f, 0.005f + amplitude);
+				ofPopMatrix();
+
+				ofPushMatrix();
+				if (index == 17) {
+					ofSetColor(255);
+				}
+				if (index == 18) {
+					ofSetColor(255, 0, 0);
+				}
+				ofTranslate(-0.2, -0.2, 0);
+				ofRotate(ofGetElapsedTimef() * -40);
+				ofDrawRectangle(0, 0, 1.7f, 0.005f + amplitude);
+				ofPopMatrix();
+			}
+		}
+		else if (index == 19 || index == 20) {
+			ofPushMatrix();
+			ofTranslate(0, 0.2, 0);
+			ofSetColor(0, 0, 255);
+			ofDrawRectangle(0, 0, 1.7f, 0.005f + amplitude);
+			ofPopMatrix();
+			ofPushMatrix();
+			ofTranslate(0, -0.2, 0);
+			ofSetColor(255, 255, 0);
+			ofDrawRectangle(0, 0, 1.7f, 0.005f + amplitude);
+			ofPopMatrix();
+			if (index == 20) {
+				ofSetColor(ofColor::orange);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPushMatrix();
+				ofTranslate(0.3,0,0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+				ofPushMatrix();
+				ofTranslate(-0.3, 0, 0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+				ofPushMatrix();
+				ofTranslate(0, 0.3, 0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+				ofPushMatrix();
+				ofTranslate(0.3, 0.3, 0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+				ofPushMatrix();
+				ofTranslate(-0.3, 0.3, 0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+				ofPushMatrix();
+				ofTranslate(0, -0.3, 0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+				ofPushMatrix();
+				ofTranslate(0.3, -0.3, 0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+				ofPushMatrix();
+				ofTranslate(-0.3, -0.3, 0);
+				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
+				ofPopMatrix();
+			}
+		}
+		else if (index == 21 || index == 22) {
+			if (index == 21) {
+			    ofSetColor(ofColor::darkBlue);
+			}
+			else if (index == 22) {
+			    ofSetColor(ofColor::yellow);
+			}
+			ofDrawCircle(sin(TWO_PI + ofGetElapsedTimef() * -0.5) * 0.18, cos(TWO_PI + ofGetElapsedTimef()*-0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
+			if (index == 21) {
+				ofSetColor(ofColor::brown);
+			}
+			else if (index == 22) {
+				ofSetColor(ofColor::green);
+			}
+			ofDrawCircle(sin(PI/2 + ofGetElapsedTimef() * -0.5) * 0.18, cos(PI/2 + ofGetElapsedTimef() * -0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
+			if (index == 21) {
+				ofSetColor(ofColor::purple);
+			}
+			else if (index == 22) {
+				ofSetColor(ofColor::red);
+			}
+			ofDrawCircle(sin(PI + ofGetElapsedTimef() * -0.5) * 0.18, cos(PI + ofGetElapsedTimef() * -0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
+			if (index == 21) {
+				ofSetColor(ofColor::darkCyan);
+			}
+			else if (index == 22) {
+				ofSetColor(ofColor::magenta);
+			}
+			ofDrawCircle(sin(PI + PI/2 + ofGetElapsedTimef() * -0.5) * 0.18, cos(PI + PI / 2 + ofGetElapsedTimef() * -0.5)*0.18, 0, 0.06f + amplitude * 0.5);
+		}
 		camera.end();
 	}
 	else if (modeIndex == 1) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		ofSetColor(255);
 		currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+	}
+	else if (modeIndex == 2) {
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		transitionShader.begin();
+		transitionShader.setUniform1f("time", ofGetElapsedTimef());
+		transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		transitionShader.end();
 	}
 	/*
 	DRAWING FBOS WITH THE VIDEO PLAYERS AND SHADERS
@@ -243,6 +439,7 @@ void ofApp::keyPressed(int key){
 	switch (key) {
 	case '1': modeIndex = 0; break;
 	case '2': modeIndex = 1; break;
+	case '3': modeIndex = 2; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
