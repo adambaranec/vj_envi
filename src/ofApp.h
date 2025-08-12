@@ -28,6 +28,7 @@ public:
 	ofPlanePrimitive shaderViewer;
 	std::vector<ofVideoPlayer> loopPlayers;
 	std::vector<ofTexture> loopTextures;
+	std::vector<ofShader> shaders;
 	ofVideoPlayer src0Player, src1Player, src2Player, src3Player, currentVideoPlayer;
 	int timestamp, previousIndex, previousModeIndex;
 	ofFbo src0, src1, src2, src3;

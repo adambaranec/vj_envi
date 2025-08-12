@@ -61,6 +61,16 @@ void ofApp::setup() {
 		player.setVolume(0.0f);
 		loopPlayers.push_back(player);
 	}
+	
+	ofDirectory shadersDir("shaders");	
+	shadersDir.allowExt("frag");
+	shadersDir.listDir();
+	for (int i = 0; i < shadersDir.size(); i++) {
+		ofShader shader;
+		shader.load("vertex.vert", shadersDir.getPath(i));
+		shaders.push_back(shader);
+	}
+
 	ofEnableDepthTest();
 	ofSetCircleResolution(100);
 	// preparing to start
@@ -382,12 +392,14 @@ void ofApp::draw(){
 		currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 	}
 	else if (modeIndex == 2) {
-		ofSetRectMode(OF_RECTMODE_CORNER);
-		transitionShader.begin();
-		transitionShader.setUniform1f("time", ofGetElapsedTimef());
-		transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-		transitionShader.end();
+		if (index < shaders.size()) {
+			ofSetRectMode(OF_RECTMODE_CORNER);
+			shaders[index].begin();
+			shaders[index].setUniform1f("time", ofGetElapsedTimef());
+			shaders[index].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			shaders[index].end();
+		}
 	}
 	/*
 	DRAWING FBOS WITH THE VIDEO PLAYERS AND SHADERS
