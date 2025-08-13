@@ -28,11 +28,8 @@ public:
 	std::vector<ofVideoPlayer> loopPlayers;
 	ofVideoPlayer currentVideoPlayer;
 	ofShader currentShader;
+	ofFbo bitmapFbo;
+	ofBitmapFont bitmapFont;
 	int timestamp, previousIndex, previousModeIndex, index, modeIndex, loopsSize, shadersSize;
 	float amplitude = 0.0f;
-	//additional textures and 3D shapes used for shaders
-	ofBoxPrimitive cube;
-	ofSpherePrimitive sphere;
-	ofTrueTypeFont font;
-	//ofMesh torus;
 };
