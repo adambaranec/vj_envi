@@ -24,20 +24,15 @@ public:
 
 	ofSoundStream soundStream;
 	ofCamera camera;
-	ofShader transitionShader;
 	ofPlanePrimitive shaderViewer;
 	std::vector<ofVideoPlayer> loopPlayers;
-	std::vector<ofTexture> loopTextures;
-	std::vector<ofShader> shaders;
-	ofVideoPlayer src0Player, src1Player, src2Player, src3Player, currentVideoPlayer;
-	int timestamp, previousIndex, previousModeIndex;
-	ofFbo src0, src1, src2, src3;
-	float progress = 1.0f;
+	ofVideoPlayer currentVideoPlayer;
+	ofShader currentShader;
+	int timestamp, previousIndex, previousModeIndex, index, modeIndex, loopsSize, shadersSize;
 	float amplitude = 0.0f;
-	int index = 0;
-	int modeIndex = 0;
 	//additional textures and 3D shapes used for shaders
 	ofBoxPrimitive cube;
 	ofSpherePrimitive sphere;
+	ofTrueTypeFont font;
 	//ofMesh torus;
 };

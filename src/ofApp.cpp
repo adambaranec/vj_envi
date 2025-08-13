@@ -46,37 +46,12 @@ void ofApp::setup() {
 	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
 	*/
 	//---------------------------------------------
-	// transitionShader - the main shader to show the results
-	transitionShader.load("vertex.vert", "transition.frag");
 	//---------------------------------------------
-	// loading external sources
-	// stored in bin/data/loops
-	ofDirectory loopsDir("loops");
-	loopsDir.allowExt("mp4");
-	loopsDir.listDir();
-	for (int i = 0; i < loopsDir.size(); i++) {
-		ofVideoPlayer player;
-		player.load(loopsDir.getPath(i));
-		player.setLoopState(OF_LOOP_NORMAL);
-		player.setVolume(0.0f);
-		loopPlayers.push_back(player);
-	}
-	
-	ofDirectory shadersDir("shaders");	
-	shadersDir.allowExt("frag");
-	shadersDir.listDir();
-	for (int i = 0; i < shadersDir.size(); i++) {
-		ofShader shader;
-		shader.load("vertex.vert", shadersDir.getPath(i));
-		shaders.push_back(shader);
-	}
-
 	ofEnableDepthTest();
 	ofSetCircleResolution(100);
-	// preparing to start
-	//sourceIndex = 0;
-	//src0Player = loopPlayers[index];
-	//src0Player.play();
+	currentVideoPlayer.setLoopState(OF_LOOP_NORMAL);
+	currentVideoPlayer.setVolume(0.0f);
+	font.load("lucida-typewriter.ttf", 35, true, true, true);
 }
 
 //--------------------------------------------------------------
@@ -84,20 +59,6 @@ void ofApp::update() {
 	if (modeIndex == 1) {
 		currentVideoPlayer.update();
 	}
-	/*
-	if (src0Player.isLoaded()) {
-		src0Player.update();
-	}
-	if (src1Player.isLoaded()) {
-		src1Player.update();
-	}
-	if (src2Player.isLoaded()) {
-		src2Player.update();
-	}
-	if (src3Player.isLoaded()) {
-		src3Player.update();
-	}
-	*/
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -389,59 +350,29 @@ void ofApp::draw(){
 	else if (modeIndex == 1) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		ofSetColor(255);
-		currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
-	}
-	else if (modeIndex == 2) {
-		if (index < shaders.size()) {
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			shaders[index].begin();
-			shaders[index].setUniform1f("time", ofGetElapsedTimef());
-			shaders[index].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			shaders[index].end();
+		if (index < loopsSize) {
+			currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 		}
 	}
-	/*
-	DRAWING FBOS WITH THE VIDEO PLAYERS AND SHADERS
-	//---------------------------------------------
-	//first drawing to the FBOs
-	if (src0Player.isFrameNew()) {
-		src0.begin();
-		ofClear(0, 0, 0, 255);
-		src0Player.draw(0, 0);
-		src0.end();
+	else if (modeIndex == 2) {
+			ofSetRectMode(OF_RECTMODE_CORNER);
+			if (index < shadersSize) {
+				currentShader.begin();
+				currentShader.setUniform1f("time", ofGetElapsedTimef());
+				currentShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+				ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				currentShader.end();
+			}
 	}
-	if (src1Player.isFrameNew()) {
-		src1.begin();
-		ofClear(0, 0, 0, 255);
-		src1Player.draw(0, 0);
-		src1.end();
+	else if (modeIndex == 3) {
+		ofSetColor(255);
+		string text = "Hello!";
+		float textWidth = font.stringWidth(text);
+		float textHeight = font.stringHeight(text);
+		float x = (ofGetWidth() - textWidth) / 2;
+		float y = (ofGetHeight() + textHeight) / 2;
+		font.drawString(text, x, y);
 	}
-	if (src2Player.isFrameNew()) {
-		src2.begin();
-		ofClear(0, 0, 0, 255);
-		src2Player.draw(0, 0);
-		src2.end();
-	}
-	if (src3Player.isFrameNew()) {
-		src3.begin();
-		ofClear(0, 0, 0, 255);
-		src3Player.draw(0, 0);
-		src3.end();
-	}
-	//the final rendering to the FBOs
-	camera.begin();
-	transitionShader.begin();
-	transitionShader.setUniform1f("time", ofGetElapsedTimef());
-	transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-	//transitionShader.setUniformTexture("tex0", src0.getTexture(), 1);
-	//transitionShader.setUniformTexture("tex1", src1.getTexture(), 2);
-	//transitionShader.setUniformTexture("tex2", src2.getTexture(), 3);
-	//transitionShader.setUniformTexture("tex3", src3.getTexture(), 4);
-	shaderViewer.draw();
-	transitionShader.end();
-	camera.end();
-	*/
 }
 
 //--------------------------------------------------------------
@@ -452,6 +383,7 @@ void ofApp::keyPressed(int key){
 	case '1': modeIndex = 0; break;
 	case '2': modeIndex = 1; break;
 	case '3': modeIndex = 2; break;
+	case '4': modeIndex = 3; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
@@ -489,119 +421,38 @@ void ofApp::keyPressed(int key){
 	case '/': index = 32; break;
 	}
 	if (modeIndex == 1) {
-		if (index < loopPlayers.size() && previousIndex < loopPlayers.size()) {
-			loopPlayers[previousIndex].stop();
-			loopPlayers[index].play();
-			currentVideoPlayer = loopPlayers[index];
+		ofDirectory loopsDir("loops");
+		loopsDir.allowExt("mp4");
+		loopsDir.listDir();
+		loopsSize = loopsDir.size();
+		if (index < loopsSize) {
+			if (previousModeIndex != modeIndex) {
+				currentVideoPlayer.load(loopsDir.getPath(index));
+				currentVideoPlayer.play();
+			}
+			else if (previousModeIndex == modeIndex) {
+				if (previousIndex == index) {
+					currentVideoPlayer.stop();
+					currentVideoPlayer.play();
+				}
+				else if (previousIndex != index) {
+					currentVideoPlayer.load(loopsDir.getPath(index));
+					currentVideoPlayer.play();
+				}
+			}
 		}
 	}
 	else if (modeIndex == 0) {
-		for (int i = 0; i < loopPlayers.size(); i++) {
-			loopPlayers[i].stop();
-		}
 		currentVideoPlayer.stop();
-	}
-	/*
-	CHANGING SOURCES AND PLAYERS
-	previousIndex = index;
-	switch (key) {
-	case '1': sourceIndex = 0; break;
-	case '2': sourceIndex = 1; break;
-	case '3': sourceIndex = 2; break;
-	case '4': sourceIndex = 3; break;
-	}
-	switch (key) {
-	case 'q': index = 0; break;
-	case 'w': index = 1; break;
-	case 'e': index = 2; break;
-	case 'r': index = 3; break;
-	case 't': index = 4; break;
-	case 'y': index = 5; break;
-	case 'u': index = 6; break;
-	case 'i': index = 7; break;
-	case 'o': index = 8; break;
-	case 'p': index = 9; break;
-	case '[': index = 10; break;
-	case ']': index = 11; break;
-	case 'a': index = 12; break;
-	case 's': index = 13; break;
-	case 'd': index = 14; break;
-	case 'f': index = 15; break;
-	case 'g': index = 16; break;
-	case 'h': index = 17; break;
-	case 'j': index = 18; break;
-	case 'k': index = 19; break;
-	case 'l': index = 20; break;
-	case ';': index = 21; break;
-	case '\'': index = 22; break;
-	case 'z': index = 23; break;
-	case 'x': index = 24; break;
-	case 'c': index = 25; break;
-	case 'v': index = 26; break;
-	case 'b': index = 27; break;
-	case 'n': index = 28; break;
-	case 'm': index = 29; break;
-	case ',': index = 30; break;
-	case '.': index = 31; break;
-	case '/': index = 32; break;
-	}
-	if (key != '1' && key != '2' && key != '3' && key != '4' && key != '5' && key != '6' && key != '7' && key != '8' && key != '9' && key != '0') {
-		bool equalIndex = previousIndex == index;
-		if (!equalIndex) {
-			if (index < loopPlayers.size()) {
-				if (sourceIndex == 0) {
-					src0Player.stop();
-					src0Player = loopPlayers[index];
-					src0Player.play();
-				}
-				else if (sourceIndex == 1) {
-					src1Player.stop();
-					src1Player = loopPlayers[index];
-					src1Player.play();
-				}
-				else if (sourceIndex == 2) {
-					src2Player.stop();
-					src2Player = loopPlayers[index];
-					src2Player.play();
-				}
-				else if (sourceIndex == 3) {
-					src3Player.stop();
-					src3Player = loopPlayers[index];
-					src3Player.play();
-				}
-			}
-		}
-		else {
-			if (sourceIndex == 0) {
-				src0Player.stop();
-				src0Player.play();
-			}
-			else if (sourceIndex == 1) {
-				src1Player.stop();
-				src1Player.play();
-			}
-			else if (sourceIndex == 2) {
-				src2Player.stop();
-				src2Player.play();
-			}
-			else if (sourceIndex == 3) {
-				src3Player.stop();
-				src3Player.play();
-			}
+	} else if (modeIndex == 2) {
+		ofDirectory shadersDir("shaders");
+		shadersDir.allowExt("frag");
+		shadersDir.listDir();
+		shadersSize = shadersDir.size();
+		if (index < shadersSize) {
+			currentShader.load("vertex.vert", shadersDir.getPath(index));
 		}
 	}
-	if (key == 13) {
-		transitionShader.load("vertex.vert", "transition.frag");
-	}
-	if (key == '0') {
-		switch (sourceIndex) {
-		case 0: src0Player.stop(); break;
-		case 1: src1Player.stop(); break;
-		case 2: src2Player.stop(); break;
-		case 3: src3Player.stop(); break;
-		}
-	}
-	*/
 }
 
 //--------------------------------------------------------------
