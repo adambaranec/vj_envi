@@ -24,7 +24,6 @@ void ofApp::setup() {
 	src2.allocate(1920, 1080, GL_RGBA);
 	src3.allocate(1920, 1080, GL_RGBA);
 	*/
-	bitmapFbo.allocate(200,200, GL_RGBA);
 	//---------------------------------------------
 	// camera to set for the plane primitive to show
 	// the result of rendering of the FBOs
@@ -52,6 +51,17 @@ void ofApp::setup() {
 	ofSetCircleResolution(100);
 	currentVideoPlayer.setLoopState(OF_LOOP_NORMAL);
 	currentVideoPlayer.setVolume(0.0f);
+	//---------------------------------------------
+	//---------------------------------------------
+	bitmapFbo.allocate(200,200, GL_RGBA);
+	bitmapFbo.begin();
+	ofClear(100, 0, 0, 255);
+	ofSetDrawBitmapMode(OF_BITMAPMODE_SIMPLE);
+	ofSetColor(ofColor::cyan);
+	string text = "";
+	ofRectangle boundingBox = bitmapFont.getBoundingBox(text, 0, 0);
+	ofDrawBitmapString(text, (bitmapFbo.getWidth() / 2) - (boundingBox.getWidth() / 2), (bitmapFbo.getHeight() / 2) - (boundingBox.getHeight() / 4));
+	bitmapFbo.end();
 }
 
 //--------------------------------------------------------------
@@ -366,14 +376,6 @@ void ofApp::draw(){
 	}
 	else if (modeIndex == 3) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
-		bitmapFbo.begin();
-		ofClear(0,0, 0, 255);
-		ofSetDrawBitmapMode(OF_BITMAPMODE_SIMPLE);
-		ofSetColor(255,0,255);
-		string text = "";
-		ofRectangle boundingBox = bitmapFont.getBoundingBox(text, 0, 0);
-		ofDrawBitmapString(text, bitmapFbo.getWidth()/2-boundingBox.getWidth()/2, bitmapFbo.getHeight() / 2 - boundingBox.getHeight() / 2);
-		bitmapFbo.end();
 		ofSetColor(255);
 		bitmapFbo.draw(0, 0, ofGetWidth(), ofGetHeight());
 	}
