@@ -1,77 +1,7 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-	// code to be used for visualising sound
-	// coming from Focusrite
-	ofSoundStreamSettings settings;
-	settings.numOutputChannels = 0;
-	settings.numInputChannels = 6;
-	settings.bufferSize = 256;
-	//Focusrite USB Asio
-	settings.setInDevice(soundStream.getDeviceList()[4]);
-	settings.setInListener(this);
-	soundStream.setup(settings);
-    //---------------------------------------------
-	// global OF settings
-	ofSetFrameRate(30);
-	ofHideCursor();
-	/*
-	//---------------------------------------------
-	// allocating four FBOs to render loops to
-	src0.allocate(1920, 1080, GL_RGBA);
-	src1.allocate(1920, 1080, GL_RGBA);
-	src2.allocate(1920, 1080, GL_RGBA);
-	src3.allocate(1920, 1080, GL_RGBA);
-	*/
-	//---------------------------------------------
-	// camera to set for the plane primitive to show
-	// the result of rendering of the FBOs
-	// the following settings of the camera fit to 1920x1080 resolution
-	camera.setGlobalPosition(0, 0, 1);
-	camera.setFov(45);
-	camera.setNearClip(0.1);
-	camera.setFarClip(1000);
-	/*
-	//---------------------------------------------
-	// to view the visuals correctly, the plane primitive 
-	// as the container must have the needed position, width and height
-	shaderViewer.setUseVbo(true);
-	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
-	shaderViewer.setHeight(1);
-	shaderViewer.setWidth(1920.0f/1080.0f);
-	//shaderViewer.mapTexCoords(0, 0, 1920, 1080);
-	// for some reason, with its default scale the visuals are
-	// not shown as whole
-	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
-	*/
-	//---------------------------------------------
-	//---------------------------------------------
-	ofEnableDepthTest();
-	ofSetCircleResolution(100);
-	currentVideoPlayer.setLoopState(OF_LOOP_NORMAL);
-	currentVideoPlayer.setVolume(0.0f);
-	//---------------------------------------------
-	//---------------------------------------------
-	bitmapFbo.allocate(200,200, GL_RGBA);
-	bitmapFbo.begin();
-	ofClear(100, 0, 0, 255);
-	ofSetDrawBitmapMode(OF_BITMAPMODE_SIMPLE);
-	ofSetColor(ofColor::cyan);
-	string text = "";
-	ofRectangle boundingBox = bitmapFont.getBoundingBox(text, 0, 0);
-	ofDrawBitmapString(text, (bitmapFbo.getWidth() / 2) - (boundingBox.getWidth() / 2), (bitmapFbo.getHeight() / 2) - (boundingBox.getHeight() / 4));
-	bitmapFbo.end();
-}
-
-//--------------------------------------------------------------
-void ofApp::update() {
-	if (modeIndex == 1) {
-		currentVideoPlayer.update();
-	}
-}
-//--------------------------------------------------------------
-void ofApp::draw(){
+void ofApp::mainDraw(int modeIndex, int index, Status status) {
 	ofClear(0, 0, 0, 255);
 	if (modeIndex == 0) {
 		ofSetRectMode(OF_RECTMODE_CENTER);
@@ -185,7 +115,7 @@ void ofApp::draw(){
 		}
 		else if (index == 13) {
 			ofSetColor(255);
-			ofDrawRectangle(sin(ofGetElapsedTimef())*0.6, 0, 0.2f + amplitude, 0.2f + amplitude);
+			ofDrawRectangle(sin(ofGetElapsedTimef()) * 0.6, 0, 0.2f + amplitude, 0.2f + amplitude);
 			ofSetColor(0);
 			ofDrawRectangle(sin(ofGetElapsedTimef()) * 0.6, 0, 0.001f, 0.1f + amplitude, 0.1f + amplitude);
 			ofSetColor(255);
@@ -214,7 +144,7 @@ void ofApp::draw(){
 			ofPushMatrix();
 			ofTranslate(-0.4, 0.2, 0);
 			if (index == 15) {
-				ofSetColor(255,255,0);
+				ofSetColor(255, 255, 0);
 			}
 			ofDrawTriangle(0, 0.035f + amplitude, -0.035f - amplitude, -0.035f - amplitude, 0.035f + amplitude, -0.035f - amplitude);
 			ofPopMatrix();
@@ -244,8 +174,9 @@ void ofApp::draw(){
 			ofPushMatrix();
 			if (index == 16 || index == 17) {
 				ofSetColor(255);
-			} else if (index == 18) {
-				ofSetColor(ofColor::fromHsb(255*0.54,255,255));
+			}
+			else if (index == 18) {
+				ofSetColor(ofColor::fromHsb(255 * 0.54, 255, 255));
 			}
 			ofRotate(ofGetElapsedTimef() * -40);
 			ofDrawRectangle(0, 0, 1.7f, 0.005f + amplitude);
@@ -292,7 +223,7 @@ void ofApp::draw(){
 				ofSetColor(ofColor::orange);
 				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
 				ofPushMatrix();
-				ofTranslate(0.3,0,0);
+				ofTranslate(0.3, 0, 0);
 				ofDrawTriangle(0, 0.01f + amplitude, -0.01f - amplitude, -0.01f - amplitude, 0.01f + amplitude, -0.01f - amplitude);
 				ofPopMatrix();
 				ofPushMatrix();
@@ -327,19 +258,19 @@ void ofApp::draw(){
 		}
 		else if (index == 21 || index == 22) {
 			if (index == 21) {
-			    ofSetColor(ofColor::darkBlue);
+				ofSetColor(ofColor::darkBlue);
 			}
 			else if (index == 22) {
-			    ofSetColor(ofColor::yellow);
+				ofSetColor(ofColor::yellow);
 			}
-			ofDrawCircle(sin(TWO_PI + ofGetElapsedTimef() * -0.5) * 0.18, cos(TWO_PI + ofGetElapsedTimef()*-0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
+			ofDrawCircle(sin(TWO_PI + ofGetElapsedTimef() * -0.5) * 0.18, cos(TWO_PI + ofGetElapsedTimef() * -0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
 			if (index == 21) {
 				ofSetColor(ofColor::brown);
 			}
 			else if (index == 22) {
 				ofSetColor(ofColor::green);
 			}
-			ofDrawCircle(sin(PI/2 + ofGetElapsedTimef() * -0.5) * 0.18, cos(PI/2 + ofGetElapsedTimef() * -0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
+			ofDrawCircle(sin(PI / 2 + ofGetElapsedTimef() * -0.5) * 0.18, cos(PI / 2 + ofGetElapsedTimef() * -0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
 			if (index == 21) {
 				ofSetColor(ofColor::purple);
 			}
@@ -353,31 +284,184 @@ void ofApp::draw(){
 			else if (index == 22) {
 				ofSetColor(ofColor::magenta);
 			}
-			ofDrawCircle(sin(PI + PI/2 + ofGetElapsedTimef() * -0.5) * 0.18, cos(PI + PI / 2 + ofGetElapsedTimef() * -0.5)*0.18, 0, 0.06f + amplitude * 0.5);
+			ofDrawCircle(sin(PI + PI / 2 + ofGetElapsedTimef() * -0.5) * 0.18, cos(PI + PI / 2 + ofGetElapsedTimef() * -0.5) * 0.18, 0, 0.06f + amplitude * 0.5);
 		}
 		camera.end();
 	}
 	else if (modeIndex == 1) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
-		ofSetColor(255);
 		if (index < loopsSize) {
-			currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+			if (currentVideoPlayer.isLoaded()) {
+				ofSetColor(255);
+				currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+			}
+			else {
+				ofSetColor(0);
+				ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			}
 		}
 	}
 	else if (modeIndex == 2) {
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			if (index < shadersSize) {
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		if (index < shadersSize) {
+			if (currentShader.isLoaded() == false) {
+				ofSetColor(0);
+				ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			}
+			else {
 				currentShader.begin();
 				currentShader.setUniform1f("time", ofGetElapsedTimef());
 				currentShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 				ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 				currentShader.end();
 			}
+		}
 	}
-	else if (modeIndex == 3) {
-		ofSetRectMode(OF_RECTMODE_CORNER);
-		ofSetColor(255);
-		bitmapFbo.draw(0, 0, ofGetWidth(), ofGetHeight());
+}
+
+//--------------------------------------------------------------
+void ofApp::setup() {
+	// code to be used for visualising sound
+	// coming from Focusrite
+	ofSoundStreamSettings settings;
+	settings.numOutputChannels = 0;
+	settings.numInputChannels = 6;
+	settings.bufferSize = 256;
+	//Focusrite USB Asio
+	settings.setInDevice(soundStream.getDeviceList()[4]);
+	settings.setInListener(this);
+	soundStream.setup(settings);
+    //---------------------------------------------
+	// global OF settings
+	ofSetFrameRate(30);
+	ofHideCursor();
+	//---------------------------------------------
+	/*
+	src0.allocate(1920, 1080, GL_RGBA);
+	src1.allocate(1920, 1080, GL_RGBA);
+	src2.allocate(1920, 1080, GL_RGBA);
+	src3.allocate(1920, 1080, GL_RGBA);
+	*/
+	mainBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	prevBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	nextBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	scene1.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	scene2.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	//---------------------------------------------
+	ofDirectory loopsDir("loops");
+	loopsDir.allowExt("mp4");
+	loopsDir.listDir();
+	loopsSize = loopsDir.size();
+
+	ofDirectory shadersDir("shaders/elements");
+	shadersDir.allowExt("frag");
+	shadersDir.listDir();
+	shadersSize = shadersDir.size();
+	//---------------------------------------------
+	// camera to set for the plane primitive to show
+	// the result of rendering of the FBOs
+	// the following settings of the camera fit to 1920x1080 resolution
+	camera.setGlobalPosition(0, 0, 1);
+	camera.setFov(45);
+	camera.setNearClip(0.1);
+	camera.setFarClip(1000);
+	/*
+	//---------------------------------------------
+	// to view the visuals correctly, the plane primitive 
+	// as the container must have the needed position, width and height
+	shaderViewer.setUseVbo(true);
+	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
+	shaderViewer.setHeight(1);
+	shaderViewer.setWidth(1920.0f/1080.0f);
+	//shaderViewer.mapTexCoords(0, 0, 1920, 1080);
+	// for some reason, with its default scale the visuals are
+	// not shown as whole
+	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
+	*/
+	//---------------------------------------------
+	//---------------------------------------------
+	ofEnableDepthTest();
+	ofSetCircleResolution(100);
+	currentVideoPlayer.setLoopState(OF_LOOP_NORMAL);
+	currentVideoPlayer.setVolume(0.0f);
+	prevVideoPlayer.setLoopState(OF_LOOP_NORMAL);
+	prevVideoPlayer.setVolume(0.0f);
+	nextVideoPlayer.setLoopState(OF_LOOP_NORMAL);
+	nextVideoPlayer.setVolume(0.0f);
+	//---------------------------------------------
+	vjSettings = TRANSITION;
+	feedbackShader.load("vertex.vert","shaders/feedback/feedback.frag");
+	//crossFadeShader.load("vertex.vert", "shaders/crossfade/crossfade.frag");
+	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
+	//---------------------------------------------
+}
+
+//--------------------------------------------------------------
+void ofApp::update() {
+	if (modeIndex == 1) {
+		currentVideoPlayer.update();
+	}
+}
+//--------------------------------------------------------------
+void ofApp::draw(){
+	if (vjSettings == SIMPLE) {
+		mainDraw(modeIndex, index, CURRENT);
+	} else if (vjSettings == FEEDBACK) {
+		nextBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		mainDraw(modeIndex, index, CURRENT);
+		nextBuffer.end();
+
+		mainBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		feedbackShader.begin();
+		feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
+		feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		feedbackShader.end();
+		mainBuffer.end();
+
+		mainBuffer.draw(0, 0);
+
+		prevBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		mainBuffer.draw(0, 0);
+		prevBuffer.end();
+
+	}
+	else if (vjSettings == CROSSFADE) {
+		scene1.begin();
+		ofClear(0, 0, 0, 255);
+		mainDraw(previousModeIndex, previousIndex, PREVIOUS);
+		scene1.end();
+		scene2.begin();
+		ofClear(0, 0, 0, 255);
+		mainDraw(modeIndex, index, NEXT);
+		scene2.end();
+	}
+	else if (vjSettings == TRANSITION) {
+		float progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
+		if (progress > 1.0f) progress = 1.0f;
+		if (progress < 1.0f) {
+			prevBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			mainDraw(previousModeIndex, previousIndex, PREVIOUS);
+			prevBuffer.end();
+			nextBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			mainDraw(modeIndex, index, NEXT);
+			nextBuffer.end();
+			transitionShader.begin();
+			transitionShader.setUniform1i("mode", transitionMode);
+			transitionShader.setUniform1f("progress", progress);
+			transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+			transitionShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 0);
+			transitionShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 1);
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			transitionShader.end();
+		} else if (progress >= 1.0f) {
+			mainDraw(modeIndex, index, CURRENT);
+		}
 	}
 }
 
@@ -386,10 +470,9 @@ void ofApp::keyPressed(int key){
 	previousIndex = index;
 	previousModeIndex = modeIndex;
 	switch (key) {
-	case '1': modeIndex = 0; break;
-	case '2': modeIndex = 1; break;
-	case '3': modeIndex = 2; break;
-	case '4': modeIndex = 3; break;
+	case '1': modeIndexToSet = 0; break;
+	case '2': modeIndexToSet = 1; break;
+	case '3': modeIndexToSet = 2; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
@@ -426,38 +509,56 @@ void ofApp::keyPressed(int key){
 	case '.': index = 31; break;
 	case '/': index = 32; break;
 	}
-	if (modeIndex == 1) {
-		ofDirectory loopsDir("loops");
-		loopsDir.allowExt("mp4");
-		loopsDir.listDir();
-		loopsSize = loopsDir.size();
-		if (index < loopsSize) {
-			if (previousModeIndex != modeIndex) {
-				currentVideoPlayer.load(loopsDir.getPath(index));
-				currentVideoPlayer.play();
+	if (key != '1' && key != '2' && key != '3') {
+		modeIndex = modeIndexToSet;
+		if (modeIndex == 1) {
+			ofDirectory loopsDir("loops");
+			loopsDir.allowExt("mp4");
+			loopsDir.listDir();
+			if (vjSettings == SIMPLE || vjSettings == FEEDBACK) {
+				if (index < loopsSize) {
+					if (previousModeIndex != modeIndex) {
+						currentVideoPlayer.load(loopsDir.getPath(index));
+						currentVideoPlayer.play();
+					}
+					else if (previousModeIndex == modeIndex) {
+						if (previousIndex == index) {
+							currentVideoPlayer.stop();
+							currentVideoPlayer.play();
+						}
+						else if (previousIndex != index) {
+							currentVideoPlayer.load(loopsDir.getPath(index));
+							currentVideoPlayer.play();
+						}
+					}
+				}
+			} else if (vjSettings == TRANSITION || vjSettings == CROSSFADE) {
+				currentVideoPlayer.stop();
+				if (previousModeIndex == 1) {
+					prevVideoPlayer.load(loopsDir.getPath(previousIndex));
+					prevVideoPlayer.play();
+				}
+				if (index < loopsSize) {
+					nextVideoPlayer.load(loopsDir.getPath(index));
+					nextVideoPlayer.play();
+				}
 			}
-			else if (previousModeIndex == modeIndex) {
-				if (previousIndex == index) {
-					currentVideoPlayer.stop();
-					currentVideoPlayer.play();
-				}
-				else if (previousIndex != index) {
-					currentVideoPlayer.load(loopsDir.getPath(index));
-					currentVideoPlayer.play();
-				}
+		}
+		else if (modeIndex == 0) {
+			currentVideoPlayer.stop();
+		}
+		else if (modeIndex == 2) {
+			ofDirectory shadersDir("shaders/elements");
+			shadersDir.allowExt("frag");
+			shadersDir.listDir();
+			if (index < shadersSize) {
+				currentShader.load("vertex.vert", shadersDir.getPath(index));
 			}
 		}
 	}
-	else if (modeIndex == 0) {
-		currentVideoPlayer.stop();
-	} else if (modeIndex == 2) {
-		ofDirectory shadersDir("shaders");
-		shadersDir.allowExt("frag");
-		shadersDir.listDir();
-		shadersSize = shadersDir.size();
-		if (index < shadersSize) {
-			currentShader.load("vertex.vert", shadersDir.getPath(index));
-		}
+	if (vjSettings == TRANSITION) {
+	   timestamp = ofGetFrameNum();
+	   transitionMode = (int)ofRandom(0, 5);
 	}
 }
 

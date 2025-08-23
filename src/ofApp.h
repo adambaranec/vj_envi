@@ -5,6 +5,8 @@
 class ofApp : public ofBaseApp {
 
 public:
+	enum Status { CURRENT, PREVIOUS, NEXT } status;
+	void mainDraw(int modeIndex, int index, Status status);
 	void setup();
 	void update();
 	void draw();
@@ -24,12 +26,17 @@ public:
 
 	ofSoundStream soundStream;
 	ofCamera camera;
-	ofPlanePrimitive shaderViewer;
-	std::vector<ofVideoPlayer> loopPlayers;
-	ofVideoPlayer currentVideoPlayer;
-	ofShader currentShader;
-	ofFbo bitmapFbo;
-	ofBitmapFont bitmapFont;
-	int timestamp, previousIndex, previousModeIndex, index, modeIndex, loopsSize, shadersSize;
-	float amplitude = 0.0f;
+	ofVideoPlayer currentVideoPlayer, prevVideoPlayer, nextVideoPlayer;
+	ofShader currentShader, prevShader, nextShader, feedbackShader, crossFadeShader, transitionShader;
+	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2;
+	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, loopsSize, shadersSize;
+	float amplitude;
+	enum Settings {SIMPLE, FEEDBACK, TRANSITION, CROSSFADE} vjSettings;
+	struct CrossFadeInfo {
+		int elementIndex1;
+		int elementIndex2;
+		int modeIndex1;
+		int modeIndex2;
+	} crossFadeInfo;
+	bool isEditingCrossFade = false;
 };
