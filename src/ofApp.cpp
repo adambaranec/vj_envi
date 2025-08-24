@@ -397,13 +397,14 @@ void ofApp::setup() {
 	nextBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	scene1.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	scene2.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	//postBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	//---------------------------------------------
-	ofDirectory loopsDir("loops");
+	loopsDir.open("loops");
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
 	loopsSize = loopsDir.size();
 
-	ofDirectory shadersDir("shaders/elements");
+	shadersDir.open("shaders/elements");
 	shadersDir.allowExt("frag");
 	shadersDir.listDir();
 	shadersSize = shadersDir.size();
@@ -439,46 +440,75 @@ void ofApp::setup() {
 	nextVideoPlayer.setLoopState(OF_LOOP_NORMAL);
 	nextVideoPlayer.setVolume(0.0f);
 	//---------------------------------------------
-	vjSettings = SIMPLE;
 	feedbackShader.load("vertex.vert","shaders/feedback/feedback.frag");
-	crossFadeShader.load("vertex.vert", "shaders/crossfade/crossfade.frag");
+	//crossFadeShader.load("vertex.vert", "shaders/crossfade/crossfade.frag");
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	//---------------------------------------------
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	if (previousModeIndex == 1) {
+		if (transition) {
+			if (progress < 1.0f) {
+				prevVideoPlayer.update();
+			}
+			else if (progress >= 1.0f) {
+				if (prevVideoPlayer.isPlaying()) {
+					prevVideoPlayer.stop();
+				}
+			}
+		}
+	}
 	if (modeIndex == 1) {
-		currentVideoPlayer.update();
+		if (transition) {
+			if (progress < 1.0f) {
+				nextVideoPlayer.update();
+				currentVideoPlayer.update();
+			}
+			else if (progress >= 1.0f) {
+				if (nextVideoPlayer.isPlaying()) {
+					nextVideoPlayer.stop();
+				}
+				currentVideoPlayer.update();
+			}
+		}
+		else {
+			currentVideoPlayer.update();
+		}
+	}
+	if (previousModeIndex == 2) {
+		if (transition) {
+			if (progress < 1.0f) {
+			}
+			else if (progress >= 1.0f) {
+				if (prevShader.isLoaded()) {
+					prevShader.unload();
+				}
+			}
+		}
+	}
+	if (modeIndex == 2) {
+		if (transition) {
+			if (progress < 1.0f) {
+			}
+			else if (progress >= 1.0f) {
+				if (nextShader.isLoaded()) {
+					nextShader.unload();
+				}
+			}
+		}
 	}
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
-	//TRANSITION AND FEEDBACK
-	/*
-	float progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
-	if (progress >= 1.0f) progress = 1.0f;
-	if (progress < 1.0f) {
-		scene1.begin();
-		ofClear(0, 0, 0, 255);
-		mainDraw(previousModeIndex, previousIndex, PREVIOUS);
-		scene1.end();
-		scene2.begin();
-		ofClear(0, 0, 0, 255);
-		mainDraw(modeIndex, index, NEXT);
-		scene2.end();
-		
+	if (!feedback && !transition) {
+		mainDraw(modeIndex, index, CURRENT);
+	}
+	else if (feedback && !transition) {
 		nextBuffer.begin();
 		ofClear(0, 0, 0, 255);
-		transitionShader.begin();
-		transitionShader.setUniform1i("mode", transitionMode);
-		transitionShader.setUniform1f("progress", progress);
-		transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-		transitionShader.setUniformTexture("prevBuffer", scene1.getTexture(), 0);
-		transitionShader.setUniformTexture("nextBuffer", scene2.getTexture(), 1);
-		ofSetRectMode(OF_RECTMODE_CORNER);
-		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-		transitionShader.end();
+		mainDraw(modeIndex, index, CURRENT);
 		nextBuffer.end();
 
 		mainBuffer.begin();
@@ -490,33 +520,6 @@ void ofApp::draw(){
 		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		feedbackShader.end();
 		mainBuffer.end();
-		ofSetRectMode(OF_RECTMODE_CORNER);
-		mainBuffer.draw(0, 0);
-
-		prevBuffer.begin();
-		ofClear(0, 0, 0, 255);
-		mainBuffer.draw(0, 0);
-		prevBuffer.end();
-	}
-	else if (progress >= 1.0f) {
-		mainDraw(modeIndex, index, CURRENT);
-	}*/
-	/*if (vjSettings == SIMPLE) {
-	mainDraw(modeIndex, index, CURRENT);
-	} else if (vjSettings == FEEDBACK) {
-		nextBuffer.begin();
-		ofClear(0, 0, 0, 255);
-		mainDraw(modeIndex, index, CURRENT);
-		nextBuffer.end();
-
-		mainBuffer.begin();
-		ofClear(0, 0, 0, 255);
-		feedbackShader.begin();
-		feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
-		feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
-		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-		feedbackShader.end();
-		mainBuffer.end();
 
 		mainBuffer.draw(0, 0);
 
@@ -524,42 +527,102 @@ void ofApp::draw(){
 		ofClear(0, 0, 0, 255);
 		mainBuffer.draw(0, 0);
 		prevBuffer.end();
-
 	}
-	else if (vjSettings == CROSSFADE) {
-		scene1.begin();
-		ofClear(0, 0, 0, 255);
-		mainDraw(previousModeIndex, previousIndex, PREVIOUS);
-		scene1.end();
-		scene2.begin();
-		ofClear(0, 0, 0, 255);
-		mainDraw(modeIndex, index, NEXT);
-		scene2.end();
-	}
-	else if (vjSettings == TRANSITION) {
-		float progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
-		if (progress > 1.0f) progress = 1.0f;
+	else if (!feedback && transition) {
+		progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
+		if (progress > 1.0f) { progress = 1.0f; }
 		if (progress < 1.0f) {
 			prevBuffer.begin();
 			ofClear(0, 0, 0, 255);
 			mainDraw(previousModeIndex, previousIndex, PREVIOUS);
 			prevBuffer.end();
+
 			nextBuffer.begin();
 			ofClear(0, 0, 0, 255);
 			mainDraw(modeIndex, index, NEXT);
 			nextBuffer.end();
+
 			transitionShader.begin();
 			transitionShader.setUniform1i("mode", transitionMode);
 			transitionShader.setUniform1f("progress", progress);
 			transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 			transitionShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 0);
 			transitionShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 1);
+			ofSetRectMode(OF_RECTMODE_CORNER);
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			transitionShader.end();
-		} else if (progress >= 1.0f) {
+		}
+		else if (progress >= 1.0f) {
 			mainDraw(modeIndex, index, CURRENT);
 		}
-	}*/
+	}
+	else if (feedback && transition) {
+		progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
+		if (progress > 1.0f) { progress = 1.0f; }
+		if (progress < 1.0f) {
+			scene1.begin();
+			ofClear(0, 0, 0, 255);
+			mainDraw(previousModeIndex, previousIndex, PREVIOUS);
+			scene1.end();
+			scene2.begin();
+			ofClear(0, 0, 0, 255);
+			mainDraw(modeIndex, index, NEXT);
+			scene2.end();
+
+			nextBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			transitionShader.begin();
+			transitionShader.setUniform1i("mode", transitionMode);
+			transitionShader.setUniform1f("progress", progress);
+			transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+			transitionShader.setUniformTexture("prevBuffer", scene1.getTexture(), 0);
+			transitionShader.setUniformTexture("nextBuffer", scene2.getTexture(), 1);
+			ofSetRectMode(OF_RECTMODE_CORNER);
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			transitionShader.end();
+			nextBuffer.end();
+
+			mainBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			feedbackShader.begin();
+			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
+			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
+			ofSetRectMode(OF_RECTMODE_CORNER);
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			feedbackShader.end();
+			mainBuffer.end();
+
+			mainBuffer.draw(0, 0);
+
+			prevBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			mainBuffer.draw(0, 0);
+			prevBuffer.end();
+		}
+		else if (progress >= 1.0f) {
+			nextBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			mainDraw(modeIndex, index, CURRENT);
+			nextBuffer.end();
+
+			mainBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			feedbackShader.begin();
+			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
+			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
+			ofSetRectMode(OF_RECTMODE_CORNER);
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			feedbackShader.end();
+			mainBuffer.end();
+
+			mainBuffer.draw(0, 0);
+
+			prevBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			mainBuffer.draw(0, 0);
+			prevBuffer.end();
+		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -606,30 +669,27 @@ void ofApp::keyPressed(int key){
 	case '.': index = 31; break;
 	case '/': index = 32; break;
 	}
+
+	timestamp = ofGetFrameNum();
+	transitionMode = (int)ofRandom(0, 5);
+	
 	if (key != '1' && key != '2' && key != '3') {
 		modeIndex = modeIndexToSet;
-		if (modeIndex == 1) {
-			ofDirectory loopsDir("loops");
-			loopsDir.allowExt("mp4");
-			loopsDir.listDir();
-			if (index < loopsSize) {
-				if (previousModeIndex != modeIndex) {
-					currentVideoPlayer.load(loopsDir.getPath(index));
-					currentVideoPlayer.play();
-				}
-				else if (previousModeIndex == modeIndex) {
-					if (previousIndex == index) {
-						currentVideoPlayer.stop();
-						currentVideoPlayer.play();
-					}
-					else if (previousIndex != index) {
-						currentVideoPlayer.load(loopsDir.getPath(index));
-						currentVideoPlayer.play();
-					}
-				}
+		if (previousModeIndex == 1) {
+			if (transition) {
+				prevVideoPlayer.load(loopsDir.getPath(previousIndex));
+				prevVideoPlayer.play();
 			}
-			/*if (vjSettings == SIMPLE || vjSettings == FEEDBACK) {
-				if (index < loopsSize) {
+		} 
+		else if (previousModeIndex == 2) {
+			if (transition) {
+				prevShader.load("vertex.vert", shadersDir.getPath(previousIndex));
+			}
+		}
+
+		if (modeIndex == 1) {
+			if (index < loopsSize) {
+				if (progress >= 1.0f) {
 					if (previousModeIndex != modeIndex) {
 						currentVideoPlayer.load(loopsDir.getPath(index));
 						currentVideoPlayer.play();
@@ -645,33 +705,55 @@ void ofApp::keyPressed(int key){
 						}
 					}
 				}
-			} else if (vjSettings == TRANSITION || vjSettings == CROSSFADE) {
-				currentVideoPlayer.stop();
-				if (previousModeIndex == 1) {
-					prevVideoPlayer.load(loopsDir.getPath(previousIndex));
-					prevVideoPlayer.play();
-				}
-				if (index < loopsSize) {
+				if (transition) {
 					nextVideoPlayer.load(loopsDir.getPath(index));
 					nextVideoPlayer.play();
+					currentVideoPlayer.load(loopsDir.getPath(index));
+					currentVideoPlayer.play();
 				}
-			}*/
-		}
-		else if (modeIndex == 0) {
-			currentVideoPlayer.stop();
-		}
-		else if (modeIndex == 2) {
-			ofDirectory shadersDir("shaders/elements");
-			shadersDir.allowExt("frag");
-			shadersDir.listDir();
-			if (index < shadersSize) {
-				currentShader.load("vertex.vert", shadersDir.getPath(index));
 			}
 		}
-	}
-	if (vjSettings == TRANSITION) {
-	   timestamp = ofGetFrameNum();
-	   transitionMode = (int)ofRandom(0, 5);
+		else if (modeIndex == 0) {
+			if (currentVideoPlayer.isPaused() == false) {
+				currentVideoPlayer.stop();
+			}
+			else if (prevVideoPlayer.isPaused() == false) {
+				prevVideoPlayer.stop();
+			}
+			else if (nextVideoPlayer.isPaused() == false) {
+				nextVideoPlayer.stop();
+			}
+		}
+		else if (modeIndex == 2) {
+			if (currentVideoPlayer.isPaused() == false) {
+				currentVideoPlayer.stop();
+			}
+			else if (nextVideoPlayer.isPaused() == false) {
+				nextVideoPlayer.stop();
+			}
+			if (index < shadersSize) {
+				if (transition) {
+					nextShader.load("vertex.vert", shadersDir.getPath(index));
+				}				
+				currentShader.load("vertex.vert", shadersDir.getPath(index));
+				/*if (progress < 1.0f) {
+				nextShader.load("vertex.vert", shadersDir.getPath(index));
+				}
+				else if (progress >= 1.0f) {
+					if (previousModeIndex != modeIndex) {
+						currentShader.load("vertex.vert", shadersDir.getPath(index));
+					}
+					else if (previousModeIndex == modeIndex) {
+						if (previousIndex == index) {
+							// do nothing, keep the same shader
+						}
+						else if (previousIndex != index) {
+							currentShader.load("vertex.vert", shadersDir.getPath(index));
+						}
+					}
+				}*/
+			}
+		}
 	}
 }
 

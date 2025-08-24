@@ -28,10 +28,12 @@ public:
 	ofCamera camera;
 	ofVideoPlayer currentVideoPlayer, prevVideoPlayer, nextVideoPlayer;
 	ofShader currentShader, prevShader, nextShader, feedbackShader, crossFadeShader, transitionShader;
-	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2;
+	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2, postBuffer;
+	ofDirectory loopsDir, shadersDir;
 	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, loopsSize, shadersSize;
 	float amplitude, progress = 1.0f;
-	enum Settings {SIMPLE, FEEDBACK, TRANSITION, CROSSFADE} vjSettings;
+	bool feedback = false;
+	bool transition = false;
 	struct CrossFadeInfo {
 		int elementIndex1;
 		int elementIndex2;
