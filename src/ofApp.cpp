@@ -291,29 +291,79 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 	else if (modeIndex == 1) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		if (index < loopsSize) {
-			if (currentVideoPlayer.isLoaded()) {
-				ofSetColor(255);
-				currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+			if (status == CURRENT) {
+				if (currentVideoPlayer.isLoaded()) {
+					ofSetColor(255);
+					currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+				}
+				else {
+					ofSetColor(0);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				}
 			}
-			else {
-				ofSetColor(0);
-				ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			else if (status == PREVIOUS) {
+				if (prevVideoPlayer.isLoaded()) {
+					ofSetColor(255);
+					prevVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+				}
+				else {
+					ofSetColor(0);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				}
+			}
+			else if (status == NEXT) {
+				if (nextVideoPlayer.isLoaded()) {
+					ofSetColor(255);
+					nextVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+				}
+				else {
+					ofSetColor(0);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				}
 			}
 		}
 	}
 	else if (modeIndex == 2) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		if (index < shadersSize) {
-			if (currentShader.isLoaded() == false) {
-				ofSetColor(0);
-				ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			if (status == CURRENT) {
+				if (currentShader.isLoaded() == false) {
+					ofSetColor(0);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				}
+				else {
+					currentShader.begin();
+					currentShader.setUniform1f("time", ofGetElapsedTimef());
+					currentShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+					currentShader.end();
+				}
 			}
-			else {
-				currentShader.begin();
-				currentShader.setUniform1f("time", ofGetElapsedTimef());
-				currentShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-				ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-				currentShader.end();
+			else if (status == PREVIOUS) {
+				if (prevShader.isLoaded() == false) {
+					ofSetColor(0);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				}
+				else {
+					prevShader.begin();
+					prevShader.setUniform1f("time", ofGetElapsedTimef());
+					prevShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+					prevShader.end();
+				}
+			}
+			else if (status == NEXT) {
+				if (nextShader.isLoaded() == false) {
+					ofSetColor(0);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				}
+				else {
+					nextShader.begin();
+					nextShader.setUniform1f("time", ofGetElapsedTimef());
+					nextShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+					nextShader.end();
+				}
 			}
 		}
 	}
@@ -389,9 +439,9 @@ void ofApp::setup() {
 	nextVideoPlayer.setLoopState(OF_LOOP_NORMAL);
 	nextVideoPlayer.setVolume(0.0f);
 	//---------------------------------------------
-	vjSettings = TRANSITION;
+	vjSettings = SIMPLE;
 	feedbackShader.load("vertex.vert","shaders/feedback/feedback.frag");
-	//crossFadeShader.load("vertex.vert", "shaders/crossfade/crossfade.frag");
+	crossFadeShader.load("vertex.vert", "shaders/crossfade/crossfade.frag");
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	//---------------------------------------------
 }
@@ -404,8 +454,55 @@ void ofApp::update() {
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
-	if (vjSettings == SIMPLE) {
+	//TRANSITION AND FEEDBACK
+	/*
+	float progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
+	if (progress >= 1.0f) progress = 1.0f;
+	if (progress < 1.0f) {
+		scene1.begin();
+		ofClear(0, 0, 0, 255);
+		mainDraw(previousModeIndex, previousIndex, PREVIOUS);
+		scene1.end();
+		scene2.begin();
+		ofClear(0, 0, 0, 255);
+		mainDraw(modeIndex, index, NEXT);
+		scene2.end();
+		
+		nextBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		transitionShader.begin();
+		transitionShader.setUniform1i("mode", transitionMode);
+		transitionShader.setUniform1f("progress", progress);
+		transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+		transitionShader.setUniformTexture("prevBuffer", scene1.getTexture(), 0);
+		transitionShader.setUniformTexture("nextBuffer", scene2.getTexture(), 1);
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		transitionShader.end();
+		nextBuffer.end();
+
+		mainBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		feedbackShader.begin();
+		feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
+		feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		feedbackShader.end();
+		mainBuffer.end();
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		mainBuffer.draw(0, 0);
+
+		prevBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		mainBuffer.draw(0, 0);
+		prevBuffer.end();
+	}
+	else if (progress >= 1.0f) {
 		mainDraw(modeIndex, index, CURRENT);
+	}*/
+	/*if (vjSettings == SIMPLE) {
+	mainDraw(modeIndex, index, CURRENT);
 	} else if (vjSettings == FEEDBACK) {
 		nextBuffer.begin();
 		ofClear(0, 0, 0, 255);
@@ -462,7 +559,7 @@ void ofApp::draw(){
 		} else if (progress >= 1.0f) {
 			mainDraw(modeIndex, index, CURRENT);
 		}
-	}
+	}*/
 }
 
 //--------------------------------------------------------------
@@ -515,7 +612,23 @@ void ofApp::keyPressed(int key){
 			ofDirectory loopsDir("loops");
 			loopsDir.allowExt("mp4");
 			loopsDir.listDir();
-			if (vjSettings == SIMPLE || vjSettings == FEEDBACK) {
+			if (index < loopsSize) {
+				if (previousModeIndex != modeIndex) {
+					currentVideoPlayer.load(loopsDir.getPath(index));
+					currentVideoPlayer.play();
+				}
+				else if (previousModeIndex == modeIndex) {
+					if (previousIndex == index) {
+						currentVideoPlayer.stop();
+						currentVideoPlayer.play();
+					}
+					else if (previousIndex != index) {
+						currentVideoPlayer.load(loopsDir.getPath(index));
+						currentVideoPlayer.play();
+					}
+				}
+			}
+			/*if (vjSettings == SIMPLE || vjSettings == FEEDBACK) {
 				if (index < loopsSize) {
 					if (previousModeIndex != modeIndex) {
 						currentVideoPlayer.load(loopsDir.getPath(index));
@@ -542,7 +655,7 @@ void ofApp::keyPressed(int key){
 					nextVideoPlayer.load(loopsDir.getPath(index));
 					nextVideoPlayer.play();
 				}
-			}
+			}*/
 		}
 		else if (modeIndex == 0) {
 			currentVideoPlayer.stop();

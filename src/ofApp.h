@@ -30,7 +30,7 @@ public:
 	ofShader currentShader, prevShader, nextShader, feedbackShader, crossFadeShader, transitionShader;
 	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2;
 	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, loopsSize, shadersSize;
-	float amplitude;
+	float amplitude, progress = 1.0f;
 	enum Settings {SIMPLE, FEEDBACK, TRANSITION, CROSSFADE} vjSettings;
 	struct CrossFadeInfo {
 		int elementIndex1;
