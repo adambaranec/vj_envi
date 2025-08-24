@@ -443,7 +443,10 @@ void ofApp::setup() {
 	feedbackShader.load("vertex.vert","shaders/feedback/feedback.frag");
 	//crossFadeShader.load("vertex.vert", "shaders/crossfade/crossfade.frag");
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
+	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
 	//---------------------------------------------
+	feedback = true;
+	repeat = true;
 }
 
 //--------------------------------------------------------------
@@ -503,7 +506,27 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw(){
 	if (!feedback && !transition) {
+		mainBuffer.begin();
+		ofClear(0, 0, 0, 255);
 		mainDraw(modeIndex, index, CURRENT);
+		mainBuffer.end();
+
+		if (repeat) {
+			postBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			repetitionShader.begin();
+			repetitionShader.setUniform1i("rows", rows);
+			repetitionShader.setUniform1i("columns", columns);
+			repetitionShader.setUniformTexture("tex", mainBuffer.getTexture(), 0);
+			ofSetRectMode(OF_RECTMODE_CORNER);
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			repetitionShader.end();
+			postBuffer.end();
+			postBuffer.draw(0, 0);
+		}
+		else {
+			mainBuffer.draw(0, 0);
+		}
 	}
 	else if (feedback && !transition) {
 		nextBuffer.begin();
@@ -521,7 +544,22 @@ void ofApp::draw(){
 		feedbackShader.end();
 		mainBuffer.end();
 
-		mainBuffer.draw(0, 0);
+		if (repeat) {
+			postBuffer.begin();
+			ofClear(0, 0, 0, 255);
+			repetitionShader.begin();
+			repetitionShader.setUniform1i("rows", rows);
+			repetitionShader.setUniform1i("columns", columns);
+			repetitionShader.setUniformTexture("tex", mainBuffer.getTexture(), 0);
+			ofSetRectMode(OF_RECTMODE_CORNER);
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			repetitionShader.end();
+			postBuffer.end();
+			postBuffer.draw(0, 0);
+		}
+		else {
+			mainBuffer.draw(0, 0);
+		}
 
 		prevBuffer.begin();
 		ofClear(0, 0, 0, 255);

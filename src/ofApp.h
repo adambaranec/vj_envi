@@ -27,13 +27,16 @@ public:
 	ofSoundStream soundStream;
 	ofCamera camera;
 	ofVideoPlayer currentVideoPlayer, prevVideoPlayer, nextVideoPlayer;
-	ofShader currentShader, prevShader, nextShader, feedbackShader, crossFadeShader, transitionShader;
+	ofShader currentShader, prevShader, nextShader, feedbackShader, crossFadeShader, transitionShader, repetitionShader;
 	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2, postBuffer;
 	ofDirectory loopsDir, shadersDir;
 	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, loopsSize, shadersSize;
 	float amplitude, progress = 1.0f;
+	//attributes edited either by OSC or MIDI
+	int rows, columns;
 	bool feedback = false;
 	bool transition = false;
+	bool repeat = false;
 	struct CrossFadeInfo {
 		int elementIndex1;
 		int elementIndex2;
