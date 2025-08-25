@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxOsc.h"
 
 class ofApp : public ofBaseApp {
 
@@ -44,4 +45,5 @@ public:
 		int modeIndex2;
 	} crossFadeInfo;
 	bool isEditingCrossFade = false;
+	ofxOscReceiver receiver;
 };

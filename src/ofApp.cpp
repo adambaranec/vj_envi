@@ -371,6 +371,8 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+	receiver.setup("192.168.50.113", 8000);
+
 	// code to be used for visualising sound
 	// coming from Focusrite
 	ofSoundStreamSettings settings;
@@ -386,18 +388,12 @@ void ofApp::setup() {
 	ofSetFrameRate(30);
 	ofHideCursor();
 	//---------------------------------------------
-	/*
-	src0.allocate(1920, 1080, GL_RGBA);
-	src1.allocate(1920, 1080, GL_RGBA);
-	src2.allocate(1920, 1080, GL_RGBA);
-	src3.allocate(1920, 1080, GL_RGBA);
-	*/
 	mainBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	prevBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	nextBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	scene1.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	scene2.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-	//postBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	postBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	//---------------------------------------------
 	loopsDir.open("loops");
 	loopsDir.allowExt("mp4");
@@ -445,8 +441,6 @@ void ofApp::setup() {
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
 	//---------------------------------------------
-	feedback = true;
-	repeat = true;
 }
 
 //--------------------------------------------------------------
@@ -500,6 +494,18 @@ void ofApp::update() {
 					nextShader.unload();
 				}
 			}
+		}
+	}
+	while (receiver.hasWaitingMessages()) {
+		ofxOscMessage msg;
+		receiver.getNextMessage(msg);
+
+		// React based on message address
+		if (msg.getAddress() == "/feedback") {
+			feedback = msg.getArgAsBool(0);
+		}
+		else if (msg.getAddress() == "/transition") {
+			transition = msg.getArgAsBool(0);
 		}
 	}
 }
