@@ -293,12 +293,13 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 		if (index < loopsSize) {
 			if (status == CURRENT) {
 				if (currentVideoPlayer.isLoaded()) {
+					ofLog() << "loaded";
 					ofSetColor(255);
 					currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 				}
-				else {
-					ofSetColor(0);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				else if (!currentVideoPlayer.isPlaying()) {
+					currentVideoPlayer.load(loopsDir.getPath(index));
+					currentVideoPlayer.play();
 				}
 			}
 			else if (status == PREVIOUS) {
@@ -306,9 +307,9 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 					ofSetColor(255);
 					prevVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 				}
-				else {
-					ofSetColor(0);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				else if(!prevVideoPlayer.isPlaying()) {
+					prevVideoPlayer.load(loopsDir.getPath(index));
+					prevVideoPlayer.play();
 				}
 			}
 			else if (status == NEXT) {
@@ -316,9 +317,9 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 					ofSetColor(255);
 					nextVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 				}
-				else {
-					ofSetColor(0);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+				else if (!nextVideoPlayer.isPlaying()) {
+					nextVideoPlayer.load(loopsDir.getPath(index));
+					nextVideoPlayer.play();
 				}
 			}
 		}
@@ -328,8 +329,7 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 		if (index < shadersSize) {
 			if (status == CURRENT) {
 				if (currentShader.isLoaded() == false) {
-					ofSetColor(0);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+					currentShader.load("vertex.vert",shadersDir.getPath(index));
 				}
 				else {
 					currentShader.begin();
@@ -341,8 +341,7 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 			}
 			else if (status == PREVIOUS) {
 				if (prevShader.isLoaded() == false) {
-					ofSetColor(0);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+					prevShader.load("vertex.vert",shadersDir.getPath(index));
 				}
 				else {
 					prevShader.begin();
@@ -354,8 +353,7 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 			}
 			else if (status == NEXT) {
 				if (nextShader.isLoaded() == false) {
-					ofSetColor(0);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+					nextShader.load("vertex.vert", shadersDir.getPath(index));
 				}
 				else {
 					nextShader.begin();
@@ -445,23 +443,11 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (previousModeIndex == 1) {
+	/*if (modeIndex == 1) {
 		if (transition) {
 			if (progress < 1.0f) {
 				prevVideoPlayer.update();
-			}
-			else if (progress >= 1.0f) {
-				if (prevVideoPlayer.isPlaying()) {
-					prevVideoPlayer.stop();
-				}
-			}
-		}
-	}
-	if (modeIndex == 1) {
-		if (transition) {
-			if (progress < 1.0f) {
 				nextVideoPlayer.update();
-				currentVideoPlayer.update();
 			}
 			else if (progress >= 1.0f) {
 				if (nextVideoPlayer.isPlaying()) {
@@ -474,28 +460,17 @@ void ofApp::update() {
 			currentVideoPlayer.update();
 		}
 	}
-	if (previousModeIndex == 2) {
-		if (transition) {
-			if (progress < 1.0f) {
-			}
-			else if (progress >= 1.0f) {
-				if (prevShader.isLoaded()) {
-					prevShader.unload();
-				}
-			}
-		}
-	}
 	if (modeIndex == 2) {
 		if (transition) {
-			if (progress < 1.0f) {
-			}
-			else if (progress >= 1.0f) {
+         if (progress >= 1.0f) {
 				if (nextShader.isLoaded()) {
 					nextShader.unload();
 				}
+				if (!prevShader.isLoaded())
+					prevShader.unload();
 			}
 		}
-	}
+	}*/
 	while (receiver.hasWaitingMessages()) {
 		ofxOscMessage msg;
 		receiver.getNextMessage(msg);
@@ -528,9 +503,11 @@ void ofApp::draw(){
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			repetitionShader.end();
 			postBuffer.end();
+			ofSetRectMode(OF_RECTMODE_CORNER);
 			postBuffer.draw(0, 0);
 		}
 		else {
+			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainBuffer.draw(0, 0);
 		}
 	}
@@ -561,9 +538,11 @@ void ofApp::draw(){
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			repetitionShader.end();
 			postBuffer.end();
+			ofSetRectMode(OF_RECTMODE_CORNER);
 			postBuffer.draw(0, 0);
 		}
 		else {
+			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainBuffer.draw(0, 0);
 		}
 
@@ -717,11 +696,14 @@ void ofApp::keyPressed(int key){
 	case '/': index = 32; break;
 	}
 
-	timestamp = ofGetFrameNum();
-	transitionMode = (int)ofRandom(0, 5);
+	if (transition) {
+		timestamp = ofGetFrameNum();
+		transitionMode = (int)ofRandom(0, 5);
+	}
 	
 	if (key != '1' && key != '2' && key != '3') {
 		modeIndex = modeIndexToSet;
+		/*modeIndex = modeIndexToSet;
 		if (previousModeIndex == 1) {
 			if (transition) {
 				prevVideoPlayer.load(loopsDir.getPath(previousIndex));
@@ -798,9 +780,9 @@ void ofApp::keyPressed(int key){
 							currentShader.load("vertex.vert", shadersDir.getPath(index));
 						}
 					}
-				}*/
+				}
 			}
-		}
+		}*/
 	}
 }
 
