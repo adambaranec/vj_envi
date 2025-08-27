@@ -293,33 +293,38 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 		if (index < loopsSize) {
 			if (status == CURRENT) {
 				if (currentVideoPlayer.isLoaded()) {
-					ofLog() << "loaded";
 					ofSetColor(255);
+					ofSetRectMode(OF_RECTMODE_CORNER);
 					currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 				}
-				else if (!currentVideoPlayer.isPlaying()) {
-					currentVideoPlayer.load(loopsDir.getPath(index));
-					currentVideoPlayer.play();
+				else {
+					ofSetColor(0);
+					ofSetRectMode(OF_RECTMODE_CORNER);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 				}
 			}
 			else if (status == PREVIOUS) {
 				if (prevVideoPlayer.isLoaded()) {
 					ofSetColor(255);
+					ofSetRectMode(OF_RECTMODE_CORNER);
 					prevVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 				}
-				else if(!prevVideoPlayer.isPlaying()) {
-					prevVideoPlayer.load(loopsDir.getPath(index));
-					prevVideoPlayer.play();
+				else {
+					ofSetColor(0);
+					ofSetRectMode(OF_RECTMODE_CORNER);
+					ofDrawRectangle(0,0,ofGetWidth(),ofGetHeight());
 				}
 			}
 			else if (status == NEXT) {
 				if (nextVideoPlayer.isLoaded()) {
 					ofSetColor(255);
+					ofSetRectMode(OF_RECTMODE_CORNER);
 					nextVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 				}
-				else if (!nextVideoPlayer.isPlaying()) {
-					nextVideoPlayer.load(loopsDir.getPath(index));
-					nextVideoPlayer.play();
+				else  {
+					ofSetColor(0);
+					ofSetRectMode(OF_RECTMODE_CORNER);
+					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 				}
 			}
 		}
@@ -328,40 +333,25 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		if (index < shadersSize) {
 			if (status == CURRENT) {
-				if (currentShader.isLoaded() == false) {
-					currentShader.load("vertex.vert",shadersDir.getPath(index));
-				}
-				else {
 					currentShader.begin();
 					currentShader.setUniform1f("time", ofGetElapsedTimef());
 					currentShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 					currentShader.end();
-				}
 			}
 			else if (status == PREVIOUS) {
-				if (prevShader.isLoaded() == false) {
-					prevShader.load("vertex.vert",shadersDir.getPath(index));
-				}
-				else {
 					prevShader.begin();
 					prevShader.setUniform1f("time", ofGetElapsedTimef());
 					prevShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 					prevShader.end();
-				}
 			}
 			else if (status == NEXT) {
-				if (nextShader.isLoaded() == false) {
-					nextShader.load("vertex.vert", shadersDir.getPath(index));
-				}
-				else {
 					nextShader.begin();
 					nextShader.setUniform1f("time", ofGetElapsedTimef());
 					nextShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 					nextShader.end();
-				}
 			}
 		}
 	}
@@ -439,19 +429,29 @@ void ofApp::setup() {
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
 	//---------------------------------------------
+	transition = true;
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	/*if (modeIndex == 1) {
+	if (previousModeIndex == 1) {
+		if (transition) {
+			if (progress < 1.0f) {
+				prevVideoPlayer.update();
+		  }
+		}
+	}
+	if (modeIndex == 1) {
 		if (transition) {
 			if (progress < 1.0f) {
 				prevVideoPlayer.update();
 				nextVideoPlayer.update();
+				currentVideoPlayer.update();
 			}
-			else if (progress >= 1.0f) {
-				if (nextVideoPlayer.isPlaying()) {
-					nextVideoPlayer.stop();
+			else if (progress == 1.0f) {
+				if (!currentVideoPlayer.isPlaying()) {
+					currentVideoPlayer.load(loopsDir.getPath(index));
+					currentVideoPlayer.play();
 				}
 				currentVideoPlayer.update();
 			}
@@ -462,15 +462,15 @@ void ofApp::update() {
 	}
 	if (modeIndex == 2) {
 		if (transition) {
-         if (progress >= 1.0f) {
-				if (nextShader.isLoaded()) {
-					nextShader.unload();
+			if (progress == 1.0f) {
+				prevShader.unload();
+				nextShader.unload();
+				if (!currentShader.isLoaded()){
+					currentShader.load("vertex.vert", shadersDir.getPath(index));
 				}
-				if (!prevShader.isLoaded())
-					prevShader.unload();
 			}
 		}
-	}*/
+	}
 	while (receiver.hasWaitingMessages()) {
 		ofxOscMessage msg;
 		receiver.getNextMessage(msg);
@@ -696,93 +696,77 @@ void ofApp::keyPressed(int key){
 	case '/': index = 32; break;
 	}
 
-	if (transition) {
-		timestamp = ofGetFrameNum();
-		transitionMode = (int)ofRandom(0, 5);
-	}
 	
 	if (key != '1' && key != '2' && key != '3') {
+		if (transition) {
+			timestamp = ofGetFrameNum();
+			transitionMode = (int)ofRandom(0, 5);
+		}
 		modeIndex = modeIndexToSet;
-		/*modeIndex = modeIndexToSet;
 		if (previousModeIndex == 1) {
 			if (transition) {
 				prevVideoPlayer.load(loopsDir.getPath(previousIndex));
 				prevVideoPlayer.play();
 			}
-		} 
-		else if (previousModeIndex == 2) {
+		}
+		if (previousModeIndex == 2) {
 			if (transition) {
-				prevShader.load("vertex.vert", shadersDir.getPath(previousIndex));
+				prevShader.unload();
+				prevShader.load("vertex.vert",shadersDir.getPath(previousIndex));
 			}
 		}
-
 		if (modeIndex == 1) {
 			if (index < loopsSize) {
-				if (progress >= 1.0f) {
-					if (previousModeIndex != modeIndex) {
-						currentVideoPlayer.load(loopsDir.getPath(index));
+				if (previousModeIndex != modeIndex) {
+					currentVideoPlayer.load(loopsDir.getPath(index));
+					currentVideoPlayer.play();
+					if (transition) {
+						nextVideoPlayer.load(loopsDir.getPath(index));
+						nextVideoPlayer.play();
+					}
+				}
+				else if (previousModeIndex == modeIndex) {
+					if (previousIndex == index && !transition) {
+						currentVideoPlayer.stop();
 						currentVideoPlayer.play();
 					}
-					else if (previousModeIndex == modeIndex) {
-						if (previousIndex == index) {
-							currentVideoPlayer.stop();
-							currentVideoPlayer.play();
+					else if (previousIndex != index) {
+						if (transition) {
+						currentVideoPlayer.stop();
+					    nextVideoPlayer.load(loopsDir.getPath(index));
+						nextVideoPlayer.play();
+						currentVideoPlayer.load(loopsDir.getPath(index));
+						currentVideoPlayer.play();
 						}
-						else if (previousIndex != index) {
+						else {
 							currentVideoPlayer.load(loopsDir.getPath(index));
 							currentVideoPlayer.play();
 						}
 					}
 				}
-				if (transition) {
-					nextVideoPlayer.load(loopsDir.getPath(index));
-					nextVideoPlayer.play();
-					currentVideoPlayer.load(loopsDir.getPath(index));
-					currentVideoPlayer.play();
-				}
 			}
 		}
-		else if (modeIndex == 0) {
-			if (currentVideoPlayer.isPaused() == false) {
-				currentVideoPlayer.stop();
-			}
-			else if (prevVideoPlayer.isPaused() == false) {
-				prevVideoPlayer.stop();
-			}
-			else if (nextVideoPlayer.isPaused() == false) {
-				nextVideoPlayer.stop();
-			}
-		}
-		else if (modeIndex == 2) {
-			if (currentVideoPlayer.isPaused() == false) {
-				currentVideoPlayer.stop();
-			}
-			else if (nextVideoPlayer.isPaused() == false) {
-				nextVideoPlayer.stop();
-			}
+		if (modeIndex == 2) {
 			if (index < shadersSize) {
-				if (transition) {
-					nextShader.load("vertex.vert", shadersDir.getPath(index));
-				}				
-				currentShader.load("vertex.vert", shadersDir.getPath(index));
-				/*if (progress < 1.0f) {
-				nextShader.load("vertex.vert", shadersDir.getPath(index));
+				if (!transition) {
+					currentShader.load("vertex.vert", shadersDir.getPath(index));
 				}
-				else if (progress >= 1.0f) {
-					if (previousModeIndex != modeIndex) {
-						currentShader.load("vertex.vert", shadersDir.getPath(index));
-					}
-					else if (previousModeIndex == modeIndex) {
-						if (previousIndex == index) {
-							// do nothing, keep the same shader
-						}
-						else if (previousIndex != index) {
-							currentShader.load("vertex.vert", shadersDir.getPath(index));
-						}
-					}
+				else {
+					nextShader.load("vertex.vert", shadersDir.getPath(index));
+
 				}
 			}
-		}*/
+			/*if (index < shadersSize) {
+				   if (transition) {
+						currentShader.unload();
+						nextShader.load("vertex.vert", shadersDir.getPath(index));
+						currentShader.load("vertex.vert", shadersDir.getPath(index));
+				   }
+				   else {
+					   currentShader.load("vertex.vert", shadersDir.getPath(index));
+				   }
+			}*/
+		}
 	}
 }
 
