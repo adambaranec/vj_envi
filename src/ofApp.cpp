@@ -429,12 +429,11 @@ void ofApp::setup() {
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
 	//---------------------------------------------
-	transition = true;
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (previousModeIndex == 1) {
+	if (previousModeIndex == 1 && previousIndex < loopsSize) {
 		if (transition) {
 			if (progress < 1.0f) {
 				prevVideoPlayer.update();
@@ -462,11 +461,17 @@ void ofApp::update() {
 	}
 	if (modeIndex == 2) {
 		if (transition) {
+			static int framesElapsedFromEnding;
 			if (progress == 1.0f) {
-				prevShader.unload();
-				nextShader.unload();
-				if (!currentShader.isLoaded()){
-					currentShader.load("vertex.vert", shadersDir.getPath(index));
+				framesElapsedFromEnding++;
+				if (framesElapsedFromEnding == 1) {
+					//currentShader.load("vertex.vert", shadersDir.getPath(index));
+				}
+				else if (framesElapsedFromEnding == 2) {
+					prevShader.unload();
+				}
+				else if (framesElapsedFromEnding == 3) {
+					nextShader.unload();
 				}
 			}
 		}
@@ -481,6 +486,15 @@ void ofApp::update() {
 		}
 		else if (msg.getAddress() == "/transition") {
 			transition = msg.getArgAsBool(0);
+		}
+		else if (msg.getAddress() == "/repeat") {
+			repeat = msg.getArgAsBool(0);
+		}
+		else if (msg.getAddress() == "/repeatX") {
+			columns = static_cast<int>(msg.getArgAsFloat(0) * 11.0f) + 1;
+		}
+		else if (msg.getAddress() == "/repeatY") {
+			rows = static_cast<int>(msg.getArgAsFloat(0) * 11.0f) + 1;
 		}
 	}
 }
@@ -703,15 +717,14 @@ void ofApp::keyPressed(int key){
 			transitionMode = (int)ofRandom(0, 5);
 		}
 		modeIndex = modeIndexToSet;
-		if (previousModeIndex == 1) {
+		if (previousModeIndex == 1 && previousIndex < loopsSize) {
 			if (transition) {
 				prevVideoPlayer.load(loopsDir.getPath(previousIndex));
 				prevVideoPlayer.play();
 			}
 		}
-		if (previousModeIndex == 2) {
+		if (previousModeIndex == 2 && previousIndex < shadersSize) {
 			if (transition) {
-				prevShader.unload();
 				prevShader.load("vertex.vert",shadersDir.getPath(previousIndex));
 			}
 		}
@@ -753,19 +766,9 @@ void ofApp::keyPressed(int key){
 				}
 				else {
 					nextShader.load("vertex.vert", shadersDir.getPath(index));
-
+					currentShader.load("vertex.vert", shadersDir.getPath(index));
 				}
 			}
-			/*if (index < shadersSize) {
-				   if (transition) {
-						currentShader.unload();
-						nextShader.load("vertex.vert", shadersDir.getPath(index));
-						currentShader.load("vertex.vert", shadersDir.getPath(index));
-				   }
-				   else {
-					   currentShader.load("vertex.vert", shadersDir.getPath(index));
-				   }
-			}*/
 		}
 	}
 }
