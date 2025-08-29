@@ -429,6 +429,7 @@ void ofApp::setup() {
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
 	//---------------------------------------------
+	feedback = true;
 }
 
 //--------------------------------------------------------------
@@ -497,6 +498,14 @@ void ofApp::update() {
 			rows = static_cast<int>(msg.getArgAsFloat(0) * 11.0f) + 1;
 		}
 	}
+	if (feedback && ofGetFrameNum() % (60*90) == 0 && ofGetFrameNum() != 0) {
+		if  (feedbackMode != 6) {
+		 feedbackMode++;
+		}
+		else {
+		 feedbackMode = 0;
+		}
+	}
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -534,6 +543,8 @@ void ofApp::draw(){
 		mainBuffer.begin();
 		ofClear(0, 0, 0, 255);
 		feedbackShader.begin();
+		feedbackShader.setUniform1i("mode", feedbackMode);
+		//feedbackShader.setUniform1f("time", ofGetElapsedTimef());
 		feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
 		feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
 		ofSetRectMode(OF_RECTMODE_CORNER);
@@ -623,6 +634,9 @@ void ofApp::draw(){
 			mainBuffer.begin();
 			ofClear(0, 0, 0, 255);
 			feedbackShader.begin();
+            
+            //feedbackShader.setUniform1f("time", ofGetElapsedTimef());
+			feedbackShader.setUniform1i("mode", feedbackMode);
 			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
 			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
 			ofSetRectMode(OF_RECTMODE_CORNER);
@@ -647,6 +661,9 @@ void ofApp::draw(){
 			mainBuffer.begin();
 			ofClear(0, 0, 0, 255);
 			feedbackShader.begin();
+            
+            //feedbackShader.setUniform1f("time", ofGetElapsedTimef());
+            feedbackShader.setUniform1i("mode", feedbackMode);
 			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
 			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
 			ofSetRectMode(OF_RECTMODE_CORNER);
