@@ -373,7 +373,7 @@ void ofApp::setup() {
 	soundStream.setup(settings);
     //---------------------------------------------
 	// global OF settings
-	ofSetFrameRate(30);
+	ofSetFrameRate(60);
 	ofHideCursor();
 	//---------------------------------------------
 	mainBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
