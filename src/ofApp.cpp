@@ -542,12 +542,10 @@ void ofApp::draw(){
 			repetitionShader.end();
 			postBuffer.end();
 
-			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			postBuffer.draw(0, 0);
 		}
 		else {
-			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainBuffer.draw(0, 0);
 		}
