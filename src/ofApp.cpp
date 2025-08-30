@@ -582,6 +582,7 @@ void ofApp::draw(){
 			transitionShader.end();
 		}
 		else if (progress == 1.0f) {
+			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainDraw(modeIndex, index, CURRENT);
 		}
@@ -623,6 +624,7 @@ void ofApp::draw(){
 			feedbackShader.end();
 			mainBuffer.end();
 
+			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainBuffer.draw(0, 0);
 
@@ -648,6 +650,7 @@ void ofApp::draw(){
 			feedbackShader.end();
 			mainBuffer.end();
 
+			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainBuffer.draw(0, 0);
 
