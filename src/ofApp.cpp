@@ -429,7 +429,6 @@ void ofApp::setup() {
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
 	//---------------------------------------------
-	feedback = true;
 }
 
 //--------------------------------------------------------------
