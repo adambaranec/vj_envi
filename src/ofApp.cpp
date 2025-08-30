@@ -292,40 +292,16 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		if (index < loopsSize) {
 			if (status == CURRENT) {
-				if (currentVideoPlayer.isLoaded()) {
-					ofSetColor(255);
-					ofSetRectMode(OF_RECTMODE_CORNER);
-					currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
-				}
-				else {
-					ofSetColor(0);
-					ofSetRectMode(OF_RECTMODE_CORNER);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-				}
+			ofSetColor(255);
+			currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 			}
 			else if (status == PREVIOUS) {
-				if (prevVideoPlayer.isLoaded()) {
 					ofSetColor(255);
-					ofSetRectMode(OF_RECTMODE_CORNER);
 					prevVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
-				}
-				else {
-					ofSetColor(0);
-					ofSetRectMode(OF_RECTMODE_CORNER);
-					ofDrawRectangle(0,0,ofGetWidth(),ofGetHeight());
-				}
 			}
 			else if (status == NEXT) {
-				if (nextVideoPlayer.isLoaded()) {
 					ofSetColor(255);
-					ofSetRectMode(OF_RECTMODE_CORNER);
-					nextVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
-				}
-				else  {
-					ofSetColor(0);
-					ofSetRectMode(OF_RECTMODE_CORNER);
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-				}
+          			nextVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
 			}
 		}
 	}
@@ -525,10 +501,13 @@ void ofApp::draw(){
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			repetitionShader.end();
 			postBuffer.end();
+
+			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			postBuffer.draw(0, 0);
 		}
 		else {
+			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainBuffer.draw(0, 0);
 		}
@@ -562,10 +541,13 @@ void ofApp::draw(){
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			repetitionShader.end();
 			postBuffer.end();
+
+			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			postBuffer.draw(0, 0);
 		}
 		else {
+			ofSetColor(255);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainBuffer.draw(0, 0);
 		}
@@ -599,7 +581,7 @@ void ofApp::draw(){
 			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 			transitionShader.end();
 		}
-		else if (progress >= 1.0f) {
+		else if (progress == 1.0f) {
 			ofSetRectMode(OF_RECTMODE_CORNER);
 			mainDraw(modeIndex, index, CURRENT);
 		}
@@ -633,8 +615,6 @@ void ofApp::draw(){
 			mainBuffer.begin();
 			ofClear(0, 0, 0, 255);
 			feedbackShader.begin();
-            
-            //feedbackShader.setUniform1f("time", ofGetElapsedTimef());
 			feedbackShader.setUniform1i("mode", feedbackMode);
 			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
 			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
@@ -651,7 +631,7 @@ void ofApp::draw(){
 			mainBuffer.draw(0, 0);
 			prevBuffer.end();
 		}
-		else if (progress >= 1.0f) {
+		else if (progress == 1.0f) {
 			nextBuffer.begin();
 			ofClear(0, 0, 0, 255);
 			mainDraw(modeIndex, index, CURRENT);
@@ -660,8 +640,6 @@ void ofApp::draw(){
 			mainBuffer.begin();
 			ofClear(0, 0, 0, 255);
 			feedbackShader.begin();
-            
-            //feedbackShader.setUniform1f("time", ofGetElapsedTimef());
             feedbackShader.setUniform1i("mode", feedbackMode);
 			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
 			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
