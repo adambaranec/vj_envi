@@ -293,15 +293,15 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 		if (index < loopsSize) {
 			if (status == CURRENT) {
 			ofSetColor(255);
-			currentVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+			players[index].draw(0, 0, ofGetWidth(), ofGetHeight());
 			}
 			else if (status == PREVIOUS) {
 					ofSetColor(255);
-					prevVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+					players[previousIndex].draw(0, 0, ofGetWidth(), ofGetHeight());
 			}
 			else if (status == NEXT) {
 					ofSetColor(255);
-          			nextVideoPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+					players[index].draw(0, 0, ofGetWidth(), ofGetHeight());
 			}
 		}
 	}
@@ -309,25 +309,25 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		if (index < shadersSize) {
 			if (status == CURRENT) {
-					currentShader.begin();
-					currentShader.setUniform1f("time", ofGetElapsedTimef());
-					currentShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+					shaders[index].begin();
+					shaders[index].setUniform1f("time", ofGetElapsedTimef());
+					shaders[index].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-					currentShader.end();
+					shaders[index].end();
 			}
 			else if (status == PREVIOUS) {
-					prevShader.begin();
-					prevShader.setUniform1f("time", ofGetElapsedTimef());
-					prevShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+					shaders[previousIndex].begin();
+					shaders[previousIndex].setUniform1f("time", ofGetElapsedTimef());
+					shaders[previousIndex].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-					prevShader.end();
+					shaders[previousIndex].end();
 			}
 			else if (status == NEXT) {
-					nextShader.begin();
-					nextShader.setUniform1f("time", ofGetElapsedTimef());
-					nextShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+					shaders[index].begin();
+					shaders[index].setUniform1f("time", ofGetElapsedTimef());
+					shaders[index].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-					nextShader.end();
+					shaders[index].end();
 			}
 		}
 	}
@@ -335,8 +335,6 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	receiver.setup("192.168.50.113", 8000);
-
 	// code to be used for visualising sound
 	// coming from Focusrite
 	ofSoundStreamSettings settings;
@@ -363,33 +361,27 @@ void ofApp::setup() {
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
 	loopsSize = loopsDir.size();
-
+	for (int i = 0; i < loopsSize; i++) {
+		ofVideoPlayer player;
+		player.load(loopsDir.getPath(i));
+		player.setVolume(0.0f);
+		player.setLoopState(OF_LOOP_NORMAL);
+		players.push_back(player);
+	}
 	shadersDir.open("shaders/elements");
 	shadersDir.allowExt("frag");
 	shadersDir.listDir();
 	shadersSize = shadersDir.size();
+	for (int i = 0; i < shadersSize; i++) {
+		ofShader shader;
+		shader.load("vertex.vert", shadersDir.getPath(i));
+		shaders.push_back(shader);
+	}
 	//---------------------------------------------
-	// camera to set for the plane primitive to show
-	// the result of rendering of the FBOs
-	// the following settings of the camera fit to 1920x1080 resolution
 	camera.setGlobalPosition(0, 0, 1);
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
-	/*
-	//---------------------------------------------
-	// to view the visuals correctly, the plane primitive 
-	// as the container must have the needed position, width and height
-	shaderViewer.setUseVbo(true);
-	shaderViewer.setPosition(glm::vec3(0.0, 0.0, 0.0));
-	shaderViewer.setHeight(1);
-	shaderViewer.setWidth(1920.0f/1080.0f);
-	//shaderViewer.mapTexCoords(0, 0, 1920, 1080);
-	// for some reason, with its default scale the visuals are
-	// not shown as whole
-	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
-	*/
-	//---------------------------------------------
 	//---------------------------------------------
 	ofEnableDepthTest();
 	ofSetCircleResolution(100);
@@ -410,53 +402,20 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	if (previousModeIndex == 1 && previousIndex < loopsSize) {
-		if (transition) {
-			if (progress < 1.0f) {
-				prevVideoPlayer.update();
-		  }
+		players[previousIndex].update();
+		if (transition && progress == 1.0f) {
+			if (players[previousIndex].isPaused()) {
+				players[previousIndex].setPaused(true);
+			}
 		}
 	}
-	if (modeIndex == 1) {
-		if (transition) {
-			if (progress < 1.0f) {
-				prevVideoPlayer.update();
-				nextVideoPlayer.update();
-				currentVideoPlayer.update();
-			}
-			else if (progress == 1.0f) {
-				if (!currentVideoPlayer.isPlaying()) {
-					currentVideoPlayer.load(loopsDir.getPath(index));
-					currentVideoPlayer.play();
-				}
-				currentVideoPlayer.update();
-			}
-		}
-		else {
-			currentVideoPlayer.update();
-		}
-	}
-	if (modeIndex == 2) {
-		if (transition) {
-			static int framesElapsedFromEnding;
-			if (progress == 1.0f) {
-				framesElapsedFromEnding++;
-				if (framesElapsedFromEnding == 1) {
-					//currentShader.load("vertex.vert", shadersDir.getPath(index));
-				}
-				else if (framesElapsedFromEnding == 2) {
-					prevShader.unload();
-				}
-				else if (framesElapsedFromEnding == 3) {
-					nextShader.unload();
-				}
-			}
-		}
+	if (modeIndex == 1 && index < loopsSize) {
+		players[index].update();
 	}
 	while (receiver.hasWaitingMessages()) {
 		ofxOscMessage msg;
 		receiver.getNextMessage(msg);
 
-		// React based on message address
 		if (msg.getAddress() == "/feedback") {
 			feedback = msg.getArgAsBool(0);
 		}
@@ -709,57 +668,20 @@ void ofApp::keyPressed(int key){
 			transitionMode = (int)ofRandom(0, 5);
 		}
 		modeIndex = modeIndexToSet;
-		if (previousModeIndex == 1 && previousIndex < loopsSize) {
-			if (transition) {
-				prevVideoPlayer.load(loopsDir.getPath(previousIndex));
-				prevVideoPlayer.play();
-			}
-		}
-		if (previousModeIndex == 2 && previousIndex < shadersSize) {
-			if (transition) {
-				prevShader.load("vertex.vert",shadersDir.getPath(previousIndex));
-			}
+
+		if (previousModeIndex == 1) {
+			if (previousIndex < loopsSize) {
+				if (!transition) {
+					players[previousIndex].stop();
+				}
+				else {
+					players[previousIndex].play();
+				}
+			}	
 		}
 		if (modeIndex == 1) {
 			if (index < loopsSize) {
-				if (previousModeIndex != modeIndex) {
-					currentVideoPlayer.load(loopsDir.getPath(index));
-					currentVideoPlayer.play();
-					if (transition) {
-						nextVideoPlayer.load(loopsDir.getPath(index));
-						nextVideoPlayer.play();
-					}
-				}
-				else if (previousModeIndex == modeIndex) {
-					if (previousIndex == index && !transition) {
-						currentVideoPlayer.stop();
-						currentVideoPlayer.play();
-					}
-					else if (previousIndex != index) {
-						if (transition) {
-						currentVideoPlayer.stop();
-					    nextVideoPlayer.load(loopsDir.getPath(index));
-						nextVideoPlayer.play();
-						currentVideoPlayer.load(loopsDir.getPath(index));
-						currentVideoPlayer.play();
-						}
-						else {
-							currentVideoPlayer.load(loopsDir.getPath(index));
-							currentVideoPlayer.play();
-						}
-					}
-				}
-			}
-		}
-		if (modeIndex == 2) {
-			if (index < shadersSize) {
-				if (!transition) {
-					currentShader.load("vertex.vert", shadersDir.getPath(index));
-				}
-				else {
-					nextShader.load("vertex.vert", shadersDir.getPath(index));
-					currentShader.load("vertex.vert", shadersDir.getPath(index));
-				}
+				players[index].play();
 			}
 		}
 	}
@@ -802,11 +724,7 @@ void ofApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-	/*
-	shaderViewer.setHeight(1);
-	shaderViewer.setWidth((float)w / (float)h);
-	shaderViewer.setScale(0.83f, 0.83f, 0.83f);
-	*/
+
 }
 
 //--------------------------------------------------------------

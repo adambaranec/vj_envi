@@ -46,4 +46,6 @@ public:
 	} crossFadeInfo;
 	bool isEditingCrossFade = false;
 	ofxOscReceiver receiver;
+	std::vector<ofVideoPlayer> players;
+	std::vector<ofShader> shaders;
 };
