@@ -27,8 +27,7 @@ public:
 
 	ofSoundStream soundStream;
 	ofCamera camera;
-	ofVideoPlayer currentVideoPlayer, prevVideoPlayer, nextVideoPlayer;
-	ofShader currentShader, prevShader, nextShader, feedbackShader, crossFadeShader, transitionShader, repetitionShader;
+	ofShader feedbackShader, crossFadeShader, transitionShader, repetitionShader;
 	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2, postBuffer;
 	ofDirectory loopsDir, shadersDir;
 	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, feedbackMode, loopsSize, shadersSize;
