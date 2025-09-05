@@ -30,6 +30,9 @@ public:
 	ofShader feedbackShader, crossFadeShader, transitionShader, repetitionShader;
 	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2, postBuffer;
 	ofDirectory loopsDir, shadersDir;
+	ofxOscReceiver receiver;
+	std::vector<ofVideoPlayer> players;
+	std::vector<ofShader> shaders;
 	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, feedbackMode, loopsSize, shadersSize;
 	float amplitude, progress = 1.0f;
 	//attributes edited either by OSC or MIDI
@@ -37,14 +40,4 @@ public:
 	bool feedback = false;
 	bool transition = false;
 	bool repeat = false;
-	struct CrossFadeInfo {
-		int elementIndex1;
-		int elementIndex2;
-		int modeIndex1;
-		int modeIndex2;
-	} crossFadeInfo;
-	bool isEditingCrossFade = false;
-	ofxOscReceiver receiver;
-	std::vector<ofVideoPlayer> players;
-	std::vector<ofShader> shaders;
 };

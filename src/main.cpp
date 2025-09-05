@@ -1,7 +1,7 @@
 #include "ofMain.h"
 #include "ofApp.h"
 
-bool isDigits(std::string& str)
+static bool isDigits(std::string& str)
 {
 	for (char ch : str) {
 		int v = ch;
@@ -21,18 +21,14 @@ int main(int argc, char* argv[]) {
 	settings.setSize(1920, 1080);
 	settings.setGLVersion(4,6);
 	settings.windowMode = OF_WINDOW;
-
-	ofDirectory loopsDir("loops");
-	loopsDir.allowExt("mp4");
-	loopsDir.listDir();
-
-	ofDirectory shadersDir("shaders/elements");
-	shadersDir.allowExt("frag");
-	shadersDir.listDir();
-
 	auto window = ofCreateWindow(settings);
 	auto app = make_shared<ofApp>();
-	if (argc == 2) {
+
+    if (argc == 1) {
+		ofRunApp(window, app);
+		ofRunMainLoop();
+	}
+	else if (argc == 2) {
 		std::string indexArg = argv[1];
 		int receivedIndex = std::stoi(indexArg);
 		bool indexArgCheck = isDigits(indexArg);
@@ -45,14 +41,20 @@ int main(int argc, char* argv[]) {
 			else {
 				ofLog() << "No element at this index";
 			}
-		} else {
+		}
+		else {
 			ofLog() << "Error, only numbers";
 		}
-	} else if (argc == 1) {
-		ofRunApp(window, app);
-		ofRunMainLoop();
 	}
 	else if (argc == 3) {
+		ofDirectory loopsDir("loops");
+		loopsDir.allowExt("mp4");
+		loopsDir.listDir();
+
+		ofDirectory shadersDir("shaders/elements");
+		shadersDir.allowExt("frag");
+		shadersDir.listDir();
+
 		std::string modeArg = argv[1];
 		std::string indexArg = argv[2];
 		bool indexArgCheck = isDigits(indexArg);

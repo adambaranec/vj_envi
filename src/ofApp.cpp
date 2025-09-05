@@ -335,28 +335,6 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	// code to be used for visualising sound
-	// coming from Focusrite
-	ofSoundStreamSettings settings;
-	settings.numOutputChannels = 0;
-	settings.numInputChannels = 6;
-	settings.bufferSize = 256;
-	//Focusrite USB Asio
-	settings.setInDevice(soundStream.getDeviceList()[4]);
-	settings.setInListener(this);
-	soundStream.setup(settings);
-    //---------------------------------------------
-	// global OF settings
-	ofSetFrameRate(60);
-	ofHideCursor();
-	//---------------------------------------------
-	mainBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-	prevBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-	nextBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-	scene1.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-	scene2.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-	postBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-	//---------------------------------------------
 	loopsDir.open("loops");
 	loopsDir.allowExt("mp4");
 	loopsDir.listDir();
@@ -378,25 +356,34 @@ void ofApp::setup() {
 		shaders.push_back(shader);
 	}
 	//---------------------------------------------
+	feedbackShader.load("vertex.vert","shaders/feedback/feedback.frag");
+	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
+	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
+	//---------------------------------------------
+	mainBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	prevBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	nextBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	scene1.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	scene2.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	postBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	//---------------------------------------------
 	camera.setGlobalPosition(0, 0, 1);
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
-	//---------------------------------------------
+    //---------------------------------------------
+	ofSetFrameRate(60);
+	ofHideCursor();
 	ofEnableDepthTest();
 	ofSetCircleResolution(100);
-	currentVideoPlayer.setLoopState(OF_LOOP_NORMAL);
-	currentVideoPlayer.setVolume(0.0f);
-	prevVideoPlayer.setLoopState(OF_LOOP_NORMAL);
-	prevVideoPlayer.setVolume(0.0f);
-	nextVideoPlayer.setLoopState(OF_LOOP_NORMAL);
-	nextVideoPlayer.setVolume(0.0f);
 	//---------------------------------------------
-	feedbackShader.load("vertex.vert","shaders/feedback/feedback.frag");
-	//crossFadeShader.load("vertex.vert", "shaders/crossfade/crossfade.frag");
-	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
-	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
-	//---------------------------------------------
+	ofSoundStreamSettings settings;
+	settings.numOutputChannels = 0;
+	settings.numInputChannels = 6;
+	settings.bufferSize = 256;
+	settings.setInDevice(soundStream.getDeviceList()[4]);
+	settings.setInListener(this);
+	soundStream.setup(settings);
 }
 
 //--------------------------------------------------------------
