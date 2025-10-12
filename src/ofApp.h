@@ -6,8 +6,7 @@
 class ofApp : public ofBaseApp {
 
 public:
-	enum Status { CURRENT, PREVIOUS, NEXT } status;
-	void mainDraw(int modeIndex, int index, Status status);
+	void mainDraw(int modeIndex, int index);
 	void setup();
 	void update();
 	void draw();

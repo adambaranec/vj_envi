@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::mainDraw(int modeIndex, int index, Status status) {
+void ofApp::mainDraw(int modeIndex, int index) {
 	ofClear(0, 0, 0, 255);
 	if (modeIndex == 0) {
 		ofSetRectMode(OF_RECTMODE_CENTER);
@@ -291,44 +291,18 @@ void ofApp::mainDraw(int modeIndex, int index, Status status) {
 	else if (modeIndex == 1) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		if (index < loopsSize) {
-			if (status == CURRENT) {
 			ofSetColor(255);
 			players[index].draw(0, 0, ofGetWidth(), ofGetHeight());
-			}
-			else if (status == PREVIOUS) {
-					ofSetColor(255);
-					players[previousIndex].draw(0, 0, ofGetWidth(), ofGetHeight());
-			}
-			else if (status == NEXT) {
-					ofSetColor(255);
-					players[index].draw(0, 0, ofGetWidth(), ofGetHeight());
-			}
 		}
 	}
 	else if (modeIndex == 2) {
 		ofSetRectMode(OF_RECTMODE_CORNER);
 		if (index < shadersSize) {
-			if (status == CURRENT) {
-					shaders[index].begin();
-					shaders[index].setUniform1f("time", ofGetElapsedTimef());
-					shaders[index].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-					shaders[index].end();
-			}
-			else if (status == PREVIOUS) {
-					shaders[previousIndex].begin();
-					shaders[previousIndex].setUniform1f("time", ofGetElapsedTimef());
-					shaders[previousIndex].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-					shaders[previousIndex].end();
-			}
-			else if (status == NEXT) {
-					shaders[index].begin();
-					shaders[index].setUniform1f("time", ofGetElapsedTimef());
-					shaders[index].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-					ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-					shaders[index].end();
-			}
+			shaders[index].begin();
+			shaders[index].setUniform1f("time", ofGetElapsedTimef());
+			shaders[index].setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+			shaders[index].end();
 		}
 	}
 }
@@ -356,7 +330,7 @@ void ofApp::setup() {
 		shaders.push_back(shader);
 	}
 	//---------------------------------------------
-	feedbackShader.load("vertex.vert","shaders/feedback/feedback.frag");
+	feedbackShader.load("vertex.vert", "shaders/feedback/feedback.frag");
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
 	//---------------------------------------------
@@ -371,7 +345,7 @@ void ofApp::setup() {
 	camera.setFov(45);
 	camera.setNearClip(0.1);
 	camera.setFarClip(1000);
-    //---------------------------------------------
+	//---------------------------------------------
 	ofSetFrameRate(60);
 	ofHideCursor();
 	ofEnableDepthTest();
@@ -381,7 +355,7 @@ void ofApp::setup() {
 	settings.numOutputChannels = 0;
 	settings.numInputChannels = 6;
 	settings.bufferSize = 256;
-	settings.setInDevice(soundStream.getDeviceList()[4]);
+	settings.setInDevice(soundStream.getMatchingDevices("Focusrite USB ASIO")[0]);
 	settings.setInListener(this);
 	soundStream.setup(settings);
 }
@@ -433,7 +407,7 @@ void ofApp::draw(){
 	if (!feedback && !transition) {
 		mainBuffer.begin();
 		ofClear(0, 0, 0, 255);
-		mainDraw(modeIndex, index, CURRENT);
+		mainDraw(modeIndex, index);
 		mainBuffer.end();
 
 		if (repeat) {
@@ -461,7 +435,7 @@ void ofApp::draw(){
 	else if (feedback && !transition) {
 		nextBuffer.begin();
 		ofClear(0, 0, 0, 255);
-		mainDraw(modeIndex, index, CURRENT);
+		mainDraw(modeIndex, index);
 		nextBuffer.end();
 
 		mainBuffer.begin();
@@ -507,12 +481,12 @@ void ofApp::draw(){
 		if (progress < 1.0f) {
 			prevBuffer.begin();
 			ofClear(0, 0, 0, 255);
-			mainDraw(previousModeIndex, previousIndex, PREVIOUS);
+			mainDraw(previousModeIndex, previousIndex);
 			prevBuffer.end();
 
 			nextBuffer.begin();
 			ofClear(0, 0, 0, 255);
-			mainDraw(modeIndex, index, NEXT);
+			mainDraw(modeIndex, index);
 			nextBuffer.end();
 
 			transitionShader.begin();
@@ -527,7 +501,7 @@ void ofApp::draw(){
 		}
 		else if (progress == 1.0f) {
 			ofSetRectMode(OF_RECTMODE_CORNER);
-			mainDraw(modeIndex, index, CURRENT);
+			mainDraw(modeIndex, index);
 		}
 	}
 	else if (feedback && transition) {
@@ -536,11 +510,11 @@ void ofApp::draw(){
 		if (progress < 1.0f) {
 			scene1.begin();
 			ofClear(0, 0, 0, 255);
-			mainDraw(previousModeIndex, previousIndex, PREVIOUS);
+			mainDraw(previousModeIndex, previousIndex);
 			scene1.end();
 			scene2.begin();
 			ofClear(0, 0, 0, 255);
-			mainDraw(modeIndex, index, NEXT);
+			mainDraw(modeIndex, index);
 			scene2.end();
 
 			nextBuffer.begin();
@@ -578,7 +552,7 @@ void ofApp::draw(){
 		else if (progress == 1.0f) {
 			nextBuffer.begin();
 			ofClear(0, 0, 0, 255);
-			mainDraw(modeIndex, index, CURRENT);
+			mainDraw(modeIndex, index);
 			nextBuffer.end();
 
 			mainBuffer.begin();
