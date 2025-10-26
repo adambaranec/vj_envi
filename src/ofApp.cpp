@@ -329,6 +329,16 @@ void ofApp::setup() {
 		shader.load("vertex.vert", shadersDir.getPath(i));
 		shaders.push_back(shader);
 	}
+	texturesDir.open("textures");
+	texturesDir.allowExt("png");
+	texturesDir.allowExt("jpg");
+	texturesDir.listDir();
+	texturesSize = texturesDir.size();
+	for (int i = 0; i < texturesSize; i++) {
+		ofImage image;
+		image.load(texturesDir.getPath(i));
+		textures.push_back(image);
+	}
 	//---------------------------------------------
 	feedbackShader.load("vertex.vert", "shaders/feedback/feedback.frag");
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");

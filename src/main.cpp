@@ -70,17 +70,19 @@ int main(int argc, char* argv[]) {
 				case 2: maxSize = shadersDir.size() - 1; break;
 				default: break;
 				}
-				app->modeIndex = receivedModeIndex;
-				app->index = receivedIndex;
-				ofRunApp(window, app);
-				ofRunMainLoop();
-			}
-			else {
+					if (receivedIndex <= maxSize) {
+						app->modeIndex = receivedModeIndex;
+						app->index = receivedIndex;
+						ofRunApp(window, app);
+						ofRunMainLoop();
+					}
+					else {
+						ofLog() << "No visual possible at this index";
+					}
+				}
+			    else {
 				ofLog() << "2 is the maximum of mode indices";
+			    }
 			}
-		}
-		else {
-			ofLog() << "Error, only numbers";
 		}
 	}
-}

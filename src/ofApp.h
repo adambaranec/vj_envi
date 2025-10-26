@@ -28,11 +28,12 @@ public:
 	ofCamera camera;
 	ofShader feedbackShader, crossFadeShader, transitionShader, repetitionShader;
 	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2, postBuffer;
-	ofDirectory loopsDir, shadersDir;
+	ofDirectory loopsDir, shadersDir, texturesDir;
 	ofxOscReceiver receiver;
 	std::vector<ofVideoPlayer> players;
 	std::vector<ofShader> shaders;
-	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, feedbackMode, loopsSize, shadersSize;
+	std::vector<ofImage> textures;
+	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, feedbackMode, loopsSize, shadersSize, texturesSize;
 	float amplitude, progress = 1.0f;
 	//attributes edited either by OSC or MIDI
 	int rows, columns;
