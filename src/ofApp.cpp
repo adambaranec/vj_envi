@@ -713,5 +713,5 @@ void ofApp::audioIn(ofSoundBuffer& buffer)
 {
 	// used when capturing audio is enabled and then
 	// sent as a uniform to a shader
-	amplitude = buffer.getRMSAmplitudeChannel(5);
+	amplitude = buffer.getRMSAmplitudeChannel(5) * 0.5;
 }
