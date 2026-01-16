@@ -305,6 +305,16 @@ void ofApp::mainDraw(int modeIndex, int index) {
 			shaders[index].end();
 		}
 	}
+	else if (modeIndex == 3) {
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		customShader.begin();
+		customShader.setUniform1f("time", ofGetElapsedTimef());
+		customShader.setUniform1f("amp", amplitude);
+		customShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+		customShader.setUniform2i("resolution", ofGetWidth(), ofGetHeight());
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		customShader.end();
+	}
 }
 
 //--------------------------------------------------------------
@@ -343,6 +353,7 @@ void ofApp::setup() {
 	feedbackShader.load("vertex.vert", "shaders/feedback/feedback.frag");
 	transitionShader.load("vertex.vert", "shaders/transitions/transition.frag");
 	repetitionShader.load("vertex.vert", "shaders/post/repeat.frag");
+	customShader.load("vertex.vert", "shaders/custom/custom.frag");
 	//---------------------------------------------
 	mainBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	prevBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
@@ -595,6 +606,7 @@ void ofApp::keyPressed(int key){
 	case '1': modeIndexToSet = 0; break;
 	case '2': modeIndexToSet = 1; break;
 	case '3': modeIndexToSet = 2; break;
+	case '4': modeIndexToSet = 3; break;
 	}
 	switch (key) {
 	case 'q': index = 0; break;
@@ -656,6 +668,10 @@ void ofApp::keyPressed(int key){
 			}
 		}
 	}
+
+	if (ofGetKeyPressed(OF_KEY_CONTROL) && key == OF_KEY_RETURN && modeIndex == 3) {
+		customShader.load("vertex.vert", "shaders/custom/custom.frag");
+	}
 }
 
 //--------------------------------------------------------------
@@ -713,5 +729,5 @@ void ofApp::audioIn(ofSoundBuffer& buffer)
 {
 	// used when capturing audio is enabled and then
 	// sent as a uniform to a shader
-	amplitude = buffer.getRMSAmplitudeChannel(5) * 0.5;
+	amplitude = buffer.getRMSAmplitudeChannel(5) * 0.1;
 }

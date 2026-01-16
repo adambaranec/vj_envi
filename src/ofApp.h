@@ -26,7 +26,7 @@ public:
 
 	ofSoundStream soundStream;
 	ofCamera camera;
-	ofShader feedbackShader, crossFadeShader, transitionShader, repetitionShader;
+	ofShader feedbackShader, crossFadeShader, transitionShader, repetitionShader, customShader;
 	ofFbo mainBuffer, prevBuffer, nextBuffer, scene1, scene2, postBuffer;
 	ofDirectory loopsDir, shadersDir, texturesDir;
 	ofxOscReceiver receiver;
