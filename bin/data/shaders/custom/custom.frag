@@ -145,6 +145,11 @@ return 1.-step(radius,d);
 
 void main(){
 vec2 st = fragCoord.xy/vec2(1920.,1080.);
-vec2 doubledSt = (st*2.-1.)*vec2(aspect,1);
+vec2 st0 = (st*2.-1.)*vec2(aspect,1);
 vec2 uv = fract(st);
+vec2 uv0 = fract(st*2);
+uv0 = uv0*2.-1;
+uv0.x *= aspect;
+float c = circle(st,.1+amp);
+fragColor = hsv2rgba(mix(.15,0,abs(sin(time*.9))),1,square(uv0,.3+amp*4));
 }

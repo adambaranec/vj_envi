@@ -680,7 +680,14 @@ void ofApp::keyPressed(int key){
 	}*/
 
 	if (key == 13) {
-		customShader.load("vertex.vert", "shaders/custom/custom.frag");
+		ofShader test;
+		bool success = test.load("vertex.vert", "shaders/custom/custom.frag");
+		GLuint programID = test.getProgram();
+		GLint linkStatus;
+		glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
+		if (linkStatus) {
+			customShader = std::move(test);
+		}
 	}
 }
 
