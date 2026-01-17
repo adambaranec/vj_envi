@@ -3,6 +3,7 @@
 precision mediump float;
 in vec2 fragCoord;
 uniform vec2 resolution;
+uniform sampler2DRect tex;
 uniform float time, aspect, amp;
 out vec4 fragColor;
 
@@ -143,13 +144,61 @@ float d = cos(floor(.5+a/r)*r-a)*length(st);
 return 1.-step(radius,d);
 }
 
+float lineX(vec2 st, float centre, float thickness){
+return 1.-step(thickness,abs(st.x-centre));
+}
+
+float lineY(vec2 st, float centre, float thickness){
+return 1.-step(thickness,abs(st.y-centre));
+}
+
+float lineX_s(vec2 st, float centre, float innerThick, float outerThick){
+return 1.-smoothstep(innerThick,outerThick,abs(st.x-centre));
+}
+
+float lineY_s(vec2 st, float centre, float innerThick, float outerThick){
+return 1.-smoothstep(innerThick,outerThick,abs(st.y-centre));
+}
+
+float circle_s(vec2 st, float holeRadius, float radius){
+return circle(st,radius) - circle(st,holeRadius);
+}
+
+float square_s(vec2 st, float holeRadius, float radius){
+return square(st,radius) - square(st,holeRadius);
+}
+
+float polygon_s(vec2 st, int sides, float holeRadius, float radius){
+return polygon(st,sides,radius) - polygon(st,sides,holeRadius);
+}
+
+float circle_b(vec2 st, float innerRadius, float outerRadius){
+return 1.-smoothstep(innerRadius,outerRadius,length(st-vec2(0)));
+}
+
 void main(){
-vec2 st = fragCoord.xy/vec2(1920.,1080.);
-vec2 st0 = (st*2.-1.)*vec2(aspect,1);
-vec2 uv = fract(st);
-vec2 uv0 = fract(st*2);
-uv0 = uv0*2.-1;
-uv0.x *= aspect;
-float c = circle(st,.1+amp);
-fragColor = hsv2rgba(mix(.15,0,abs(sin(time*.9))),1,square(uv0,.3+amp*4));
+vec2 st = fragCoord.xy/resolution.xy;
+vec2 uv = fract(st*8);
+vec2 st0 = (st*2-1)*vec2(aspect,1);
+vec2 uv0 = (uv*2-1)*vec2(aspect,1);
+/*
+vec2[] hs = vec2[](vec2(0,1),vec2(.15,sin(time)),vec2(.4,.6),vec2(1,.7));
+float[] shapes = float[](lineX(st0*rot(time),0,.1),lineX(st0*rot(-time*.5),0,.1),circle_s(st0,.25+amp*4,.4+amp*4),square_s(st0+vec2(1,0),.09,.1));
+fragColor = hsv2rgba(hs[0].x,hs[0].y,shapes[0]);
+for (int i=0; i<3; i++){
+fragColor = mix(fragColor,
+hsv2rgba(hs[i+1].x,hs[i+1].y,shapes[i+1]),shapes[i+1]); 
+}
+*/
+/*
+fragColor = hsv2rgba(0,0,0);
+int rep = 4;
+float r = .2;
+float speed = .5;
+float dist = .7;
+for (int i=0; i<rep; i++){
+float shape = square(uv0+vec2(sin(6.28/float(rep)*float(i)+time*speed)*dist,cos(6.28/float(rep)*float(i)+time*speed)*dist),r+amp*5);
+fragColor += hsv2rgba(.1,.9,shape);
+}
+*/
 }
