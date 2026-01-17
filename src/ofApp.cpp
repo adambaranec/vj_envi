@@ -425,6 +425,15 @@ void ofApp::update() {
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
+	ofSetRectMode(OF_RECTMODE_CORNER);
+	customShader.begin();
+	customShader.setUniform1f("time", ofGetElapsedTimef());
+	customShader.setUniform1f("amp", amplitude);
+	customShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+	customShader.setUniform2f("resolution", (float)ofGetWidth(), (float)ofGetHeight());
+	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+	customShader.end();
+	/*
 	if (!feedback && !transition) {
 		mainBuffer.begin();
 		ofClear(0, 0, 0, 255);
@@ -595,11 +604,12 @@ void ofApp::draw(){
 			mainBuffer.draw(0, 0);
 			prevBuffer.end();
 		}
-	}
+	}*/
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	/*
 	previousIndex = index;
 	previousModeIndex = modeIndex;
 	switch (key) {
@@ -667,9 +677,9 @@ void ofApp::keyPressed(int key){
 				players[index].play();
 			}
 		}
-	}
+	}*/
 
-	if (ofGetKeyPressed(OF_KEY_CONTROL) && key == OF_KEY_RETURN && modeIndex == 3) {
+	if (key == 13) {
 		customShader.load("vertex.vert", "shaders/custom/custom.frag");
 	}
 }

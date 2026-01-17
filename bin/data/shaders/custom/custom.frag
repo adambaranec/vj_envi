@@ -126,20 +126,25 @@ vec4 sphere(vec2 _st, float magnitude){
 return vec4(vec3( exp(1.-distance(_st,vec2(0.))/.4 / magnitude) ),1.);
 }
 
-vec4 square(vec2 st, float width){
-vec2 tl = step(vec2(-width),st);
-vec2 br = step(vec2(1.-width),1.-st);
-float sq = br.x * br.y * tl.x * tl.y;
-return vec4(vec3(sq),1.); 
+float circle(vec2 st, float radius){
+return 1.-step(radius,length(st-vec2(0)));
 }
 
-vec4 polygon(vec2 st, int sides, float radius){
+float square(vec2 st, float width){
+vec2 tl = step(vec2(0)-vec2(width),st);
+vec2 br = 1.-step(vec2(0)+vec2(width),st);
+return tl.x*tl.y*br.x*br.y;
+}
+
+float polygon(vec2 st, int sides, float radius){
 float a = atan(st.x,st.y)+3.1416;
 float r = (2.*3.1416)/float(sides);
 float d = cos(floor(.5+a/r)*r-a)*length(st);
-return hsv2rgba(0.,0.,1.-step(radius,d));
+return 1.-step(radius,d);
 }
 
 void main(){
-
+vec2 st = fragCoord.xy/vec2(1920.,1080.);
+vec2 doubledSt = (st*2.-1.)*vec2(aspect,1);
+vec2 uv = fract(st);
 }

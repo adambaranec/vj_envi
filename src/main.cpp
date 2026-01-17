@@ -23,7 +23,10 @@ int main(int argc, char* argv[]) {
 	settings.windowMode = OF_WINDOW;
 	auto window = ofCreateWindow(settings);
 	auto app = make_shared<ofApp>();
+	ofRunApp(window, app);
+	ofRunMainLoop();
 
+	/*
     if (argc == 1) {
 		ofRunApp(window, app);
 		ofRunMainLoop();
@@ -84,5 +87,5 @@ int main(int argc, char* argv[]) {
 				ofLog() << "2 is the maximum of mode indices";
 			    }
 			}
-		}
+		}*/
 	}
