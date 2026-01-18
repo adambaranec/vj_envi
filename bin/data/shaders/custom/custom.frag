@@ -123,82 +123,146 @@ mat2 rot(float angle){
 return mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
 }
 
+vec2 mid0(vec2 st){
+vec2 uv = st* 2 - 1;
+uv.x *= aspect;
+return uv;
+}
+
+vec2 mid0rot(vec2 st,float speed){
+vec2 uv = mid0(st);
+return uv * rot(time*-speed);
+}
+
+vec2 mid0rep(vec2 st,float x,float y){
+st = repeat(st,x,y,0,0);
+vec2 uv = mid0(st);
+return uv;
+}
+
+vec2 mid0rotRep(vec2 st,float speed,float x,float y){
+st = repeat(st,x,y,0,0);
+vec2 uv = mid0(st);
+uv *= rot(time*-speed);
+return uv;
+}
+
+vec2 mid0scroll(vec2 st,float speedX, float speedY){
+st += vec2(time*speedX,time*speedY);
+st = fract(st);
+vec2 uv = st* 2 - 1;
+uv.x *= aspect;
+return uv;
+}
+
+vec2 mid0scrollRep(vec2 st, float speedX, float speedY, float repX, float repY){
+st += vec2(time*speedX,time*speedY);
+st = repeat(st,repX,repY,0,0);
+vec2 uv = st* 2 - 1;
+uv.x *= aspect;
+return uv;
+}
+
+vec2 mid0trans(vec2 st,float x,float y){
+st += vec2(x,y);
+return mid0(st);
+}
+
+float a_polar(vec2 st){
+vec2 uv = mid0(st);
+return atan(uv.x,uv.y)+3.1416;
+}
+
+
 vec4 sphere(vec2 _st, float magnitude){
 return vec4(vec3( exp(1.-distance(_st,vec2(0.))/.4 / magnitude) ),1.);
 }
 
-float circle(vec2 st, float radius){
-return 1.-step(radius,length(st-vec2(0)));
+float circle(vec2 st, float radius, float ampMulti){
+return 1.-step(radius+(amp*ampMulti), length(st-vec2(0))  );
 }
 
-float square(vec2 st, float width){
-vec2 tl = step(vec2(0)-vec2(width),st);
-vec2 br = 1.-step(vec2(0)+vec2(width),st);
+float square(vec2 st, float width, float ampMulti){
+vec2 tl = step(vec2(0)-vec2(width+(amp*ampMulti)),st);
+vec2 br = 1.-step(vec2(width+(amp*ampMulti)),st);
 return tl.x*tl.y*br.x*br.y;
 }
 
-float polygon(vec2 st, int sides, float radius){
+float polygon(vec2 st, int sides, float radius, float ampMulti){
 float a = atan(st.x,st.y)+3.1416;
 float r = (2.*3.1416)/float(sides);
 float d = cos(floor(.5+a/r)*r-a)*length(st);
-return 1.-step(radius,d);
+return 1.-step(radius+(amp*ampMulti),d);
 }
 
-float lineX(vec2 st, float centre, float thickness){
-return 1.-step(thickness,abs(st.x-centre));
+float lineY(vec2 st, float centre, float thickness, float ampMulti){
+return 1.-step(thickness+(amp*ampMulti),abs(st.x-centre));
 }
 
-float lineY(vec2 st, float centre, float thickness){
-return 1.-step(thickness,abs(st.y-centre));
+float lineX(vec2 st, float centre, float thickness, float ampMulti){
+return 1.-step(thickness+(amp*ampMulti),abs(st.y-centre));
 }
 
-float lineX_s(vec2 st, float centre, float innerThick, float outerThick){
-return 1.-smoothstep(innerThick,outerThick,abs(st.x-centre));
+float lineY_s(vec2 st, float centre, float innerThick, float outerThick, float ampMulti){
+return 1.-smoothstep(innerThick+(amp*ampMulti),outerThick+(amp*ampMulti),abs(st.x-centre));
 }
 
-float lineY_s(vec2 st, float centre, float innerThick, float outerThick){
-return 1.-smoothstep(innerThick,outerThick,abs(st.y-centre));
+float lineX_s(vec2 st, float centre, float innerThick, float outerThick, float ampMulti){
+return 1.-smoothstep(innerThick+(amp*ampMulti),outerThick+(amp*ampMulti),abs(st.y-centre));
 }
 
-float circle_s(vec2 st, float holeRadius, float radius){
-return circle(st,radius) - circle(st,holeRadius);
+float circle_s(vec2 st, float holeRadius, float radius, float ampMulti){
+return circle(st,radius,(amp*ampMulti)) - circle(st,holeRadius,(amp*ampMulti));
 }
 
-float square_s(vec2 st, float holeRadius, float radius){
-return square(st,radius) - square(st,holeRadius);
+float square_s(vec2 st, float holeRadius, float radius, float ampMulti){
+return square(st,radius,(amp*ampMulti)) - square(st,holeRadius,(amp*ampMulti));
 }
 
-float polygon_s(vec2 st, int sides, float holeRadius, float radius){
-return polygon(st,sides,radius) - polygon(st,sides,holeRadius);
+float polygon_s(vec2 st, int sides, float holeRadius, float radius,float ampMulti){
+return polygon(st,sides,radius,(amp*ampMulti)) - polygon(st,sides,holeRadius,(amp*ampMulti));
 }
 
-float circle_b(vec2 st, float innerRadius, float outerRadius){
-return 1.-smoothstep(innerRadius,outerRadius,length(st-vec2(0)));
+float circle_b(vec2 st, float innerRadius, float outerRadius,float ampMulti){
+return 1.-smoothstep(innerRadius+(amp*ampMulti),outerRadius+(amp*ampMulti),length(st-vec2(0)));
 }
+
+float noise_f(vec2 st, float scale, float offset){
+return _noise(vec3(st*scale, time*offset));
+}
+
+vec4 noise_hue(float n, float min, float max, float ampMulti){
+return hsv2rgba(mix(min,max,n+(amp*ampMulti)),1,1);
+}
+
+vec4 osc(vec2 st,float density, float hue1, float hue2,float speed){
+st.x += time*speed;
+return hsv2rgba(mix(hue1,hue2,sin(st.x*density)),1,1);
+}
+
+vec4 b_w_osc(vec2 st, float density, float v1, float v2, float speed){
+st.x += time*speed;
+return hsv2rgba(0,0,mix(v1,v2,sin(st.x*density)));
+}
+
+vec4 addShape(vec4 fragColor, float hue, float saturation, float shape){
+vec4 result = mix(fragColor,hsv2rgba(hue,saturation,shape),shape);
+return result;
+}
+
+void layer(out vec4 fragColor, vec4 result){
+fragColor = result;
+}
+
+vec2 circledUv(vec2 st,int which,int totalNumber,float distance,float speed){
+return mid0(st)+vec2(sin(6.28/float(totalNumber)*float(which)+time*speed)*distance,cos(6.28/float(totalNumber)*float(which)+time*speed)*distance);
+}
+
 
 void main(){
-vec2 st = fragCoord.xy/resolution.xy;
-vec2 uv = fract(st*8);
-vec2 st0 = (st*2-1)*vec2(aspect,1);
-vec2 uv0 = (uv*2-1)*vec2(aspect,1);
-/*
-vec2[] hs = vec2[](vec2(0,1),vec2(.15,sin(time)),vec2(.4,.6),vec2(1,.7));
-float[] shapes = float[](lineX(st0*rot(time),0,.1),lineX(st0*rot(-time*.5),0,.1),circle_s(st0,.25+amp*4,.4+amp*4),square_s(st0+vec2(1,0),.09,.1));
-fragColor = hsv2rgba(hs[0].x,hs[0].y,shapes[0]);
-for (int i=0; i<3; i++){
-fragColor = mix(fragColor,
-hsv2rgba(hs[i+1].x,hs[i+1].y,shapes[i+1]),shapes[i+1]); 
-}
-*/
-/*
-fragColor = hsv2rgba(0,0,0);
-int rep = 4;
-float r = .2;
-float speed = .5;
-float dist = .7;
-for (int i=0; i<rep; i++){
-float shape = square(uv0+vec2(sin(6.28/float(rep)*float(i)+time*speed)*dist,cos(6.28/float(rep)*float(i)+time*speed)*dist),r+amp*5);
-fragColor += hsv2rgba(.1,.9,shape);
-}
-*/
+vec2 st = fragCoord.xy/resolution.xy; 
+fragColor = b_w_osc(st,10,.4,.9,.3);
+fragColor = addShape(fragColor,.1,.9,square_s(mid0rotRep(st,.9,4,4),.3,.5,0));	
+fragColor = addShape(fragColor,.75,1,circle_b(mid0scrollRep(st,.3,.2,6,6),.1,.3,1));
+fragColor = addShape(fragColor,0,1,lineY(mid0rot(st,1),.0,.04,0));
 }
