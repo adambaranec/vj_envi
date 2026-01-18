@@ -168,6 +168,13 @@ st += vec2(x,y);
 return mid0(st);
 }
 
+vec2 mid0transRot(vec2 st,float x,float y,float speed){
+vec2 uv = mid0(st);
+uv += vec2(x,y);
+uv *= rot(time*-speed);
+return uv;
+}
+
 float a_polar(vec2 st){
 vec2 uv = mid0(st);
 return atan(uv.x,uv.y)+3.1416;
@@ -245,24 +252,27 @@ st.x += time*speed;
 return hsv2rgba(0,0,mix(v1,v2,sin(st.x*density)));
 }
 
-vec4 addShape(vec4 fragColor, float hue, float saturation, float shape){
+void addShape(vec4 fragColor, out vec4 final, float hue, float saturation, float shape){
 vec4 result = mix(fragColor,hsv2rgba(hue,saturation,shape),shape);
-return result;
+final = result;
 }
 
-void layer(out vec4 fragColor, vec4 result){
-fragColor = result;
-}
-
-vec2 circledUv(vec2 st,int which,int totalNumber,float distance,float speed){
-return mid0(st)+vec2(sin(6.28/float(totalNumber)*float(which)+time*speed)*distance,cos(6.28/float(totalNumber)*float(which)+time*speed)*distance);
+vec2 circledUv(vec2 st,int which,int totalNumber,float distance,float speed,float rotateSpeed){
+return mid0transRot(st,sin(6.28/float(totalNumber)*float(which)+time*speed)*distance,cos(6.28/float(totalNumber)*float(which)+time*speed)*distance,rotateSpeed);
 }
 
 
 void main(){
-vec2 st = fragCoord.xy/resolution.xy; 
-fragColor = b_w_osc(st,10,.4,.9,.3);
-fragColor = addShape(fragColor,.1,.9,square_s(mid0rotRep(st,.9,4,4),.3,.5,0));	
-fragColor = addShape(fragColor,.75,1,circle_b(mid0scrollRep(st,.3,.2,6,6),.1,.3,1));
-fragColor = addShape(fragColor,0,1,lineY(mid0rot(st,1),.0,.04,0));
+vec2 st = fragCoord.xy/resolution.xy;
+fragColor = hsv2rgba(0,0,0);
+
+//addShape(fragColor,fragColor,0,0,lineX_s(mid0rot(st,.2),0,.01,.05,1));
+//addShape(fragColor,fragColor,0,0,lineY_s(mid0rot(st,0),0,.1,1));
+
+//addShape(fragColor,fragColor,.0,0,circle_b(mid0(st),.1,.3,3));
+//addShape(fragColor,fragColor,0,0,square_s(mid0transRot(st,.3,.1,2),.12,.15,2));
+int num = 12;
+for (int i; i<num; i++){
+addShape(fragColor,fragColor,0,0,square_s(circledUv(st,i,num,.7,0,0),.08,.12,2));
+}
 }
