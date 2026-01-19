@@ -264,15 +264,17 @@ return mid0transRot(st,sin(6.28/float(totalNumber)*float(which)+time*speed)*dist
 
 void main(){
 vec2 st = fragCoord.xy/resolution.xy;
-fragColor = hsv2rgba(0,0,0);
+vec4 pixel = hsv2rgba(0,0,0);
 
-//addShape(fragColor,fragColor,0,0,lineX_s(mid0rot(st,.2),0,.01,.05,1));
-//addShape(fragColor,fragColor,0,0,lineY_s(mid0rot(st,0),0,.1,1));
+//addShape(pixel,0,0,lineX_s(mid0rot(st,.2),0,.01,.05,1));
+//addShape(pixel,0,0,lineY_s(mid0rot(st,0),0,.1,1));
 
-//addShape(fragColor,fragColor,.0,0,circle_b(mid0(st),.1,.3,3));
-//addShape(fragColor,fragColor,0,0,square_s(mid0transRot(st,.3,.1,2),.12,.15,2));
+//addShape(pixel,.0,0,circle_b(mid0(st),.1,.3,3));
+//addShape(pixel,0,0,square_s(mid0transRot(st,.3,.1,2),.12,.15,2));
 int num = 12;
 for (int i; i<num; i++){
-addShape(fragColor,fragColor,0,0,square_s(circledUv(st,i,num,.7,0,0),.08,.12,2));
+addShape(pixel,0,0,square_s(circledUv(st,i,num,.7,0,0),.08,.12,2));
 }
+
+fragColor = pixel;
 }
