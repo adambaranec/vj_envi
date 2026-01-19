@@ -186,7 +186,7 @@ return vec4(vec3( exp(1.-distance(_st,vec2(0.))/.4 / magnitude) ),1.);
 }
 
 float circle(vec2 st, float radius, float ampMulti){
-return 1.-step(radius+(amp*ampMulti), length(st-vec2(0))  );
+return 1.-step(radius+(amp*ampMulti), length(st-vec2(0)));
 }
 
 float square(vec2 st, float width, float ampMulti){
@@ -202,19 +202,19 @@ float d = cos(floor(.5+a/r)*r-a)*length(st);
 return 1.-step(radius+(amp*ampMulti),d);
 }
 
-float lineY(vec2 st, float centre, float thickness, float ampMulti){
-return 1.-step(thickness+(amp*ampMulti),abs(st.x-centre));
+float yline(vec2 st, float centre, float thickness, float ampMulti){
+return 1.-step(thickness+(amp*ampMulti),abs(mid0(st).x-centre));
 }
 
-float lineX(vec2 st, float centre, float thickness, float ampMulti){
+float xline(vec2 st, float centre, float thickness, float ampMulti){
 return 1.-step(thickness+(amp*ampMulti),abs(st.y-centre));
 }
 
-float lineY_s(vec2 st, float centre, float innerThick, float outerThick, float ampMulti){
+float yline_s(vec2 st, float centre, float innerThick, float outerThick, float ampMulti){
 return 1.-smoothstep(innerThick+(amp*ampMulti),outerThick+(amp*ampMulti),abs(st.x-centre));
 }
 
-float lineX_s(vec2 st, float centre, float innerThick, float outerThick, float ampMulti){
+float xline_s(vec2 st, float centre, float innerThick, float outerThick, float ampMulti){
 return 1.-smoothstep(innerThick+(amp*ampMulti),outerThick+(amp*ampMulti),abs(st.y-centre));
 }
 
@@ -252,9 +252,9 @@ st.x += time*speed;
 return hsv2rgba(0,0,mix(v1,v2,sin(st.x*density)));
 }
 
-void addShape(vec4 fragColor, out vec4 final, float hue, float saturation, float shape){
+void addShape(inout vec4 fragColor, float hue, float saturation, float shape){
 vec4 result = mix(fragColor,hsv2rgba(hue,saturation,shape),shape);
-final = result;
+fragColor = result;
 }
 
 vec2 circledUv(vec2 st,int which,int totalNumber,float distance,float speed,float rotateSpeed){
