@@ -732,9 +732,7 @@ void ofApp::keyPressed(int key){
 			for (int i = 0; i < textures.size(); i++) {
 				string name = "tex[" + ofToString(i) + "]";
 				GLint loc = glGetUniformLocation(customShader.getProgram(), name.c_str());
-
 				texLocs.push_back(loc);
-
 				if (loc != -1) {
 					glUniform1i(loc, i + 1);
 				}
