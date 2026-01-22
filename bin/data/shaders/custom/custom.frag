@@ -266,8 +266,8 @@ void main(){
 vec2 st = fragCoord.xy/resolution.xy;
 vec4 pixel = hsv2rgba(0,0,0);
 
-//addShape(pixel,0,0,lineX_s(mid0rot(st,.2),0,.01,.05,1));
-//addShape(pixel,0,0,lineY_s(mid0rot(st,0),0,.1,1));
+//addShape(pixel,0,0,xline_s(mid0rot(st,.2),0,.01,.05,1));
+//addShape(pixel,0,0,yline_s(mid0rot(st,0),0,.1,1));
 
 //addShape(pixel,.0,0,circle_b(mid0(st),.1,.3,3));
 //addShape(pixel,0,0,square_s(mid0transRot(st,.3,.1,2),.12,.15,2));
