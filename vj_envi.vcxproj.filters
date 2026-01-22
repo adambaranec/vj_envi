@@ -55,31 +55,31 @@
 			<UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons">
-			<UniqueIdentifier>{CCF8FF3E--A61-9-43-D2-A-2C5-AED87A00B7DA}</UniqueIdentifier>
+			<UniqueIdentifier>{E3B700BC--3AD-6-41-4F-8-327-F96AFD76C73A}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc">
-			<UniqueIdentifier>{35E7A61A--E9C-D-4B-4C-B-980-E9F3A264F134}</UniqueIdentifier>
+			<UniqueIdentifier>{D808C1A2--34D-4-4A-97-9-E41-AF98DCC5029A}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc\src">
-			<UniqueIdentifier>{6B1E8579--830-8-46-D2-B-F6A-736CBD479B5B}</UniqueIdentifier>
+			<UniqueIdentifier>{6F1E846C--DF6-A-42-C6-A-A6B-9AE32E0122B8}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc\libs">
-			<UniqueIdentifier>{96AF93EF--84A-C-47-AB-B-ABC-08236DB3960F}</UniqueIdentifier>
+			<UniqueIdentifier>{9E4AE480--3AB-9-4E-34-A-9D3-376022781540}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc\libs\oscpack">
-			<UniqueIdentifier>{32920BB1--9AA-E-4D-DD-B-509-382B4F161CF4}</UniqueIdentifier>
+			<UniqueIdentifier>{30E238DE--C2D-B-4E-67-8-C22-C8DB7F1C9346}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc\libs\oscpack\src">
-			<UniqueIdentifier>{35839377--92C-B-49-7A-9-82E-C6B48F09C4FB}</UniqueIdentifier>
+			<UniqueIdentifier>{C145E9C0--CF8-E-43-BA-8-EB9-4DB06F2287D8}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc\libs\oscpack\src\ip">
-			<UniqueIdentifier>{E078B731--E3D-0-46-59-B-08B-51FA828FBD60}</UniqueIdentifier>
+			<UniqueIdentifier>{92B89795--441-1-4B-3C-8-1A2-E06751CD0F3A}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc\libs\oscpack\src\ip\win32">
-			<UniqueIdentifier>{9E355BD1--491-1-48-91-A-979-7968477666CF}</UniqueIdentifier>
+			<UniqueIdentifier>{77528929--521-9-46-47-A-128-9C24BFAB2715}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxOsc\libs\oscpack\src\osc">
-			<UniqueIdentifier>{3AFC45DB--F37-E-45-F9-B-7EE-FD609218F034}</UniqueIdentifier>
+			<UniqueIdentifier>{51C00A95--399-F-46-82-A-A13-09CACDEC9AE3}</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

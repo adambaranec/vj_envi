@@ -340,6 +340,23 @@ void ofApp::setup() {
 		image.load(texturesDir.getPath(i));
 		textures.push_back(image);
 	}
+	customShader.load("vertex.vert", "shaders/custom/custom.frag");
+	customShader.begin();
+	for (int i = 0; i < textures.size(); i++) {
+		string name = "tex[" + ofToString(i) + "]";
+
+		// Find the location once
+		GLint loc = glGetUniformLocation(customShader.getProgram(), name.c_str());
+
+		// Store it for later
+		texLocs.push_back(loc);
+
+		// Optional: Pre-link the index to the unit ID here as well
+		if (loc != -1) {
+			glUniform1i(loc, i + 1);
+		}
+	}
+	customShader.end();
 	/*
 	shadersDir.open("shaders/elements");
 	shadersDir.allowExt("frag");
@@ -437,12 +454,23 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw(){
 	ofSetRectMode(OF_RECTMODE_CORNER);
+	ofClear(0, 0, 0, 255);
 	customShader.begin();
+	for (int i = 0; i < textures.size(); i++) {
+		int unit = i + 1;
+		textures[i].getTexture().bind(unit);
+		if (texLocs[i] != -1) {
+			glUniform1i(texLocs[i], unit);
+		}
+	}
 	customShader.setUniform1f("time", ofGetElapsedTimef());
 	customShader.setUniform1f("amp", amplitude);
 	customShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
 	customShader.setUniform2f("resolution", (float)ofGetWidth(), (float)ofGetHeight());
 	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+	for (int i = 0; i < textures.size(); i++) {
+		textures[i].getTexture().unbind(i + 1);
+	}
 	customShader.end();
 	/*
 	if (!feedback && !transition) {
@@ -698,6 +726,23 @@ void ofApp::keyPressed(int key){
 		glGetProgramiv(programID, GL_LINK_STATUS, &linkStatus);
 		if (linkStatus) {
 			customShader = std::move(test);
+			customShader.begin();
+			texLocs.clear(); 
+
+			for (int i = 0; i < textures.size(); i++) {
+				string name = "tex[" + ofToString(i) + "]";
+				GLint loc = glGetUniformLocation(customShader.getProgram(), name.c_str());
+
+				texLocs.push_back(loc);
+
+				if (loc != -1) {
+					glUniform1i(loc, i + 1);
+				}
+				else {
+					ofLogWarning("Shader") << "Could not find uniform: " << name;
+				}
+			}
+			customShader.end();
 		}
 	}
 }

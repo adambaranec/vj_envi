@@ -33,6 +33,7 @@ public:
 	std::vector<ofVideoPlayer> players;
 	std::vector<ofShader> shaders;
 	std::vector<ofImage> textures;
+	std::vector<GLint> texLocs;
 	int timestamp, previousIndex, previousModeIndex, index, modeIndex, modeIndexToSet, transitionMode, feedbackMode, loopsSize, shadersSize, texturesSize;
 	float amplitude, progress = 1.0f;
 	//attributes edited either by OSC or MIDI

@@ -124,7 +124,9 @@ vec4 mask(vec4 _c0, vec4 _c1) {
 }
 
 vec3 texHsv(int index){
-
+vec2 st = fragCoord.xy/resolution.xy;
+vec4 t = texture(tex[index], st);
+return rgb2hsv(t.rgb);
 }
 
 vec2 repeat(vec2 _st, float repeatX, float repeatY, float offsetX, float offsetY) {
@@ -278,7 +280,8 @@ return mid0transRot(st,sin(6.28/float(totalNumber)*float(which)+time*speed)*dist
 
 
 void main(){
-vec2 st = fragCoord.xy/resolution.xy;
+vec2 st = fragCoord.xy;
+
 vec4 pixel = hsv2rgba(0,0,0);
 
 /*
