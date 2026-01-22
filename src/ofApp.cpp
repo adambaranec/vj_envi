@@ -330,6 +330,17 @@ void ofApp::setup() {
 		player.setLoopState(OF_LOOP_NORMAL);
 		players.push_back(player);
 	}
+	texturesDir.open("textures");
+	texturesDir.allowExt("png");
+	texturesDir.allowExt("jpg");
+	texturesDir.listDir();
+	texturesSize = texturesDir.size();
+	for (int i = 0; i < texturesSize; i++) {
+		ofImage image;
+		image.load(texturesDir.getPath(i));
+		textures.push_back(image);
+	}
+	/*
 	shadersDir.open("shaders/elements");
 	shadersDir.allowExt("frag");
 	shadersDir.listDir();
@@ -370,8 +381,8 @@ void ofApp::setup() {
 	ofSetFrameRate(60);
 	ofHideCursor();
 	ofEnableDepthTest();
-	ofSetCircleResolution(100);
 	//---------------------------------------------
+	*/
 	ofSoundStreamSettings settings;
 	settings.numOutputChannels = 0;
 	settings.numInputChannels = 6;
@@ -383,7 +394,7 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (previousModeIndex == 1 && previousIndex < loopsSize) {
+	/*if (previousModeIndex == 1 && previousIndex < loopsSize) {
 		players[previousIndex].update();
 		if (transition && progress == 1.0f) {
 			if (players[previousIndex].isPaused()) {
@@ -421,7 +432,7 @@ void ofApp::update() {
 		else {
 		 feedbackMode = 0;
 		}
-	}
+	}*/
 }
 //--------------------------------------------------------------
 void ofApp::draw(){

@@ -31,6 +31,9 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+[Bb]in/data/loops
+[Bb]in/data/textures
+[Bb]in/data/shaders/custom/
 
 *.exe
 *.dll

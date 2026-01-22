@@ -3,7 +3,7 @@
 precision mediump float;
 in vec2 fragCoord;
 uniform vec2 resolution;
-uniform sampler2DRect tex;
+uniform sampler2DRect tex[8];
 uniform float time, aspect, amp;
 out vec4 fragColor;
 
@@ -95,6 +95,17 @@ vec4 hsv2rgba(float hue, float saturation, float value)
     return vec4(vec3(result),1.);
 }
 
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
   vec4 noise(vec2 _st, float scale, float offset) {
          return vec4(vec3(_noise(vec3(_st*scale, offset*time))), 1.0);
   }
@@ -110,6 +121,10 @@ return (_c0+_c1)*amount + _c0*(1.0-amount);
 vec4 mask(vec4 _c0, vec4 _c1) {
          float a = _luminance(_c1.rgb);
   return vec4(_c0.rgb*a, a*_c0.a);
+}
+
+vec3 texHsv(int index){
+
 }
 
 vec2 repeat(vec2 _st, float repeatX, float repeatY, float offsetX, float offsetY) {
@@ -266,15 +281,12 @@ void main(){
 vec2 st = fragCoord.xy/resolution.xy;
 vec4 pixel = hsv2rgba(0,0,0);
 
-//addShape(pixel,0,0,xline_s(mid0rot(st,.2),0,.01,.05,1));
-//addShape(pixel,0,0,yline_s(mid0rot(st,0),0,.1,1));
-
-//addShape(pixel,.0,0,circle_b(mid0(st),.1,.3,3));
-//addShape(pixel,0,0,square_s(mid0transRot(st,.3,.1,2),.12,.15,2));
-int num = 12;
+/*
+int num = 8;
 for (int i; i<num; i++){
-addShape(pixel,0,0,square_s(circledUv(st,i,num,.7,0,0),.08,.12,2));
+addShape(pixel,.8,1,circle_s(circledUv(st,i,num,.7,-1,1.8),.05,.09,2));
 }
+*/
 
 fragColor = pixel;
 }
