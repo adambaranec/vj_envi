@@ -453,9 +453,6 @@ void ofApp::update() {
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofSetRectMode(OF_RECTMODE_CORNER);
-	ofClear(0, 0, 0, 255);
-	customShader.begin();
 	for (int i = 0; i < textures.size(); i++) {
 		int unit = i + 1;
 		textures[i].getTexture().bind(unit);
@@ -463,15 +460,47 @@ void ofApp::draw(){
 			glUniform1i(texLocs[i], unit);
 		}
 	}
-	customShader.setUniform1f("time", ofGetElapsedTimef());
-	customShader.setUniform1f("amp", amplitude);
-	customShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-	customShader.setUniform2f("resolution", (float)ofGetWidth(), (float)ofGetHeight());
-	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+	ofSetRectMode(OF_RECTMODE_CORNER);
+	ofClear(0, 0, 0, 255);
+	if (!feedback) {
+		customShader.begin();
+		customShader.setUniform1f("time", ofGetElapsedTimef());
+		customShader.setUniform1f("amp", amplitude);
+		customShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+		customShader.setUniform2f("resolution", (float)ofGetWidth(), (float)ofGetHeight());
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		customShader.end();
+	}
+	else {
+		nextBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		customShader.begin();
+		customShader.setUniform1f("time", ofGetElapsedTimef());
+		customShader.setUniform1f("amp", amplitude);
+		customShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
+		customShader.setUniform2f("resolution", (float)ofGetWidth(), (float)ofGetHeight());
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		customShader.end();
+		nextBuffer.end();
+
+		mainBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		feedbackShader.begin();
+		feedbackShader.setUniform1i("mode", feedbackMode);
+		feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
+		feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+		feedbackShader.end();
+		mainBuffer.end();
+
+		ofSetColor(255);
+		ofSetRectMode(OF_RECTMODE_CORNER);
+		mainBuffer.draw(0, 0);
+	}
 	for (int i = 0; i < textures.size(); i++) {
 		textures[i].getTexture().unbind(i + 1);
 	}
-	customShader.end();
 	/*
 	if (!feedback && !transition) {
 		mainBuffer.begin();

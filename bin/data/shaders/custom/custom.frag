@@ -123,11 +123,6 @@ vec4 mask(vec4 _c0, vec4 _c1) {
   return vec4(_c0.rgb*a, a*_c0.a);
 }
 
-vec3 texHsv(int index){
-vec2 st = fragCoord.xy;
-vec4 t = texture(tex[index], st);
-return rgb2hsv(t.rgb);
-}
 
 vec2 repeat(vec2 _st, float repeatX, float repeatY, float offsetX, float offsetY) {
          vec2 st = _st * vec2(repeatX, repeatY);
@@ -192,11 +187,31 @@ uv *= rot(time*-speed);
 return uv;
 }
 
+vec2 texUv(){
+return fragCoord;
+}
+
+vec2 texScroll(vec2 st, float x, float y){
+return fract(st+vec2(time*x,time*y))*resolution;
+}
+
+vec2 texRepeat(vec2 st, float x, float y){
+return fract(st*vec2(x,y))*resolution;
+}
+
+vec2 texScrollRep(vec2 st, float x, float y, float repeatX, float repeatY){
+return fract(st+vec2(time*x,time*y)*vec2(repeatX,repeatY))*resolution;
+}
+
 float a_polar(vec2 st){
 vec2 uv = mid0(st);
 return atan(uv.x,uv.y)+3.1416;
 }
 
+vec3 texHsv(int index, vec2 st){
+vec4 t = texture(tex[index], st);
+return rgb2hsv(t.rgb);
+}
 
 vec4 sphere(vec2 _st, float magnitude){
 return vec4(vec3( exp(1.-distance(_st,vec2(0.))/.4 / magnitude) ),1.);
@@ -236,15 +251,15 @@ return 1.-smoothstep(innerThick+(amp*ampMulti),outerThick+(amp*ampMulti),abs(st.
 }
 
 float circle_s(vec2 st, float holeRadius, float radius, float ampMulti){
-return circle(st,radius,(amp*ampMulti)) - circle(st,holeRadius,(amp*ampMulti));
+return circle(st,radius,(amp*ampMulti*10)) - circle(st,holeRadius,(amp*ampMulti*10));
 }
 
 float square_s(vec2 st, float holeRadius, float radius, float ampMulti){
-return square(st,radius,(amp*ampMulti)) - square(st,holeRadius,(amp*ampMulti));
+return square(st,radius,(amp*ampMulti*10)) - square(st,holeRadius,(amp*ampMulti*10));
 }
 
 float polygon_s(vec2 st, int sides, float holeRadius, float radius,float ampMulti){
-return polygon(st,sides,radius,(amp*ampMulti)) - polygon(st,sides,holeRadius,(amp*ampMulti));
+return polygon(st,sides,radius,(amp*ampMulti*10)) - polygon(st,sides,holeRadius,(amp*ampMulti*10));
 }
 
 float circle_b(vec2 st, float innerRadius, float outerRadius,float ampMulti){
@@ -262,6 +277,11 @@ return hsv2rgba(mix(min,max,n+(amp*ampMulti)),1,1);
 vec4 osc(vec2 st,float density, float hue1, float hue2,float speed){
 st.x += time*speed;
 return hsv2rgba(mix(hue1,hue2,sin(st.x*density)),1,1);
+}
+
+vec4 osc2(vec2 st,float density,float hue1,float sat1, float hue2, float sat2, float speed){
+st.x += time*speed;
+return mix(hsv2rgba(hue1,sat1,1),hsv2rgba(hue2,sat2,1),sin(st.x*density));
 }
 
 vec4 b_w_osc(vec2 st, float density, float v1, float v2, float speed){
@@ -282,7 +302,7 @@ return mid0transRot(st,sin(6.28/float(totalNumber)*float(which)+time*speed)*dist
 void main(){
 vec2 st = fragCoord.xy/resolution.xy;
 
-vec4 pixel = texture(tex[1],(st-vec2(.1))/.7*resolution);
+vec4 pixel = osc2(st,16,.1,.9,.25,1,.6);
 
 /*
 int num = 8;
