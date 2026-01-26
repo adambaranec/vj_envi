@@ -340,7 +340,9 @@ void ofApp::setup() {
 		image.load(texturesDir.getPath(i));
 		textures.push_back(image);
 	}
+	//---------------------------------------------
 	customShader.load("vertex.vert", "shaders/custom/custom.frag");
+	feedbackShader.load("vertex.vert", "shaders/feedback/feedback.frag");
 	customShader.begin();
 	for (int i = 0; i < textures.size(); i++) {
 		string name = "tex[" + ofToString(i) + "]";
@@ -357,6 +359,10 @@ void ofApp::setup() {
 		}
 	}
 	customShader.end();
+	//---------------------------------------------
+	mainBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	prevBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	nextBuffer.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	/*
 	shadersDir.open("shaders/elements");
 	shadersDir.allowExt("frag");
@@ -411,45 +417,6 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	/*if (previousModeIndex == 1 && previousIndex < loopsSize) {
-		players[previousIndex].update();
-		if (transition && progress == 1.0f) {
-			if (players[previousIndex].isPaused()) {
-				players[previousIndex].setPaused(true);
-			}
-		}
-	}
-	if (modeIndex == 1 && index < loopsSize) {
-		players[index].update();
-	}
-	while (receiver.hasWaitingMessages()) {
-		ofxOscMessage msg;
-		receiver.getNextMessage(msg);
-
-		if (msg.getAddress() == "/feedback") {
-			feedback = msg.getArgAsBool(0);
-		}
-		else if (msg.getAddress() == "/transition") {
-			transition = msg.getArgAsBool(0);
-		}
-		else if (msg.getAddress() == "/repeat") {
-			repeat = msg.getArgAsBool(0);
-		}
-		else if (msg.getAddress() == "/repeatX") {
-			columns = static_cast<int>(msg.getArgAsFloat(0) * 11.0f) + 1;
-		}
-		else if (msg.getAddress() == "/repeatY") {
-			rows = static_cast<int>(msg.getArgAsFloat(0) * 11.0f) + 1;
-		}
-	}
-	if (feedback && ofGetFrameNum() % (60*90) == 0 && ofGetFrameNum() != 0) {
-		if  (feedbackMode != 6) {
-		 feedbackMode++;
-		}
-		else {
-		 feedbackMode = 0;
-		}
-	}*/
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -494,259 +461,20 @@ void ofApp::draw(){
 		feedbackShader.end();
 		mainBuffer.end();
 
-		ofSetColor(255);
-		ofSetRectMode(OF_RECTMODE_CORNER);
+		prevBuffer.begin();
+		ofClear(0, 0, 0, 255);
+		mainBuffer.draw(0, 0);
+		prevBuffer.end();
+
 		mainBuffer.draw(0, 0);
 	}
 	for (int i = 0; i < textures.size(); i++) {
 		textures[i].getTexture().unbind(i + 1);
 	}
-	/*
-	if (!feedback && !transition) {
-		mainBuffer.begin();
-		ofClear(0, 0, 0, 255);
-		mainDraw(modeIndex, index);
-		mainBuffer.end();
-
-		if (repeat) {
-			postBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			repetitionShader.begin();
-			repetitionShader.setUniform1i("rows", rows);
-			repetitionShader.setUniform1i("columns", columns);
-			repetitionShader.setUniformTexture("tex", mainBuffer.getTexture(), 0);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			repetitionShader.end();
-			postBuffer.end();
-
-			ofSetColor(255);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			postBuffer.draw(0, 0);
-		}
-		else {
-			ofSetColor(255);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			mainBuffer.draw(0, 0);
-		}
-	}
-	else if (feedback && !transition) {
-		nextBuffer.begin();
-		ofClear(0, 0, 0, 255);
-		mainDraw(modeIndex, index);
-		nextBuffer.end();
-
-		mainBuffer.begin();
-		ofClear(0, 0, 0, 255);
-		feedbackShader.begin();
-		feedbackShader.setUniform1i("mode", feedbackMode);
-		//feedbackShader.setUniform1f("time", ofGetElapsedTimef());
-		feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
-		feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
-		ofSetRectMode(OF_RECTMODE_CORNER);
-		ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-		feedbackShader.end();
-		mainBuffer.end();
-
-		if (repeat) {
-			postBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			repetitionShader.begin();
-			repetitionShader.setUniform1i("rows", rows);
-			repetitionShader.setUniform1i("columns", columns);
-			repetitionShader.setUniformTexture("tex", mainBuffer.getTexture(), 0);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			repetitionShader.end();
-			postBuffer.end();
-
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			postBuffer.draw(0, 0);
-		}
-		else {
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			mainBuffer.draw(0, 0);
-		}
-
-		prevBuffer.begin();
-		ofClear(0, 0, 0, 255);
-		mainBuffer.draw(0, 0);
-		prevBuffer.end();
-	}
-	else if (!feedback && transition) {
-		progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
-		if (progress > 1.0f) { progress = 1.0f; }
-		if (progress < 1.0f) {
-			prevBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			mainDraw(previousModeIndex, previousIndex);
-			prevBuffer.end();
-
-			nextBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			mainDraw(modeIndex, index);
-			nextBuffer.end();
-
-			transitionShader.begin();
-			transitionShader.setUniform1i("mode", transitionMode);
-			transitionShader.setUniform1f("progress", progress);
-			transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-			transitionShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 0);
-			transitionShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 1);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			transitionShader.end();
-		}
-		else if (progress == 1.0f) {
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			mainDraw(modeIndex, index);
-		}
-	}
-	else if (feedback && transition) {
-		progress = (float)(ofGetFrameNum() - timestamp) / 300.0f;
-		if (progress > 1.0f) { progress = 1.0f; }
-		if (progress < 1.0f) {
-			scene1.begin();
-			ofClear(0, 0, 0, 255);
-			mainDraw(previousModeIndex, previousIndex);
-			scene1.end();
-			scene2.begin();
-			ofClear(0, 0, 0, 255);
-			mainDraw(modeIndex, index);
-			scene2.end();
-
-			nextBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			transitionShader.begin();
-			transitionShader.setUniform1i("mode", transitionMode);
-			transitionShader.setUniform1f("progress", progress);
-			transitionShader.setUniform1f("aspect", (float)ofGetWidth() / (float)ofGetHeight());
-			transitionShader.setUniformTexture("prevBuffer", scene1.getTexture(), 0);
-			transitionShader.setUniformTexture("nextBuffer", scene2.getTexture(), 1);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			transitionShader.end();
-			nextBuffer.end();
-
-			mainBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			feedbackShader.begin();
-			feedbackShader.setUniform1i("mode", feedbackMode);
-			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
-			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			feedbackShader.end();
-			mainBuffer.end();
-
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			mainBuffer.draw(0, 0);
-
-			prevBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			mainBuffer.draw(0, 0);
-			prevBuffer.end();
-		}
-		else if (progress == 1.0f) {
-			nextBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			mainDraw(modeIndex, index);
-			nextBuffer.end();
-
-			mainBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			feedbackShader.begin();
-            feedbackShader.setUniform1i("mode", feedbackMode);
-			feedbackShader.setUniformTexture("nextBuffer", nextBuffer.getTexture(), 0);
-			feedbackShader.setUniformTexture("prevBuffer", prevBuffer.getTexture(), 1);
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-			feedbackShader.end();
-			mainBuffer.end();
-
-			ofSetRectMode(OF_RECTMODE_CORNER);
-			mainBuffer.draw(0, 0);
-
-			prevBuffer.begin();
-			ofClear(0, 0, 0, 255);
-			mainBuffer.draw(0, 0);
-			prevBuffer.end();
-		}
-	}*/
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	/*
-	previousIndex = index;
-	previousModeIndex = modeIndex;
-	switch (key) {
-	case '1': modeIndexToSet = 0; break;
-	case '2': modeIndexToSet = 1; break;
-	case '3': modeIndexToSet = 2; break;
-	case '4': modeIndexToSet = 3; break;
-	}
-	switch (key) {
-	case 'q': index = 0; break;
-	case 'w': index = 1; break;
-	case 'e': index = 2; break;
-	case 'r': index = 3; break;
-	case 't': index = 4; break;
-	case 'y': index = 5; break;
-	case 'u': index = 6; break;
-	case 'i': index = 7; break;
-	case 'o': index = 8; break;
-	case 'p': index = 9; break;
-	case '[': index = 10; break;
-	case ']': index = 11; break;
-	case 'a': index = 12; break;
-	case 's': index = 13; break;
-	case 'd': index = 14; break;
-	case 'f': index = 15; break;
-	case 'g': index = 16; break;
-	case 'h': index = 17; break;
-	case 'j': index = 18; break;
-	case 'k': index = 19; break;
-	case 'l': index = 20; break;
-	case ';': index = 21; break;
-	case '\'': index = 22; break;
-	case 'z': index = 23; break;
-	case 'x': index = 24; break;
-	case 'c': index = 25; break;
-	case 'v': index = 26; break;
-	case 'b': index = 27; break;
-	case 'n': index = 28; break;
-	case 'm': index = 29; break;
-	case ',': index = 30; break;
-	case '.': index = 31; break;
-	case '/': index = 32; break;
-	}
-
-	
-	if (key != '1' && key != '2' && key != '3') {
-		if (transition) {
-			timestamp = ofGetFrameNum();
-			transitionMode = (int)ofRandom(0, 5);
-		}
-		modeIndex = modeIndexToSet;
-
-		if (previousModeIndex == 1) {
-			if (previousIndex < loopsSize) {
-				if (!transition) {
-					players[previousIndex].stop();
-				}
-				else {
-					players[previousIndex].play();
-				}
-			}	
-		}
-		if (modeIndex == 1) {
-			if (index < loopsSize) {
-				players[index].play();
-			}
-		}
-	}*/
-
 	if (key == 13) {
 		ofShader test;
 		bool success = test.load("vertex.vert", "shaders/custom/custom.frag");
@@ -771,6 +499,13 @@ void ofApp::keyPressed(int key){
 			}
 			customShader.end();
 		}
+	}
+	if (key == '0') {
+		if (feedback) { feedback = !feedback; }
+	}
+	else if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6') {
+		if (!feedback) { feedback = !feedback; }
+		feedbackMode = key - 49;
 	}
 }
 

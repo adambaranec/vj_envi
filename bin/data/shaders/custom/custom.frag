@@ -302,7 +302,9 @@ return mid0transRot(st,sin(6.28/float(totalNumber)*float(which)+time*speed)*dist
 void main(){
 vec2 st = fragCoord.xy/resolution.xy;
 
-vec4 pixel = osc2(st,16,.1,.9,.25,1,.6);
+vec4 pixel = hsv2rgba(0,0,0);
+
+addShape(pixel,.15,1,circle(mid0(st),.5,1));
 
 /*
 int num = 8;
