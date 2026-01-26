@@ -294,6 +294,11 @@ vec4 result = mix(fragColor,hsv2rgba(hue,saturation,shape),shape);
 fragColor = result;
 }
 
+void addTexShape(inout vec4 fragColor, vec4 texture, float shape){
+texture.rgb *= shape;
+fragColor = mix(fragColor, texture, shape);
+}
+
 vec2 circledUv(vec2 st,int which,int totalNumber,float distance,float speed,float rotateSpeed){
 return mid0transRot(st,sin(6.28/float(totalNumber)*float(which)+time*speed)*distance,cos(6.28/float(totalNumber)*float(which)+time*speed)*distance,rotateSpeed);
 }
@@ -303,8 +308,8 @@ void main(){
 vec2 st = fragCoord.xy/resolution.xy;
 
 vec4 pixel = hsv2rgba(0,0,0);
-
-addShape(pixel,.15,1,circle(mid0(st),.5,1));
+//addTexShape(pixel,texture(tex[3], texUv()),circle(mid0(st),.5,5));
+addTexShape(pixel,texture(tex[1], texScroll(st,.1,0)),circle_b(mid0rot(st,1),.4,.5,6));
 
 /*
 int num = 8;
