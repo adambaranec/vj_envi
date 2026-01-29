@@ -294,9 +294,9 @@ vec4 result = mix(fragColor,hsv2rgba(hue,saturation,shape),shape);
 fragColor = result;
 }
 
-void addTexShape(inout vec4 fragColor, vec4 texture, float shape){
+void addTexShape(inout vec4 fragColor, int index, vec2 st, float shape){
 texture.rgb *= shape;
-fragColor = mix(fragColor, texture, shape);
+fragColor = mix(fragColor, texture(tex[index], st), shape);
 }
 
 vec2 circledUv(vec2 st,int which,int totalNumber,float distance,float speed,float rotateSpeed){
